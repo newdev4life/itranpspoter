@@ -1,0 +1,86 @@
+.log-viewer {
+    background: #1E1E1E;
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    height: 320px;
+    overflow-y: auto;
+    font-family: var(--font-family-mono);
+    font-size: 11px;
+    line-height: 1.5;
+    border: 0.5px solid rgba(0, 0, 0, 0.2);
+}
+
+.log-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #6B6B6B;
+}
+
+.log-empty-icon {
+    font-size: 24px;
+    margin-bottom: var(--space-sm);
+    opacity: 0.5;
+}
+
+.log-empty p {
+    margin: 0;
+    color: #6B6B6B;
+    font-size: 11px;
+}
+
+.log-entry {
+    display: flex;
+    gap: var(--space-sm);
+    padding: 2px 0;
+    border-bottom: 1px solid #2A2A2A;
+    line-height: 1.4;
+}
+
+.log-entry:last-child {
+    border-bottom: none;
+}
+
+.log-time {
+    color: #6B6B6B;
+    flex-shrink: 0;
+    font-size: 10px;
+}
+
+.log-message {
+    color: #D4D4D4;
+    word-break: break-all;
+    white-space: pre-wrap;
+}
+
+.log-info .log-message {
+    color: #4FC3F7;
+}
+
+.log-error .log-message {
+    color: #F48771;
+}
+
+.log-success .log-message {
+    color: #89D185;
+}
+
+/* macOS style scrollbar for dark bg */
+.log-viewer::-webkit-scrollbar {
+    width: 8px;
+}
+
+.log-viewer::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.log-viewer::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+
+.log-viewer::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+}

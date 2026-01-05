@@ -1,0 +1,53 @@
+.environment-check {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: var(--space-xl) 0;
+}
+
+.check-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.check-icon {
+    display: inline-block;
+    font-size: 36px;
+    margin-bottom: var(--space-md);
+}
+
+.check-header h2 {
+    margin-bottom: var(--space-xs);
+    font-size: var(--font-size-xl);
+}
+
+.check-header p {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.check-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+}
+
+.install-message {
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-primary-light);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-lg);
+}
+
+.install-message p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-primary);
+    text-align: center;
+}
+
+.check-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-sm);
+}

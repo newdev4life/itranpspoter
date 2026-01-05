@@ -1,0 +1,294 @@
+.upload-page {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: var(--space-lg) 0;
+}
+
+.upload-container {
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    border: 0.5px solid var(--color-border-light);
+    box-shadow: var(--shadow-sm);
+}
+
+.upload-header {
+    margin-bottom: var(--space-lg);
+}
+
+.upload-header h2 {
+    margin-bottom: 2px;
+    font-size: var(--font-size-xl);
+}
+
+.upload-header p {
+    color: var(--color-text-secondary);
+    margin: 0;
+    font-size: var(--font-size-sm);
+}
+
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.form-section h3 {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+/* File Picker - Native feeling */
+.file-picker {
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    background: var(--color-bg-primary);
+}
+
+.file-picker:hover {
+    border-color: var(--color-primary);
+    background: var(--color-primary-light);
+}
+
+.file-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.file-placeholder .file-icon {
+    font-size: 24px;
+}
+
+.file-selected {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.file-selected .file-icon {
+    font-size: 24px;
+}
+
+.file-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.file-name {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+}
+
+.file-path {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Credential Toggle - Segmented Control */
+.credential-toggle {
+    display: flex;
+    background: rgba(0, 0, 0, 0.04);
+    border-radius: var(--radius-md);
+    padding: 2px;
+    margin-bottom: var(--space-md);
+}
+
+.toggle-btn {
+    flex: 1;
+    padding: 4px var(--space-md);
+    height: 22px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-secondary);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.toggle-btn.active {
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Credential List */
+.credential-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.credential-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-bg-primary);
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.credential-item:hover {
+    background: var(--color-bg-tertiary);
+}
+
+.credential-item.selected {
+    border-color: var(--color-primary);
+    background: var(--color-primary-light);
+}
+
+.credential-icon {
+    font-size: 18px;
+}
+
+.credential-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.credential-email {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.credential-meta {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+}
+
+.credential-check {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+/* Credential Form */
+.credential-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.form-hint {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+}
+
+.form-hint a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.form-hint a:hover {
+    text-decoration: underline;
+}
+
+/* Provider Section */
+.provider-fetch {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.provider-error {
+    font-size: var(--font-size-xs);
+    color: var(--color-error);
+    margin: 0;
+}
+
+.provider-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.provider-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-bg-primary);
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.provider-item:hover {
+    background: var(--color-bg-tertiary);
+}
+
+.provider-item.selected {
+    border-color: var(--color-primary);
+    background: var(--color-primary-light);
+}
+
+.provider-icon {
+    font-size: 18px;
+}
+
+.provider-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.provider-name {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.provider-meta {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+}
+
+.provider-check {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+/* Actions */
+.form-actions {
+    padding-top: var(--space-md);
+    border-top: 0.5px solid var(--color-divider);
+}

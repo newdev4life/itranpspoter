@@ -1,0 +1,48 @@
+/* App-specific styles */
+
+/* Ensure smooth scrolling on content area */
+.app-content {
+  scroll-behavior: smooth;
+}
+
+/* Focus styles - native macOS ring */
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2.5px var(--color-primary-light);
+}
+
+/* Selection styles */
+::selection {
+  background: rgba(0, 122, 255, 0.2);
+  color: inherit;
+}
+
+/* Link styles */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: opacity var(--transition-fast);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Disable text selection on UI elements */
+button,
+.nav-item,
+.toggle-btn,
+.credential-item,
+.file-picker {
+  user-select: none;
+}
+
+/* Native-like text rendering */
+body {
+  text-rendering: optimizeLegibility;
+}
+
+/* Subtle page transitions */
+.app-content>* {
+  animation: fadeIn 0.12s ease-out;
+}

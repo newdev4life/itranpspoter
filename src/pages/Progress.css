@@ -1,0 +1,207 @@
+.progress-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: var(--space-lg) 0;
+}
+
+.progress-container {
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    border: 0.5px solid var(--color-border-light);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Progress Header */
+.progress-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-lg);
+}
+
+.progress-header.status-primary {
+    background: var(--color-primary-light);
+}
+
+.progress-header.status-success {
+    background: var(--color-success-light);
+}
+
+.progress-header.status-error {
+    background: var(--color-error-light);
+}
+
+.progress-header.status-warning {
+    background: var(--color-warning-light);
+}
+
+.progress-icon {
+    font-size: 32px;
+}
+
+.progress-info h2 {
+    margin-bottom: 2px;
+    font-size: var(--font-size-lg);
+}
+
+.progress-info p {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+/* Progress Bar */
+.progress-bar-container {
+    margin-bottom: var(--space-lg);
+}
+
+.progress-bar-wrapper {
+    height: 8px;
+    background: var(--color-bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: var(--space-sm);
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary) 0%, #5AC8FA 100%);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-bar-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+}
+
+.progress-percentage {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    font-size: var(--font-size-sm);
+}
+
+.progress-bytes {
+    font-family: var(--font-family-mono);
+}
+
+.progress-speed {
+    color: var(--color-success);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Progress Steps */
+.progress-steps {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-lg);
+    padding: var(--space-md);
+    background: var(--color-bg-primary);
+    border-radius: var(--radius-md);
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.step-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-secondary);
+    border-radius: 50%;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    transition: all 0.2s ease;
+}
+
+.step span {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+}
+
+.step.active .step-icon {
+    background: var(--color-primary);
+    color: white;
+    animation: pulse 1.5s infinite;
+}
+
+.step.active span {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-medium);
+}
+
+.step.done .step-icon {
+    background: var(--color-success);
+    color: white;
+}
+
+.step.done span {
+    color: var(--color-success);
+}
+
+.step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--color-bg-tertiary);
+    margin: 0 var(--space-xs);
+}
+
+/* Progress Meta */
+.progress-meta {
+    display: flex;
+    gap: var(--space-xl);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-bg-primary);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-lg);
+    border: 0.5px solid var(--color-border-light);
+}
+
+.meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.meta-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+}
+
+.meta-value {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Progress Logs */
+.progress-logs {
+    margin-bottom: var(--space-lg);
+}
+
+.progress-logs h3 {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-sm);
+}
+
+/* Progress Actions */
+.progress-actions {
+    display: flex;
+    justify-content: center;
+    padding-top: var(--space-md);
+    border-top: 0.5px solid var(--color-divider);
+}

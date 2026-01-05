@@ -1,0 +1,133 @@
+.history-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: var(--space-lg) 0;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-lg);
+}
+
+.history-header h2 {
+    margin-bottom: 2px;
+    font-size: var(--font-size-xl);
+}
+
+.history-header p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+}
+
+/* Loading State */
+.history-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2xl);
+    color: var(--color-text-secondary);
+}
+
+.history-loading span {
+    font-size: 24px;
+    margin-bottom: var(--space-sm);
+}
+
+.history-loading p {
+    font-size: var(--font-size-sm);
+}
+
+/* Empty State */
+.history-empty {
+    text-align: center;
+    padding: var(--space-2xl);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--color-border-light);
+}
+
+.empty-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: var(--space-md);
+}
+
+.history-empty h3 {
+    margin-bottom: var(--space-xs);
+    font-size: var(--font-size-lg);
+}
+
+.history-empty p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+}
+
+/* History List */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--color-border-light);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 0.5px solid var(--color-border-light);
+}
+
+.history-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--color-bg-secondary);
+    transition: all var(--transition-fast);
+}
+
+.history-item:hover {
+    background: var(--color-bg-primary);
+}
+
+.history-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    padding-top: 1px;
+}
+
+.history-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.history-main {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: 2px;
+}
+
+.history-filename {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.history-meta {
+    display: flex;
+    gap: var(--space-sm);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    flex-wrap: wrap;
+}
+
+.history-error {
+    margin-top: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--color-error-light);
+    border-radius: var(--radius-xs);
+    font-size: var(--font-size-xs);
+    color: #D93025;
+}
