@@ -14,6 +14,7 @@ The official [Transporter](https://apps.apple.com/app/transporter/id1450874784) 
 - **Team Workflows** - Developers may prefer using App-Specific Passwords instead of sharing Apple ID credentials
 - **Security Concerns** - Using App-Specific Passwords limits access scope compared to full Apple ID login
 - **No Full Xcode Required** - Only needs Xcode Command Line Tools, not the full 12GB+ Xcode installation
+- **Transporter Without Login** - Just install the Transporter app from App Store, no need to sign in to it
 
 iTransporter solves this by leveraging the `iTMSTransporter` command-line tool (bundled with Transporter) to upload IPAs using only your **Apple ID email** and an **App-Specific Password** — no interactive login required.
 
@@ -33,7 +34,7 @@ iTransporter solves this by leveraging the `iTMSTransporter` command-line tool (
 ## Requirements
 
 - macOS 10.15 or later
-- [Transporter](https://apps.apple.com/app/transporter/id1450874784) app installed
+- [Transporter](https://apps.apple.com/app/transporter/id1450874784) app installed (no need to sign in)
 - Xcode Command Line Tools
 
 ## Installation
