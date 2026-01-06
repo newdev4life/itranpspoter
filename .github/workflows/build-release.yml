@@ -6,6 +6,9 @@ on:
       - 'v*'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: macos-latest
@@ -28,7 +31,7 @@ jobs:
         run: npm ci
 
       - name: Build for macOS ${{ matrix.arch }}
-        run: npm run build -- --mac --${{ matrix.arch }}
+        run: npm run build -- --mac --${{ matrix.arch }} --publish never
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
