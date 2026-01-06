@@ -1,53 +1,142 @@
+/* Environment Check styles */
+
 .environment-check {
-    max-width: 480px;
+    max-width: 600px;
     margin: 0 auto;
-    padding: var(--space-xl) 0;
+    padding-top: 60px;
+    animation: fadeIn 0.4s ease-out;
 }
 
 .check-header {
     text-align: center;
-    margin-bottom: var(--space-xl);
+    margin-bottom: 40px;
 }
 
-.check-icon {
-    display: inline-block;
-    font-size: 36px;
-    margin-bottom: var(--space-md);
+.check-spinner-wrapper {
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: center;
+}
+
+.check-spinner {
+    width: 64px;
+    height: 64px;
+    border: 4px solid rgba(0, 122, 255, 0.1);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.check-icon-large {
+    font-size: 64px;
+    line-height: 1;
+    margin-bottom: 24px;
+    display: block;
 }
 
 .check-header h2 {
-    margin-bottom: var(--space-xs);
-    font-size: var(--font-size-xl);
+    margin-bottom: 12px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--color-text-primary);
 }
 
 .check-header p {
-    color: var(--color-text-secondary);
-    font-size: var(--font-size-sm);
+    color: #86909C;
+    /* Specific gray from design */
+    font-size: 16px;
+    margin: 0;
 }
 
-.check-list {
+/* New Status List Card */
+.status-list-card {
+    background: #F8F9FA;
+    /* Light gray background for the list container */
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    margin-bottom: 32px;
+}
+
+.status-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.status-list-item:last-child {
+    border-bottom: none;
+}
+
+.status-item-info {
     display: flex;
     flex-direction: column;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-lg);
 }
 
-.install-message {
-    padding: var(--space-sm) var(--space-md);
-    background: var(--color-primary-light);
-    border-radius: var(--radius-md);
-    margin-bottom: var(--space-lg);
+.status-item-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
 }
 
-.install-message p {
-    margin: 0;
-    font-size: var(--font-size-sm);
-    color: var(--color-primary);
-    text-align: center;
+.status-item-desc {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+}
+
+.status-item-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Specific Checkmark Style */
+.status-icon-check {
+    color: #34C759;
+    /* Apple Green */
+    font-size: 20px;
+    background: rgba(52, 199, 89, 0.1);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-icon-check::before {
+    content: '✓';
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.status-icon-pending {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #C7C7CC;
+    border-radius: 50%;
+}
+
+.status-icon-error {
+    color: var(--color-error);
+    font-size: 20px;
 }
 
 .check-actions {
     display: flex;
     justify-content: center;
-    gap: var(--space-sm);
+    gap: 16px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }

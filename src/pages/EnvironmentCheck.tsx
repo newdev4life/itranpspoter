@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { EnvironmentStatus } from '../types'
-import { StatusCard } from '../components/StatusCard'
 import './EnvironmentCheck.css'
 
 interface EnvironmentCheckProps {
@@ -56,101 +55,86 @@ export function EnvironmentCheck({ onReady }: EnvironmentCheckProps) {
         setInstalling(false)
     }
 
-    if (loading) {
-        return (
-            <div className="environment-check animate-fade-in">
-                <div className="check-header">
-                    <span className="check-icon animate-spin">⟳</span>
-                    <h2>正在检查环境...</h2>
-                </div>
-            </div>
+    // Render Helpers
+    const renderStatusIcon = (isSuccess: boolean) => {
+        return isSuccess ? (
+            <div className="status-icon-check"></div>
+        ) : (
+            <div className="status-icon-pending"></div>
         )
     }
 
-    if (!status) {
-        return (
-            <div className="environment-check animate-fade-in">
-                <div className="check-header">
-                    <span className="check-icon">❌</span>
-                    <h2>环境检查失败</h2>
-                    <p>无法获取环境状态</p>
-                </div>
-                <button className="btn btn-primary" onClick={checkEnvironment}>
-                    重新检查
-                </button>
-            </div>
-        )
-    }
-
+    // Main Content
     return (
         <div className="environment-check animate-fade-in">
+            {/* Header */}
             <div className="check-header">
-                <span className="check-icon">{status.allReady ? '✅' : '⚙️'}</span>
-                <h2>{status.allReady ? '环境就绪' : '环境检查'}</h2>
-                <p>{status.allReady ? '所有必需组件已安装' : '请确保以下组件已安装'}</p>
+                {loading ? (
+                    <div className="check-spinner-wrapper">
+                        <div className="check-spinner"></div>
+                    </div>
+                ) : status?.allReady ? (
+                    <span className="check-icon-large">✅</span>
+                ) : (
+                    <span className="check-icon-large" style={{ fontSize: '48px' }}>⚠️</span>
+                )}
+
+                <h2>{loading ? '正在检查运行环境' : (status?.allReady ? '环境检查通过' : '环境检查未通过')}</h2>
+                <p>确保您的 Mac 已安装 Xcode CLT 和 Transporter</p>
             </div>
 
-            <div className="check-list">
-                <StatusCard
-                    title="Transporter.app"
-                    status={status.transporterInstalled ? 'success' : 'error'}
-                    description={
-                        status.transporterInstalled
-                            ? status.transporterPath
-                            : '未安装 - 从 Mac App Store 下载'
-                    }
-                    action={
-                        !status.transporterInstalled
-                            ? { label: '下载', onClick: openTransporterDownload }
-                            : undefined
-                    }
-                />
+            {/* List Card */}
+            {status && (
+                <div className="status-list-card">
+                    {/* Transporter Item */}
+                    <div className="status-list-item">
+                        <div className="status-item-info">
+                            <span className="status-item-title">Transporter.app</span>
+                            <span className="status-item-desc">
+                                {status.transporterInstalled
+                                    ? '已安装'
+                                    : <a href="#" onClick={(e) => { e.preventDefault(); openTransporterDownload(); }} style={{ color: 'var(--color-primary)' }}>点击下载</a>
+                                }
+                            </span>
+                        </div>
+                        <div className="status-item-icon">
+                            {renderStatusIcon(status.transporterInstalled)}
+                        </div>
+                    </div>
 
-                <StatusCard
-                    title="iTMSTransporter"
-                    status={status.iTMSTransporterExists ? 'success' : 'error'}
-                    description={
-                        status.iTMSTransporterExists
-                            ? status.iTMSTransporterPath
-                            : '未找到 - 请先安装 Transporter.app'
-                    }
-                />
+                    {/* altool / xcrun Item */}
+                    <div className="status-list-item">
+                        <div className="status-item-info">
+                            <span className="status-item-title">Command Line Tools</span>
+                            <span className="status-item-desc">
+                                {status.commandLineToolsInstalled
+                                    ? '已就绪'
+                                    : (installing ? '安装中...' : <a href="#" onClick={(e) => { e.preventDefault(); installCLT(); }} style={{ color: 'var(--color-primary)' }}>点击安装 CLT</a>)
+                                }
+                            </span>
+                        </div>
+                        <div className="status-item-icon">
+                            {renderStatusIcon(status.commandLineToolsInstalled)}
+                        </div>
+                    </div>
+                </div>
+            )}
 
-                <StatusCard
-                    title="Command Line Tools"
-                    status={status.commandLineToolsInstalled ? 'success' : 'warning'}
-                    description={
-                        status.commandLineToolsInstalled
-                            ? status.commandLineToolsPath
-                            : '未安装 - 某些功能可能受限'
-                    }
-                    action={
-                        !status.commandLineToolsInstalled
-                            ? {
-                                label: installing ? '安装中...' : '安装',
-                                onClick: installCLT,
-                            }
-                            : undefined
-                    }
-                />
-            </div>
-
+            {/* Error/Install Messages */}
             {installMessage && (
-                <div className="install-message">
+                <div style={{ textAlign: 'center', marginBottom: '20px', color: 'var(--color-text-secondary)' }}>
                     <p>{installMessage}</p>
                 </div>
             )}
 
-            <div className="check-actions">
-                <button className="btn btn-secondary" onClick={checkEnvironment}>
-                    重新检查
-                </button>
-                {status.transporterInstalled && status.iTMSTransporterExists && (
-                    <button className="btn btn-primary" onClick={onReady}>
-                        继续
+            {/* Actions (if failed) */}
+            {!loading && status && !status.allReady && (
+                <div className="check-actions">
+                    <button className="btn btn-primary" onClick={checkEnvironment} disabled={installing}>
+                        重新检查
                     </button>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     )
 }

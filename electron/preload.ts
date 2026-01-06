@@ -89,6 +89,17 @@ contextBridge.exposeInMainWorld('api', {
   getUploadHistory: () => ipcRenderer.invoke('get-upload-history'),
   clearUploadHistory: () => ipcRenderer.invoke('clear-upload-history'),
   deleteUploadHistory: (id: string) => ipcRenderer.invoke('delete-upload-history', id),
+
+  // 上下文菜单
+  onContextMenu: (callback: (event: any, data: { isEditable: boolean; hasSelection: boolean; editFlags: any; x: number; y: number }) => void) =>
+    ipcRenderer.on('show-context-menu', callback),
+  offContextMenu: (callback: (event: any, data: any) => void) =>
+    ipcRenderer.off('show-context-menu', callback),
+
+  // 执行编辑命令
+  execCommand: (command: string) => {
+    document.execCommand(command)
+  }
 } as ElectronAPI)
 
 // 保留原有的 ipcRenderer 暴露（兼容性）

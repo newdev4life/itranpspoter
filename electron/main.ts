@@ -42,10 +42,10 @@ let win: BrowserWindow | null
 
 function createWindow() {
   win = new BrowserWindow({
-    width: 900,
-    height: 700,
-    minWidth: 800,
-    minHeight: 600,
+    width: 1000,
+    height: 800,
+    minWidth: 900,
+    minHeight: 700,
     // icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
     titleBarStyle: 'hiddenInset',
     trafficLightPosition: { x: 16, y: 16 },
@@ -70,6 +70,20 @@ function createWindow() {
     // win.loadFile('dist/index.html')
     win.loadFile(path.join(RENDERER_DIST, 'index.html'))
   }
+
+  // 添加右键菜单 - 发送到渲染进程显示自定义菜单
+  win.webContents.on('context-menu', (_event, params) => {
+    const { isEditable, selectionText, editFlags, x, y } = params
+
+    // 发送上下文菜单事件到渲染进程
+    win?.webContents.send('show-context-menu', {
+      isEditable,
+      hasSelection: selectionText && selectionText.trim() !== '',
+      editFlags,
+      x,
+      y
+    })
+  })
 }
 
 // ==================== IPC Handlers ====================

@@ -74,39 +74,87 @@ export async function fetchProviders(appleId: string, password: string): Promise
         process.on('close', (code: number | null) => {
             if (code === 0) {
                 // 解析输出获取 providers
-                // 输出格式: "1. YourTeamName (12345678) - ProviderShortName: yourteamname"
                 const providers: Provider[] = []
                 const lines = stdout.split('\n')
 
+                // 检测是否有 "Provider listing:" 标志
+                let inProviderSection = false
+
                 for (const line of lines) {
-                    // 匹配格式: 数字. TeamName (TeamId) - ProviderShortName: shortname
-                    const match = line.match(/^\d+\.\s+(.+?)\s+\((\w+)\)\s+-\s+ProviderShortName:\s+(\S+)/)
-                    if (match) {
+                    // 检测 Provider 列表开始
+                    if (line.includes('Provider listing:')) {
+                        inProviderSection = true
+                        continue
+                    }
+
+                    // 跳过表头行 "- Long Name -" 或 "- Short Name -"
+                    if (line.includes('- Long Name -') || line.includes('- Short Name -')) {
+                        continue
+                    }
+
+                    // 在 Provider 区域内，尝试解析数据行
+                    if (inProviderSection) {
+                        // 格式: 数字  长名称(可能包含空格)  短名称(通常是代码)
+                        // 例: 1  PLAY CAT NETWORK TECHNOLOGY CO., LIMITED  44FBZ3K49W
+                        const tableMatch = line.match(/^\s*(\d+)\s+(.+?)\s{2,}(\S+)\s*$/)
+                        if (tableMatch) {
+                            providers.push({
+                                teamName: tableMatch[2].trim(),
+                                teamId: tableMatch[3], // 在表格格式中，shortName 就是 ID
+                                shortName: tableMatch[3]
+                            })
+                            continue
+                        }
+                    }
+
+                    // 尝试旧格式: 数字. TeamName (TeamId) - ProviderShortName: shortname
+                    const oldMatch = line.match(/^\d+\.\s+(.+?)\s+\((\w+)\)\s+-\s+ProviderShortName:\s+(\S+)/)
+                    if (oldMatch) {
                         providers.push({
-                            teamName: match[1].trim(),
-                            teamId: match[2],
-                            shortName: match[3]
+                            teamName: oldMatch[1].trim(),
+                            teamId: oldMatch[2],
+                            shortName: oldMatch[3]
                         })
+                    }
+
+                    // 尝试 DBG-X 输出格式中的 provider 信息
+                    // 例: parameter PLAY CAT NETWORK TECHNOLOGY CO., LIMITED = 44FBZ3K49W
+                    const dbgMatch = line.match(/parameter\s+(.+?)\s+=\s+(\w+)/)
+                    if (dbgMatch && !line.includes('Application') && !line.includes('Version') && !line.includes('OSIdentifier')) {
+                        // 排除一些常见的非 provider 参数
+                        const name = dbgMatch[1].trim()
+                        const shortName = dbgMatch[2]
+                        // 检查是否看起来像是 provider (shortName 通常是数字+字母组合)
+                        if (/^[A-Z0-9]{8,12}$/.test(shortName)) {
+                            // 避免重复添加
+                            if (!providers.find(p => p.shortName === shortName)) {
+                                providers.push({
+                                    teamName: name,
+                                    teamId: shortName,
+                                    shortName
+                                })
+                            }
+                        }
                     }
                 }
 
                 if (providers.length > 0) {
                     resolve({ success: true, providers })
                 } else {
-                    // 尝试另一种解析方式
-                    const altMatch = stdout.match(/ProviderShortName:\s*(\S+)/g)
-                    if (altMatch) {
-                        altMatch.forEach((m, index) => {
-                            const shortName = m.replace('ProviderShortName:', '').trim()
+                    // 最后尝试: 搜索任何看起来像 provider shortName 的模式
+                    const shortNameMatch = stdout.match(/ProviderShortName[:\s]+(\S+)/g)
+                    if (shortNameMatch) {
+                        shortNameMatch.forEach((m, index) => {
+                            const shortName = m.replace(/ProviderShortName[:\s]+/, '').trim()
                             providers.push({
                                 teamName: `Team ${index + 1}`,
-                                teamId: '',
+                                teamId: shortName,
                                 shortName
                             })
                         })
                         resolve({ success: true, providers })
                     } else {
-                        resolve({ success: false, errorMessage: '未能解析 Provider 列表' })
+                        resolve({ success: false, errorMessage: '未能解析 Provider 列表。请手动输入 Provider Shortname。' })
                     }
                 }
             } else {

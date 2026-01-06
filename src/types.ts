@@ -118,6 +118,10 @@ declare global {
             getUploadHistory: () => Promise<UploadHistoryRecord[]>
             clearUploadHistory: () => Promise<boolean>
             deleteUploadHistory: (id: string) => Promise<boolean>
+            // 上下文菜单
+            onContextMenu: (callback: (event: any, data: { isEditable: boolean; hasSelection: boolean; editFlags: any; x: number; y: number }) => void) => void
+            offContextMenu: (callback: (event: any, data: any) => void) => void
+            execCommand: (command: string) => void
         }
     }
 }

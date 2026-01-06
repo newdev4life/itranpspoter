@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Page, UploadConfig, EnvironmentStatus } from './types'
 import { Header } from './components/Header'
+import { ContextMenu } from './components/ContextMenu'
 import { EnvironmentCheck } from './pages/EnvironmentCheck'
 import { Upload } from './pages/Upload'
 import { Progress } from './pages/Progress'
@@ -120,6 +121,7 @@ function App() {
 
   return (
     <div className="app-container">
+      <ContextMenu />
       <Header
         currentPage={currentPage}
         onNavigate={handleNavigate}

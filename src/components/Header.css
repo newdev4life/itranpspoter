@@ -1,38 +1,133 @@
+/* ==================== Header Layout ==================== */
+
+.app-header {
+    flex-shrink: 0;
+    padding: 16px 32px;
+    padding-top: 50px;
+    /* Traffic lights space */
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    -webkit-app-region: drag;
+}
+
 .header-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    height: 56px;
+    max-width: 1000px;
+    margin: 0 auto;
 }
 
-.header-title {
+/* ==================== Brand Section ==================== */
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.brand-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 4px 12px rgba(75, 110, 255, 0.3));
+}
+
+.brand-icon svg {
+    width: 48px;
+    height: 48px;
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.brand-text h1 {
+    font-size: 18px;
+    font-weight: 900;
+    color: #1D1D1F;
+    letter-spacing: 0.02em;
+    margin: 0;
+    line-height: 1;
+}
+
+.brand-status {
     display: flex;
     align-items: center;
     gap: 6px;
 }
 
-.header-title h1 {
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background: #34C759;
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(52, 199, 89, 0.5);
 }
 
-.app-icon {
-    font-size: 18px;
+.status-text {
+    font-size: 11px;
+    font-weight: 500;
+    color: #34C759;
+    letter-spacing: 0.02em;
 }
 
-.nav-emoji {
-    font-size: 12px;
+/* ==================== Navigation Toggle ==================== */
+
+.header-nav {
+    -webkit-app-region: no-drag;
 }
 
-.nav-item {
+.nav-toggle {
+    display: flex;
+    background: #FFFFFF;
+    padding: 4px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    gap: 0;
+}
+
+.toggle-item {
     display: flex;
     align-items: center;
-    gap: 4px;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 20px;
+    height: 40px;
+    min-width: 90px;
+    border-radius: 10px;
+    border: none;
+    background: transparent;
+    color: #6B7280;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Segmented control wrapper */
-.app-nav {
-    background: rgba(0, 0, 0, 0.04);
-    border-radius: var(--radius-md);
-    padding: 2px;
+.toggle-item svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.toggle-item:hover:not(.active):not(:disabled) {
+    color: #1D1D1F;
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.toggle-item.active {
+    background: #1D1D1F;
+    color: #FFFFFF;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.toggle-item:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
