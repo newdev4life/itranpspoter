@@ -5,6 +5,18 @@ A modern macOS application for uploading IPA files to App Store Connect.
 ![macOS](https://img.shields.io/badge/macOS-10.15+-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+## Why iTransporter?
+
+The official [Transporter](https://apps.apple.com/app/transporter/id1450874784) app requires you to sign in with your Apple ID directly, which can be problematic in certain scenarios:
+
+- **Virtual macOS Systems** - VMs and cloud-based macOS environments often cannot authenticate with Apple ID due to system restrictions
+- **CI/CD Pipelines** - Automated build systems need a non-interactive way to upload IPAs
+- **Team Workflows** - Developers may prefer using App-Specific Passwords instead of sharing Apple ID credentials
+- **Security Concerns** - Using App-Specific Passwords limits access scope compared to full Apple ID login
+- **No Full Xcode Required** - Only needs Xcode Command Line Tools, not the full 12GB+ Xcode installation
+
+iTransporter solves this by leveraging the `iTMSTransporter` command-line tool (bundled with Transporter) to upload IPAs using only your **Apple ID email** and an **App-Specific Password** — no interactive login required.
+
 ## Features
 
 - 🚀 **Easy IPA Upload** - Drag and browse to select IPA files
