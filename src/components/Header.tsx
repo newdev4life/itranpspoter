@@ -38,7 +38,7 @@ export function Header({ currentPage, onNavigate, isUploading }: HeaderProps) {
                                 <path d="M8 12V4M8 4L5 7M8 4L11 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                 <path d="M3 13H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                             </svg>
-                            上傳
+                            Upload
                         </button>
                         <button
                             className={`toggle-item ${currentPage === 'history' ? 'active' : ''}`}
@@ -49,7 +49,7 @@ export function Header({ currentPage, onNavigate, isUploading }: HeaderProps) {
                                 <path d="M8 4V8L10.5 10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                 <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" />
                             </svg>
-                            歷史
+                            History
                         </button>
                     </div>
                 </div>

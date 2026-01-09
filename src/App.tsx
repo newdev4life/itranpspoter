@@ -15,7 +15,7 @@ function App() {
   const [uploadConfig, setUploadConfig] = useState<UploadConfig | null>(null)
   const [environmentReady, setEnvironmentReady] = useState(false)
 
-  // 检查是否有正在进行的上传
+  // Check if there is an ongoing upload
   useEffect(() => {
     const checkUploading = async () => {
       const uploading = await window.api.isUploading()
@@ -27,7 +27,7 @@ function App() {
     checkUploading()
   }, [])
 
-  // 检查环境是否就绪
+  // Check if environment is ready
   useEffect(() => {
     const checkEnvironment = async () => {
       const status: EnvironmentStatus = await window.api.checkEnvironment()
@@ -42,12 +42,12 @@ function App() {
   }, [])
 
   const handleNavigate = (page: Page) => {
-    // 如果正在上传，只能查看 progress 页面
+    // If uploading, can only view progress page
     if (isUploading && page !== 'progress') {
       return
     }
 
-    // 如果环境未就绪且尝试访问非环境检查页面
+    // If environment is not ready and trying to access non-environment check page
     if (!environmentReady && page !== 'environment') {
       setCurrentPage('environment')
       return
@@ -66,14 +66,14 @@ function App() {
     setIsUploading(true)
     setCurrentPage('progress')
 
-    // 开始上传
+    // Start upload
     await window.api.startUpload(config)
   }
 
   const handleUploadComplete = (_success: boolean) => {
     setIsUploading(false)
     setUploadConfig(null)
-    // 返回上传页面
+    // Return to upload page
     setCurrentPage('upload')
   }
 

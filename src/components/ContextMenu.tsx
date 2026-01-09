@@ -41,46 +41,46 @@ export function ContextMenu() {
 
         if (isEditable) {
             items.push({
-                label: '復原',
+                label: 'Undo',
                 icon: <UndoIcon />,
                 action: 'undo',
                 enabled: editFlags.canUndo
             })
             items.push({
-                label: '重做',
+                label: 'Redo',
                 icon: <RedoIcon />,
                 action: 'redo',
                 enabled: editFlags.canRedo,
                 divider: true
             })
             items.push({
-                label: '剪下',
+                label: 'Cut',
                 icon: <CutIcon />,
                 action: 'cut',
                 enabled: editFlags.canCut
             })
             items.push({
-                label: '複製',
+                label: 'Copy',
                 icon: <CopyIcon />,
                 action: 'copy',
                 enabled: editFlags.canCopy
             })
             items.push({
-                label: '貼上',
+                label: 'Paste',
                 icon: <PasteIcon />,
                 action: 'paste',
                 enabled: editFlags.canPaste,
                 divider: true
             })
             items.push({
-                label: '全選',
+                label: 'Select All',
                 icon: <SelectAllIcon />,
                 action: 'selectAll',
                 enabled: editFlags.canSelectAll
             })
         } else if (hasSelection) {
             items.push({
-                label: '複製',
+                label: 'Copy',
                 icon: <CopyIcon />,
                 action: 'copy',
                 enabled: true

@@ -19,14 +19,14 @@ export function History() {
 
     const handleDelete = async (id: string, e: React.MouseEvent) => {
         e.stopPropagation()
-        if (confirm('確定要刪除這條記錄嗎？')) {
+        if (confirm('Are you sure you want to delete this record?')) {
             await window.api.deleteUploadHistory(id)
             loadHistory()
         }
     }
 
     const handleClearAll = async () => {
-        if (confirm('確定要清空所有上傳歷史嗎？此操作不可撤銷。')) {
+        if (confirm('Are you sure you want to clear all upload history? This action cannot be undone.')) {
             await window.api.clearUploadHistory()
             loadHistory()
         }
@@ -51,7 +51,7 @@ export function History() {
                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 3L4.5 8.5L2 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
-                        成功
+                        Success
                     </span>
                 )
             case 'failed':
@@ -61,7 +61,7 @@ export function History() {
                             <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.5" />
                             <path d="M4 4L8 8M8 4L4 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                         </svg>
-                        失敗
+                        Failed
                     </span>
                 )
             case 'cancelled':
@@ -71,7 +71,7 @@ export function History() {
                             <path d="M6 4V6.5M6 8.5H6.005" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                             <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.5" />
                         </svg>
-                        已取消
+                        Cancelled
                     </span>
                 )
         }
@@ -82,7 +82,7 @@ export function History() {
             <div className="history-page">
                 <div className="history-loading">
                     <div className="loading-spinner"></div>
-                    <span>載入中...</span>
+                    <span>Loading...</span>
                 </div>
             </div>
         )
@@ -100,8 +100,8 @@ export function History() {
                         </svg>
                     </div>
                     <div className="history-text">
-                        <h2>上傳歷史紀錄</h2>
-                        <p>追蹤過去的上傳狀態與檔案</p>
+                        <h2>Upload History</h2>
+                        <p>Track past upload status and files</p>
                     </div>
                 </div>
                 {history.length > 0 && (
@@ -109,7 +109,7 @@ export function History() {
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M1.75 3.5H12.25M5.25 3.5V2.33333C5.25 1.97971 5.39048 1.64057 5.64052 1.39052C5.89057 1.14048 6.22971 1 6.58333 1H7.41667C7.77029 1 8.10943 1.14048 8.35948 1.39052C8.60952 1.64057 8.75 1.97971 8.75 2.33333V3.5M10.5 3.5V11.6667C10.5 12.0203 10.3595 12.3594 10.1095 12.6095C9.85943 12.8595 9.52029 13 9.16667 13H4.83333C4.47971 13 4.14057 12.8595 3.89052 12.6095C3.64048 12.3594 3.5 12.0203 3.5 11.6667V3.5H10.5Z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
-                        清除全部
+                        Clear All
                     </button>
                 )}
             </div>
@@ -117,10 +117,10 @@ export function History() {
             <div className="history-card">
                 {/* Table Header */}
                 <div className="history-table-header">
-                    <div className="col-status">狀態</div>
-                    <div className="col-filename">檔案名稱</div>
+                    <div className="col-status">Status</div>
+                    <div className="col-filename">Filename</div>
                     <div className="col-apple-id">APPLE ID</div>
-                    <div className="col-date">日期</div>
+                    <div className="col-date">Date</div>
                 </div>
 
                 {/* Table Body */}
@@ -134,8 +134,8 @@ export function History() {
                                     <path d="M16 8V14M32 8V14" stroke="#D1D5DB" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
                             </div>
-                            <h3>暫無上傳記錄</h3>
-                            <p>上傳的檔案將會顯示在這裡</p>
+                            <h3>No upload history</h3>
+                            <p>Uploaded files will appear here</p>
                         </div>
                     ) : (
                         history.map((record) => (
@@ -154,7 +154,7 @@ export function History() {
                                     <button
                                         className="btn-delete"
                                         onClick={(e) => handleDelete(record.id, e)}
-                                        title="刪除"
+                                        title="Delete"
                                     >
                                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M1.75 3.5H12.25M5.25 3.5V2.33333C5.25 1.97971 5.39048 1.64057 5.64052 1.39052C5.89057 1.14048 6.22971 1 6.58333 1H7.41667C7.77029 1 8.10943 1.14048 8.35948 1.39052C8.60952 1.64057 8.75 1.97971 8.75 2.33333V3.5M10.5 3.5V11.6667C10.5 12.0203 10.3595 12.3594 10.1095 12.6095C9.85943 12.8595 9.52029 13 9.16667 13H4.83333C4.47971 13 4.14057 12.8595 3.89052 12.6095C3.64048 12.3594 3.5 12.0203 3.5 11.6667V3.5H10.5Z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />

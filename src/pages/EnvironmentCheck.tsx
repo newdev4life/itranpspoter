@@ -19,11 +19,11 @@ export function EnvironmentCheck({ onReady }: EnvironmentCheckProps) {
             const result = await window.api.checkEnvironment()
             setStatus(result)
             if (result.allReady) {
-                // 自动跳转到上传页面
+                // Automatically redirect to upload page
                 setTimeout(() => onReady(), 1000)
             }
         } catch (error) {
-            console.error('环境检查失败:', error)
+            console.error('Environment check failed:', error)
         }
         setLoading(false)
     }
@@ -33,8 +33,8 @@ export function EnvironmentCheck({ onReady }: EnvironmentCheckProps) {
     }, [])
 
     const openTransporterDownload = () => {
-        // 打开 Mac App Store 的 Transporter 页面
-        window.open('https://apps.apple.com/app/transporter/id1450874784', '_blank')
+        // Open Transporter page on Mac App Store
+        window.api.openExternal('https://apps.apple.com/app/transporter/id1450874784')
     }
 
     const installCLT = async () => {
@@ -44,13 +44,13 @@ export function EnvironmentCheck({ onReady }: EnvironmentCheckProps) {
             const result = await window.api.installCommandLineTools()
             setInstallMessage(result.message)
             if (result.success) {
-                // 等待一段时间后重新检查
+                // Wait for a while and recheck
                 setTimeout(() => {
                     checkEnvironment()
                 }, 3000)
             }
         } catch (error) {
-            setInstallMessage('安装命令执行失败')
+            setInstallMessage('Install command failed')
         }
         setInstalling(false)
     }
@@ -79,8 +79,8 @@ export function EnvironmentCheck({ onReady }: EnvironmentCheckProps) {
                     <span className="check-icon-large" style={{ fontSize: '48px' }}>⚠️</span>
                 )}
 
-                <h2>{loading ? '正在检查运行环境' : (status?.allReady ? '环境检查通过' : '环境检查未通过')}</h2>
-                <p>确保您的 Mac 已安装 Xcode CLT 和 Transporter</p>
+                <h2>{loading ? 'Checking Environment' : (status?.allReady ? 'Environment Check Passed' : 'Environment Check Failed')}</h2>
+                <p>Ensure Xcode CLT and Transporter are installed on your Mac</p>
             </div>
 
             {/* List Card */}
@@ -92,8 +92,8 @@ export function EnvironmentCheck({ onReady }: EnvironmentCheckProps) {
                             <span className="status-item-title">Transporter.app</span>
                             <span className="status-item-desc">
                                 {status.transporterInstalled
-                                    ? '已安装'
-                                    : <a href="#" onClick={(e) => { e.preventDefault(); openTransporterDownload(); }} style={{ color: 'var(--color-primary)' }}>点击下载</a>
+                                    ? 'Installed'
+                                    : <a href="#" onClick={(e) => { e.preventDefault(); openTransporterDownload(); }} style={{ color: 'var(--color-primary)' }}>Click to download</a>
                                 }
                             </span>
                         </div>
@@ -108,8 +108,8 @@ export function EnvironmentCheck({ onReady }: EnvironmentCheckProps) {
                             <span className="status-item-title">Command Line Tools</span>
                             <span className="status-item-desc">
                                 {status.commandLineToolsInstalled
-                                    ? '已就绪'
-                                    : (installing ? '安装中...' : <a href="#" onClick={(e) => { e.preventDefault(); installCLT(); }} style={{ color: 'var(--color-primary)' }}>点击安装 CLT</a>)
+                                    ? 'Ready'
+                                    : (installing ? 'Installing...' : <a href="#" onClick={(e) => { e.preventDefault(); installCLT(); }} style={{ color: 'var(--color-primary)' }}>Click to install CLT</a>)
                                 }
                             </span>
                         </div>
@@ -131,7 +131,7 @@ export function EnvironmentCheck({ onReady }: EnvironmentCheckProps) {
             {!loading && status && !status.allReady && (
                 <div className="check-actions">
                     <button className="btn btn-primary" onClick={checkEnvironment} disabled={installing}>
-                        重新检查
+                        Recheck
                     </button>
                 </div>
             )}

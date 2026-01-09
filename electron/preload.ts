@@ -1,4 +1,4 @@
-import { ipcRenderer, contextBridge } from 'electron'
+import { ipcRenderer, contextBridge, shell } from 'electron'
 
 // 定义 API 类型
 export interface ElectronAPI {
@@ -12,6 +12,8 @@ export interface ElectronAPI {
     commandLineToolsPath: string
     allReady: boolean
   }>
+
+  openExternal: (url: string) => Promise<void>
 
   // 文件操作
   selectIpaFile: () => Promise<string | null>
@@ -55,6 +57,7 @@ contextBridge.exposeInMainWorld('api', {
   // 环境检查
   checkEnvironment: () => ipcRenderer.invoke('check-environment'),
   installCommandLineTools: () => ipcRenderer.invoke('install-clt'),
+  openExternal: (url: string) => shell.openExternal(url),
 
   // 文件操作
   selectIpaFile: () => ipcRenderer.invoke('select-ipa-file'),

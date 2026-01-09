@@ -22,15 +22,15 @@ export interface Provider {
     shortName: string
 }
 
-// 上传进度状态
+// Upload Phase
 export type UploadPhase =
-    | 'preparing'      // 准备中
-    | 'authenticating' // 认证中
-    | 'analyzing'      // 分析包
-    | 'uploading'      // 上传中
-    | 'committing'     // 提交中
-    | 'completed'      // 完成
-    | 'failed'         // 失败
+    | 'preparing'      // Preparing
+    | 'authenticating' // Authenticating
+    | 'analyzing'      // Analyzing
+    | 'uploading'      // Uploading
+    | 'committing'     // Committing
+    | 'completed'      // Completed
+    | 'failed'         // Failed
 
 export interface UploadProgress {
     phase: UploadPhase
@@ -47,8 +47,8 @@ let currentUploadConfig: UploadConfig | null = null
 let uploadStartTime: string = ''
 
 /**
- * 获取可用的 Provider 列表
- * 执行命令: iTMSTransporter -m provider -u email -p password
+ * Get available Provider list
+ * Execute command: iTMSTransporter -m provider -u email -p password
  */
 export async function fetchProviders(appleId: string, password: string): Promise<{ success: boolean; providers?: Provider[]; errorMessage?: string }> {
     return new Promise((resolve) => {
@@ -73,41 +73,41 @@ export async function fetchProviders(appleId: string, password: string): Promise
 
         process.on('close', (code: number | null) => {
             if (code === 0) {
-                // 解析输出获取 providers
+                // Parse output to get providers
                 const providers: Provider[] = []
                 const lines = stdout.split('\n')
 
-                // 检测是否有 "Provider listing:" 标志
+                // Check for "Provider listing:" flag
                 let inProviderSection = false
 
                 for (const line of lines) {
-                    // 检测 Provider 列表开始
+                    // Check for Provider list start
                     if (line.includes('Provider listing:')) {
                         inProviderSection = true
                         continue
                     }
 
-                    // 跳过表头行 "- Long Name -" 或 "- Short Name -"
+                    // Skip header line "- Long Name -" or "- Short Name -"
                     if (line.includes('- Long Name -') || line.includes('- Short Name -')) {
                         continue
                     }
 
-                    // 在 Provider 区域内，尝试解析数据行
+                    // Inside Provider section, try to parse data line
                     if (inProviderSection) {
-                        // 格式: 数字  长名称(可能包含空格)  短名称(通常是代码)
-                        // 例: 1  PLAY CAT NETWORK TECHNOLOGY CO., LIMITED  44FBZ3K49W
+                        // Format: Number  LongName(may contain spaces)  ShortName(usually code)
+                        // Example: 1  PLAY CAT NETWORK TECHNOLOGY CO., LIMITED  44FBZ3K49W
                         const tableMatch = line.match(/^\s*(\d+)\s+(.+?)\s{2,}(\S+)\s*$/)
                         if (tableMatch) {
                             providers.push({
                                 teamName: tableMatch[2].trim(),
-                                teamId: tableMatch[3], // 在表格格式中，shortName 就是 ID
+                                teamId: tableMatch[3], // In table format, shortName is ID
                                 shortName: tableMatch[3]
                             })
                             continue
                         }
                     }
 
-                    // 尝试旧格式: 数字. TeamName (TeamId) - ProviderShortName: shortname
+                    // Try old format: Number. TeamName (TeamId) - ProviderShortName: shortname
                     const oldMatch = line.match(/^\d+\.\s+(.+?)\s+\((\w+)\)\s+-\s+ProviderShortName:\s+(\S+)/)
                     if (oldMatch) {
                         providers.push({
@@ -117,16 +117,16 @@ export async function fetchProviders(appleId: string, password: string): Promise
                         })
                     }
 
-                    // 尝试 DBG-X 输出格式中的 provider 信息
-                    // 例: parameter PLAY CAT NETWORK TECHNOLOGY CO., LIMITED = 44FBZ3K49W
+                    // Try DBG-X output format for provider info
+                    // Example: parameter PLAY CAT NETWORK TECHNOLOGY CO., LIMITED = 44FBZ3K49W
                     const dbgMatch = line.match(/parameter\s+(.+?)\s+=\s+(\w+)/)
                     if (dbgMatch && !line.includes('Application') && !line.includes('Version') && !line.includes('OSIdentifier')) {
-                        // 排除一些常见的非 provider 参数
+                        // Exclude common non-provider parameters
                         const name = dbgMatch[1].trim()
                         const shortName = dbgMatch[2]
-                        // 检查是否看起来像是 provider (shortName 通常是数字+字母组合)
+                        // Check if it looks like a provider (shortName is usually Alphanumeric)
                         if (/^[A-Z0-9]{8,12}$/.test(shortName)) {
-                            // 避免重复添加
+                            // Avoid duplicate addition
                             if (!providers.find(p => p.shortName === shortName)) {
                                 providers.push({
                                     teamName: name,
@@ -141,7 +141,7 @@ export async function fetchProviders(appleId: string, password: string): Promise
                 if (providers.length > 0) {
                     resolve({ success: true, providers })
                 } else {
-                    // 最后尝试: 搜索任何看起来像 provider shortName 的模式
+                    // Last attempt: Search for any pattern that looks like provider shortName
                     const shortNameMatch = stdout.match(/ProviderShortName[:\s]+(\S+)/g)
                     if (shortNameMatch) {
                         shortNameMatch.forEach((m, index) => {
@@ -154,13 +154,13 @@ export async function fetchProviders(appleId: string, password: string): Promise
                         })
                         resolve({ success: true, providers })
                     } else {
-                        resolve({ success: false, errorMessage: '未能解析 Provider 列表。请手动输入 Provider Shortname。' })
+                        resolve({ success: false, errorMessage: 'Failed to parse Provider list. Please enter Provider Shortname manually.' })
                     }
                 }
             } else {
                 resolve({
                     success: false,
-                    errorMessage: stderr || `获取 Provider 失败 (退出码: ${code})`
+                    errorMessage: stderr || `Failed to get Provider (Exit code: ${code})`
                 })
             }
         })
@@ -172,22 +172,22 @@ export async function fetchProviders(appleId: string, password: string): Promise
 }
 
 /**
- * 解析日志行获取上传进度
+ * Parse log line for upload progress
  */
 function parseProgress(text: string, fileName: string): UploadProgress | null {
-    // 匹配: Package upload progress: XX.XX% completed
+    // Match: Package upload progress: XX.XX% completed
     const progressMatch = text.match(/Package upload progress:\s*([\d.]+)%\s*completed/)
     if (progressMatch) {
         const progress = parseFloat(progressMatch[1])
         return {
             phase: 'uploading',
-            phaseText: '上传中',
+            phaseText: 'Uploading',
             progress,
             fileName
         }
     }
 
-    // 匹配: File: a.ipa 647498011/647596315, 99.98% completed
+    // Match: File: a.ipa 647498011/647596315, 99.98% completed
     const fileProgressMatch = text.match(/File:\s*\S+\s+(\d+)\/(\d+),\s*([\d.]+)%\s*completed/)
     if (fileProgressMatch) {
         const bytesUploaded = parseInt(fileProgressMatch[1])
@@ -195,7 +195,7 @@ function parseProgress(text: string, fileName: string): UploadProgress | null {
         const progress = parseFloat(fileProgressMatch[3])
         return {
             phase: 'uploading',
-            phaseText: '上传中',
+            phaseText: 'Uploading',
             progress,
             fileName,
             bytesUploaded,
@@ -203,12 +203,12 @@ function parseProgress(text: string, fileName: string): UploadProgress | null {
         }
     }
 
-    // 匹配: Finished part upload for: (a.ipa/8) 4.388 MB/s in 15.293 secs
+    // Match: Finished part upload for: (a.ipa/8) 4.388 MB/s in 15.293 secs
     const finishedMatch = text.match(/Finished part upload.*?([\d.]+)\s*MB\/s/)
     if (finishedMatch) {
         return {
             phase: 'uploading',
-            phaseText: '上传中',
+            phaseText: 'Uploading',
             progress: 100,
             fileName,
             speed: `${finishedMatch[1]} MB/s`
@@ -219,64 +219,64 @@ function parseProgress(text: string, fileName: string): UploadProgress | null {
 }
 
 /**
- * 解析日志行获取上传阶段
+ * Parse log line for upload phase
  */
 function parsePhase(text: string, fileName: string): UploadProgress | null {
-    // 认证阶段
+    // Authentication phase
     if (text.includes('authenticateForSession') || text.includes('Configuring logging')) {
         return {
             phase: 'authenticating',
-            phaseText: '认证中',
+            phaseText: 'Authenticating',
             progress: 0,
             fileName
         }
     }
 
-    // 分析阶段
+    // Analysis phase
     if (text.includes('Performing analysis') || text.includes('Configuring the Software Uploader')) {
         return {
             phase: 'analyzing',
-            phaseText: '分析包中',
+            phaseText: 'Analyzing',
             progress: 0,
             fileName
         }
     }
 
-    // 开始上传
+    // Start upload
     if (text.includes('Starting upload for package') || text.includes('Computing total size')) {
         return {
             phase: 'uploading',
-            phaseText: '准备上传',
+            phaseText: 'Preparing upload',
             progress: 0,
             fileName
         }
     }
 
-    // 提交阶段
+    // Commit phase
     if (text.includes('Committing reservation') || text.includes('Transfer Metrics Summary')) {
         return {
             phase: 'committing',
-            phaseText: '提交中',
+            phaseText: 'Committing',
             progress: 100,
             fileName
         }
     }
 
-    // 上传成功
+    // Upload success
     if (text.includes('package was uploaded successfully') || text.includes('Package Summary')) {
         return {
             phase: 'completed',
-            phaseText: '上传完成',
+            phaseText: 'Completed',
             progress: 100,
             fileName
         }
     }
 
-    // 错误检测
+    // Error detection
     if (text.includes('ERROR:') || text.includes('Upload Failed') || text.includes('Could not upload')) {
         return {
             phase: 'failed',
-            phaseText: '上传失败',
+            phaseText: 'Failed',
             progress: 0,
             fileName
         }
@@ -286,7 +286,7 @@ function parsePhase(text: string, fileName: string): UploadProgress | null {
 }
 
 /**
- * 开始上传 IPA 文件
+ * Start uploading IPA file
  */
 export function startUpload(
     config: UploadConfig,
@@ -299,24 +299,24 @@ export function startUpload(
         uploadStartTime = new Date().toISOString()
         currentUploadConfig = config
 
-        // 发送初始进度状态
+        // Send initial progress status
         sendProgress(mainWindow, {
             phase: 'preparing',
-            phaseText: '准备中',
+            phaseText: 'Preparing',
             progress: 0,
             fileName
         })
 
-        // 发送开始日志
-        sendLog(mainWindow, `[INFO] 开始上传: ${fileName}`)
+        // Send start log
+        sendLog(mainWindow, `[INFO] Start upload: ${fileName}`)
         sendLog(mainWindow, `[INFO] Apple ID: ${config.appleId}`)
         if (config.ascProvider) {
             sendLog(mainWindow, `[INFO] Provider: ${config.ascProvider}`)
         }
-        sendLog(mainWindow, `[INFO] 使用 iTMSTransporter: ${iTMSTransporterPath}`)
+        sendLog(mainWindow, `[INFO] Using iTMSTransporter: ${iTMSTransporterPath}`)
         sendLog(mainWindow, '---')
 
-        // 构建命令参数
+        // Build command arguments
         const args = [
             '-m', 'upload',
             '-assetFile', config.ipaPath,
@@ -324,27 +324,27 @@ export function startUpload(
             '-p', config.appSpecificPassword
         ]
 
-        // 如果有 provider，添加 -asc_provider 参数
+        // If provider exists, add -asc_provider argument
         if (config.ascProvider) {
             args.push('-asc_provider', config.ascProvider)
         }
 
-        // 启动 iTMSTransporter 进程
+        // Start iTMSTransporter process
         currentUploadProcess = spawn(iTMSTransporterPath, args)
 
         let errorOutput = ''
         let lastProgress: UploadProgress | null = null
 
-        // 处理输出并解析进度
+        // Handle output and parse progress
         const handleOutput = (text: string, isError: boolean = false) => {
-            // 发送日志
+            // Send log
             if (isError) {
                 sendLog(mainWindow, `[ERROR] ${text}`)
             } else {
                 sendLog(mainWindow, text)
             }
 
-            // 解析进度
+            // Parse progress
             const progress = parseProgress(text, fileName)
             if (progress) {
                 lastProgress = progress
@@ -352,10 +352,10 @@ export function startUpload(
                 return
             }
 
-            // 解析阶段
+            // Parse phase
             const phase = parsePhase(text, fileName)
             if (phase) {
-                // 保持上一次的进度百分比（如果是同一阶段）
+                // Keep previous progress percentage (if same phase)
                 if (lastProgress && phase.phase === 'uploading' && lastProgress.phase === 'uploading') {
                     phase.progress = lastProgress.progress
                 }
@@ -364,15 +364,15 @@ export function startUpload(
             }
         }
 
-        // 监听 stdout
+        // Listen to stdout
         currentUploadProcess.stdout?.on('data', (data: Buffer) => {
             const text = data.toString()
-            // 按行分割处理
+            // Split by line and process
             const lines = text.split('\n').filter(line => line.trim())
             lines.forEach(line => handleOutput(line))
         })
 
-        // 监听 stderr
+        // Listen to stderr
         currentUploadProcess.stderr?.on('data', (data: Buffer) => {
             const text = data.toString()
             errorOutput += text
@@ -380,25 +380,25 @@ export function startUpload(
             lines.forEach(line => handleOutput(line, true))
         })
 
-        // 监听进程结束
+        // Listen for process exit
         currentUploadProcess.on('close', (code: number | null) => {
             const endTime = new Date().toISOString()
 
             if (code === 0) {
                 sendLog(mainWindow, '---')
-                sendLog(mainWindow, '[SUCCESS] 上传完成!')
+                sendLog(mainWindow, '[SUCCESS] Upload Completed!')
 
                 sendProgress(mainWindow, {
                     phase: 'completed',
-                    phaseText: '上传完成',
+                    phaseText: 'Completed',
                     progress: 100,
                     fileName
                 })
 
-                // 保存凭证（上传成功）
+                // Save credential (upload success)
                 saveCredential(config.appleId, config.appSpecificPassword)
 
-                // 添加上传历史
+                // Add upload history
                 addUploadHistory({
                     fileName,
                     filePath: config.ipaPath,
@@ -412,16 +412,16 @@ export function startUpload(
                 resolve({ success: true })
             } else {
                 sendLog(mainWindow, '---')
-                sendLog(mainWindow, `[FAILED] 上传失败 (退出码: ${code})`)
+                sendLog(mainWindow, `[FAILED] Upload Failed (Exit code: ${code})`)
 
                 sendProgress(mainWindow, {
                     phase: 'failed',
-                    phaseText: '上传失败',
+                    phaseText: 'Failed',
                     progress: lastProgress?.progress || 0,
                     fileName
                 })
 
-                // 添加上传历史（失败）
+                // Add upload history (failed)
                 addUploadHistory({
                     fileName,
                     filePath: config.ipaPath,
@@ -443,20 +443,20 @@ export function startUpload(
             currentUploadConfig = null
         })
 
-        // 监听进程错误
+        // Listen for process error
         currentUploadProcess.on('error', (error: Error) => {
             const endTime = new Date().toISOString()
 
-            sendLog(mainWindow, `[ERROR] 进程启动失败: ${error.message}`)
+            sendLog(mainWindow, `[ERROR] Process failed to start: ${error.message}`)
 
             sendProgress(mainWindow, {
                 phase: 'failed',
-                phaseText: '启动失败',
+                phaseText: 'Start failed',
                 progress: 0,
                 fileName
             })
 
-            // 添加上传历史（失败）
+            // Add upload history (failed)
             addUploadHistory({
                 fileName,
                 filePath: config.ipaPath,
@@ -480,22 +480,22 @@ export function startUpload(
 }
 
 /**
- * 取消上传
+ * Cancel upload
  */
 export function cancelUpload(mainWindow: BrowserWindow): boolean {
     if (currentUploadProcess && currentUploadConfig) {
         const fileName = path.basename(currentUploadConfig.ipaPath)
 
-        sendLog(mainWindow, '[INFO] 正在取消上传...')
+        sendLog(mainWindow, '[INFO] Cancelling upload...')
 
         sendProgress(mainWindow, {
             phase: 'failed',
-            phaseText: '已取消',
+            phaseText: 'Cancelled',
             progress: 0,
             fileName
         })
 
-        // 记录取消的上传历史
+        // Record cancelled upload history
         const endTime = new Date().toISOString()
         addUploadHistory({
             fileName,
@@ -504,17 +504,17 @@ export function cancelUpload(mainWindow: BrowserWindow): boolean {
             status: 'cancelled',
             startTime: uploadStartTime,
             endTime,
-            errorMessage: '用户取消上传'
+            errorMessage: 'User cancelled upload'
         })
 
         currentUploadProcess.kill('SIGTERM')
         currentUploadProcess = null
         currentUploadConfig = null
 
-        sendLog(mainWindow, '[INFO] 上传已取消')
+        sendLog(mainWindow, '[INFO] Upload cancelled')
         mainWindow.webContents.send('upload-complete', {
             success: false,
-            errorMessage: '用户取消上传'
+            errorMessage: 'User cancelled upload'
         })
 
         return true
@@ -523,14 +523,14 @@ export function cancelUpload(mainWindow: BrowserWindow): boolean {
 }
 
 /**
- * 检查是否正在上传
+ * Check if uploading
  */
 export function isUploading(): boolean {
     return currentUploadProcess !== null
 }
 
 /**
- * 发送日志到渲染进程
+ * Send log to renderer process
  */
 function sendLog(mainWindow: BrowserWindow, message: string): void {
     mainWindow.webContents.send('upload-log', {
@@ -540,7 +540,7 @@ function sendLog(mainWindow: BrowserWindow, message: string): void {
 }
 
 /**
- * 发送进度到渲染进程
+ * Send progress to renderer process
  */
 function sendProgress(mainWindow: BrowserWindow, progress: UploadProgress): void {
     mainWindow.webContents.send('upload-progress', progress)

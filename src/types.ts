@@ -1,4 +1,4 @@
-// 环境状态
+// Environment Status
 export interface EnvironmentStatus {
     transporterInstalled: boolean
     transporterPath: string
@@ -9,7 +9,7 @@ export interface EnvironmentStatus {
     allReady: boolean
 }
 
-// 凭证
+// Credential
 export interface Credential {
     appleId: string
     password: string
@@ -17,21 +17,21 @@ export interface Credential {
     uploadCount: number
 }
 
-// 凭证列表项（不含密码）
+// Credential List Item (No Password)
 export interface CredentialListItem {
     appleId: string
     lastUsed: string
     uploadCount: number
 }
 
-// Provider (团队)
+// Provider (Team)
 export interface Provider {
     teamName: string
     teamId: string
     shortName: string
 }
 
-// 上传历史记录
+// Upload History Record
 export interface UploadHistoryRecord {
     id: string
     fileName: string
@@ -43,7 +43,7 @@ export interface UploadHistoryRecord {
     errorMessage?: string
 }
 
-// 上传配置
+// Upload Config
 export interface UploadConfig {
     ipaPath: string
     appleId: string
@@ -51,36 +51,36 @@ export interface UploadConfig {
     ascProvider?: string
 }
 
-// 上传结果
+// Upload Result
 export interface UploadResult {
     success: boolean
     errorMessage?: string
 }
 
-// Provider 获取结果
+// Provider Fetch Result
 export interface FetchProvidersResult {
     success: boolean
     providers?: Provider[]
     errorMessage?: string
 }
 
-// 日志消息
+// Log Message
 export interface LogMessage {
     timestamp: string
     message: string
 }
 
-// 上传进度阶段
+// Upload Phase
 export type UploadPhase =
-    | 'preparing'      // 准备中
-    | 'authenticating' // 认证中
-    | 'analyzing'      // 分析包
-    | 'uploading'      // 上传中
-    | 'committing'     // 提交中
-    | 'completed'      // 完成
-    | 'failed'         // 失败
+    | 'preparing'      // Preparing
+    | 'authenticating' // Authenticating
+    | 'analyzing'      // Analyzing
+    | 'uploading'      // Uploading
+    | 'committing'     // Committing
+    | 'completed'      // Completed
+    | 'failed'         // Failed
 
-// 上传进度
+// Upload Progress
 export interface UploadProgress {
     phase: UploadPhase
     phaseText: string
@@ -91,15 +91,16 @@ export interface UploadProgress {
     speed?: string
 }
 
-// 页面类型
+// Page Type
 export type Page = 'environment' | 'upload' | 'progress' | 'history' | 'credentials'
 
-// 声明全局 API 类型
+// Declare Global API Types
 declare global {
     interface Window {
         api: {
             checkEnvironment: () => Promise<EnvironmentStatus>
             installCommandLineTools: () => Promise<{ success: boolean; message: string }>
+            openExternal: (url: string) => Promise<void>
             selectIpaFile: () => Promise<string | null>
             startUpload: (config: UploadConfig) => Promise<UploadResult>
             cancelUpload: () => Promise<boolean>
@@ -118,7 +119,7 @@ declare global {
             getUploadHistory: () => Promise<UploadHistoryRecord[]>
             clearUploadHistory: () => Promise<boolean>
             deleteUploadHistory: (id: string) => Promise<boolean>
-            // 上下文菜单
+            // Context Menu
             onContextMenu: (callback: (event: any, data: { isEditable: boolean; hasSelection: boolean; editFlags: any; x: number; y: number }) => void) => void
             offContextMenu: (callback: (event: any, data: any) => void) => void
             execCommand: (command: string) => void

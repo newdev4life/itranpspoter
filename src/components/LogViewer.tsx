@@ -21,10 +21,11 @@ export function LogViewer({ logs, autoScroll = true }: LogViewerProps) {
 
     const formatTimestamp = (timestamp: string) => {
         const date = new Date(timestamp)
-        return date.toLocaleTimeString('zh-CN', {
+        return date.toLocaleTimeString('en-US', {
             hour: '2-digit',
             minute: '2-digit',
-            second: '2-digit'
+            second: '2-digit',
+            hour12: false
         })
     }
 
@@ -75,7 +76,7 @@ export function LogViewer({ logs, autoScroll = true }: LogViewerProps) {
                     </svg>
                     <input
                         type="text"
-                        placeholder="搜尋日誌..."
+                        placeholder="Search logs..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="log-search-input"
@@ -89,22 +90,22 @@ export function LogViewer({ logs, autoScroll = true }: LogViewerProps) {
                     )}
                 </div>
                 <div className="log-actions">
-                    <span className="log-count">{filteredLogs.length} 條</span>
+                    <span className="log-count">{filteredLogs.length} entries</span>
                     <button
                         className={`log-action-btn ${isAutoScroll ? 'active' : ''}`}
                         onClick={() => setIsAutoScroll(!isAutoScroll)}
-                        title={isAutoScroll ? '自動滾動：開' : '自動滾動：關'}
+                        title={isAutoScroll ? 'Auto-scroll: On' : 'Auto-scroll: Off'}
                     >
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M7 2V12M7 12L4 9M7 12L10 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                     </button>
-                    <button className="log-action-btn" onClick={scrollToTop} title="滾動到頂部">
+                    <button className="log-action-btn" onClick={scrollToTop} title="Scroll to top">
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M7 12V2M7 2L4 5M7 2L10 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                     </button>
-                    <button className="log-action-btn" onClick={scrollToBottom} title="滾動到底部">
+                    <button className="log-action-btn" onClick={scrollToBottom} title="Scroll to bottom">
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M7 2V12M7 12L4 9M7 12L10 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
@@ -112,7 +113,7 @@ export function LogViewer({ logs, autoScroll = true }: LogViewerProps) {
                     <button
                         className="log-action-btn"
                         onClick={() => setIsExpanded(!isExpanded)}
-                        title={isExpanded ? '收縮視圖' : '展開視圖'}
+                        title={isExpanded ? 'Collapse view' : 'Expand view'}
                     >
                         {isExpanded ? (
                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -134,12 +135,12 @@ export function LogViewer({ logs, autoScroll = true }: LogViewerProps) {
                         {logs.length === 0 ? (
                             <>
                                 <span className="log-empty-icon">📋</span>
-                                <p>等待日誌輸出...</p>
+                                <p>Waiting for log output...</p>
                             </>
                         ) : (
                             <>
                                 <span className="log-empty-icon">🔍</span>
-                                <p>無匹配結果</p>
+                                <p>No matching results</p>
                             </>
                         )}
                     </div>
