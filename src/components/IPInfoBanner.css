@@ -1,0 +1,188 @@
+/* IP Info Banner Styles */
+
+.ip-info-banner {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.ip-info-banner:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Header with title */
+.ip-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.ip-info-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.ip-info-subtitle {
+    font-size: 11px;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+.ip-info-banner.loading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #64748b;
+}
+
+.ip-info-icon {
+    font-size: 20px;
+}
+
+.ip-info-loading-text {
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+.ip-info-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.ip-info-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ip-info-flag {
+    font-size: 28px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.ip-info-primary {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.ip-info-location {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.ip-info-ip {
+    font-size: 12px;
+    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    color: #64748b;
+    padding: 2px 6px;
+    background: rgba(0, 0, 0, 0.04);
+    border-radius: 4px;
+    display: inline-block;
+    width: fit-content;
+}
+
+.ip-info-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ip-info-isp {
+    font-size: 12px;
+    color: #64748b;
+    background: rgba(75, 110, 255, 0.08);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ip-info-expand-icon {
+    font-size: 12px;
+    color: #94a3b8;
+    transition: transform 0.2s ease;
+}
+
+.ip-info-expand-icon.rotated {
+    transform: rotate(180deg);
+}
+
+/* Expanded Details */
+.ip-info-details {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ip-info-detail-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ip-info-detail-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.ip-info-detail-value {
+    font-size: 13px;
+    color: #475569;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .ip-info-details {
+        grid-template-columns: 1fr;
+    }
+
+    .ip-info-main {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .ip-info-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

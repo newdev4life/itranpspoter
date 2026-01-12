@@ -14,6 +14,7 @@ import {
   deleteUploadHistory
 } from './services/store'
 import { startUpload, cancelUpload, isUploading, fetchProviders } from './services/uploader'
+import { getIpInfo } from './services/ipInfo'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -57,7 +58,7 @@ function createWindow() {
   })
 
   // Open DevTools for debugging
-  win.webContents.openDevTools()
+  // win.webContents.openDevTools()
 
   // Test active push message to Renderer-process.
   win.webContents.on('did-finish-load', () => {
@@ -118,11 +119,11 @@ ipcMain.handle('select-ipa-file', async () => {
 })
 
 // 开始上传
-ipcMain.handle('start-upload', async (_event, config: { ipaPath: string; appleId: string; appSpecificPassword: string; ascProvider?: string }) => {
+ipcMain.handle('start-upload', async (_event, config: { ipaPath: string; appleId: string; appSpecificPassword: string; ascProvider?: string; retryAttempts?: number }) => {
   if (!win) return { success: false, errorMessage: '窗口未初始化' }
   if (isUploading()) return { success: false, errorMessage: '已有上传任务进行中' }
 
-  return await startUpload(config, win)
+  return await startUpload(config, win, config.retryAttempts || 1)
 })
 
 // 取消上传
@@ -183,6 +184,11 @@ ipcMain.handle('clear-upload-history', () => {
 // 删除单条上传历史
 ipcMain.handle('delete-upload-history', (_event, id: string) => {
   return deleteUploadHistory(id)
+})
+
+// IP Info - Fetch user's IP geolocation
+ipcMain.handle('get-ip-info', async () => {
+  return await getIpInfo()
 })
 
 // ==================== App Lifecycle ====================

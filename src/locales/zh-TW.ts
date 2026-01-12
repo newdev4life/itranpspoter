@@ -50,6 +50,7 @@ export const zhTW = {
     'upload.fetching_providers': '正在獲取提供者列表...',
     'upload.select_team': '選擇團隊',
     'upload.start_upload': '開始上傳',
+    'upload.retry_attempts': '失敗後重試次數',
     'upload.error.no_ipa': '請選擇 IPA 文件',
     'upload.error.incomplete_cred': '請填寫完整的憑證資訊',
     'upload.error.invalid_id': '請輸入有效的 Apple ID (電子郵件)',
@@ -59,6 +60,15 @@ export const zhTW = {
     'upload.error.fetch_error': '獲取提供者列表時發生錯誤',
     'upload.cred_saved': '憑證已儲存',
     'upload.save_failed': '儲存失敗',
+    'upload.confirm.title': '確認上傳',
+    'upload.confirm.message': '您即將上傳 IPA 至以下帳號',
+    'upload.confirm.apple_id': 'Apple ID',
+    'upload.confirm.file': 'IPA 文件',
+    'upload.confirm.ip': '網路 IP',
+    'upload.confirm.location': '位置',
+    'upload.confirm.isp': 'ISP',
+    'upload.confirm.proceed': '確認上傳',
+    'upload.confirm.cancel': '取消',
 
     // History
     'history.title': '上傳歷史',
@@ -102,6 +112,19 @@ export const zhTW = {
     'progress.file': '文件',
     'progress.logs': '上傳日誌',
     'progress.cancel_upload': '取消上傳',
+    'progress.manual_retry': '重試上傳',
     'progress.dont_close': '請勿關閉應用程式',
-    'progress.preparing': '準備中'
+    'progress.preparing': '準備中',
+    'progress.retrying': '重試上傳中',
+    'progress.retry_attempt': '重試 {attempt}/{maxAttempts}',
+
+    // IP Info Banner
+    'ipinfo.title': '網路環境',
+    'ipinfo.subtitle': '您的上傳將從此位置連接到 Apple 伺服器',
+    'ipinfo.loading': '正在偵測網路環境...',
+    'ipinfo.region': '地區',
+    'ipinfo.org': '組織',
+    'ipinfo.coordinates': '座標',
+    'ipinfo.timezone': '時區',
+    'ipinfo.as': 'AS'
 }

@@ -84,6 +84,18 @@ function AppContent() {
     setCurrentPage('upload')
   }
 
+  const handleRetry = async () => {
+    if (uploadConfig) {
+      setIsUploading(true)
+      // Clear logs by resetting the page briefly
+      setCurrentPage('upload')
+      setTimeout(() => {
+        setCurrentPage('progress')
+        window.api.startUpload(uploadConfig)
+      }, 100)
+    }
+  }
+
   const getFileName = (path: string) => {
     return path.split('/').pop() || path
   }
@@ -106,6 +118,7 @@ function AppContent() {
             appleId={uploadConfig.appleId}
             onComplete={handleUploadComplete}
             onCancel={handleUploadCancel}
+            onRetry={handleRetry}
           />
         )
 

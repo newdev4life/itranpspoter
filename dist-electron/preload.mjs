@@ -18,6 +18,8 @@ electron.contextBridge.exposeInMainWorld("api", {
   offUploadProgress: (callback) => electron.ipcRenderer.off("upload-progress", callback),
   onUploadComplete: (callback) => electron.ipcRenderer.on("upload-complete", callback),
   offUploadComplete: (callback) => electron.ipcRenderer.off("upload-complete", callback),
+  onUploadRetry: (callback) => electron.ipcRenderer.on("upload-retry", callback),
+  offUploadRetry: (callback) => electron.ipcRenderer.off("upload-retry", callback),
   // 凭证管理
   getCredentialsList: () => electron.ipcRenderer.invoke("get-credentials-list"),
   getCredential: (appleId) => electron.ipcRenderer.invoke("get-credential", appleId),
@@ -27,6 +29,8 @@ electron.contextBridge.exposeInMainWorld("api", {
   getUploadHistory: () => electron.ipcRenderer.invoke("get-upload-history"),
   clearUploadHistory: () => electron.ipcRenderer.invoke("clear-upload-history"),
   deleteUploadHistory: (id) => electron.ipcRenderer.invoke("delete-upload-history", id),
+  // IP Info
+  getIpInfo: () => electron.ipcRenderer.invoke("get-ip-info"),
   // 上下文菜单
   onContextMenu: (callback) => electron.ipcRenderer.on("show-context-menu", callback),
   offContextMenu: (callback) => electron.ipcRenderer.off("show-context-menu", callback),

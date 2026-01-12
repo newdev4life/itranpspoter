@@ -49,6 +49,7 @@ export interface UploadConfig {
     appleId: string
     appSpecificPassword: string
     ascProvider?: string
+    retryAttempts?: number
 }
 
 // Upload Result
@@ -94,6 +95,24 @@ export interface UploadProgress {
 // Page Type
 export type Page = 'environment' | 'upload' | 'progress' | 'history' | 'credentials'
 
+// IP Info
+export interface IpInfo {
+    status: string
+    country: string
+    countryCode: string
+    region: string
+    regionName: string
+    city: string
+    zip: string
+    lat: number
+    lon: number
+    timezone: string
+    isp: string
+    org: string
+    as: string
+    query: string
+}
+
 // Declare Global API Types
 declare global {
     interface Window {
@@ -112,6 +131,8 @@ declare global {
             offUploadProgress: (callback: (event: any, data: UploadProgress) => void) => void
             onUploadComplete: (callback: (event: any, data: UploadResult) => void) => void
             offUploadComplete: (callback: (event: any, data: UploadResult) => void) => void
+            onUploadRetry: (callback: (event: any, data: { attempt: number; maxAttempts: number }) => void) => void
+            offUploadRetry: (callback: (event: any, data: { attempt: number; maxAttempts: number }) => void) => void
             getCredentialsList: () => Promise<CredentialListItem[]>
             getCredential: (appleId: string) => Promise<Credential | null>
             saveCredential: (data: { appleId: string; password: string }) => Promise<boolean>
@@ -119,6 +140,8 @@ declare global {
             getUploadHistory: () => Promise<UploadHistoryRecord[]>
             clearUploadHistory: () => Promise<boolean>
             deleteUploadHistory: (id: string) => Promise<boolean>
+            // IP Info
+            getIpInfo: () => Promise<IpInfo | null>
             // Context Menu
             onContextMenu: (callback: (event: any, data: { isEditable: boolean; hasSelection: boolean; editFlags: any; x: number; y: number }) => void) => void
             offContextMenu: (callback: (event: any, data: any) => void) => void

@@ -81,6 +81,10 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.on('upload-complete', callback),
   offUploadComplete: (callback: (event: any, data: { success: boolean; errorMessage?: string }) => void) =>
     ipcRenderer.off('upload-complete', callback),
+  onUploadRetry: (callback: (event: any, data: { attempt: number; maxAttempts: number }) => void) =>
+    ipcRenderer.on('upload-retry', callback),
+  offUploadRetry: (callback: (event: any, data: { attempt: number; maxAttempts: number }) => void) =>
+    ipcRenderer.off('upload-retry', callback),
 
   // 凭证管理
   getCredentialsList: () => ipcRenderer.invoke('get-credentials-list'),
@@ -92,6 +96,9 @@ contextBridge.exposeInMainWorld('api', {
   getUploadHistory: () => ipcRenderer.invoke('get-upload-history'),
   clearUploadHistory: () => ipcRenderer.invoke('clear-upload-history'),
   deleteUploadHistory: (id: string) => ipcRenderer.invoke('delete-upload-history', id),
+
+  // IP Info
+  getIpInfo: () => ipcRenderer.invoke('get-ip-info'),
 
   // 上下文菜单
   onContextMenu: (callback: (event: any, data: { isEditable: boolean; hasSelection: boolean; editFlags: any; x: number; y: number }) => void) =>

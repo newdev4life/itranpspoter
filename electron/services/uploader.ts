@@ -45,6 +45,9 @@ export interface UploadProgress {
 let currentUploadProcess: ChildProcess | null = null
 let currentUploadConfig: UploadConfig | null = null
 let uploadStartTime: string = ''
+let currentRetryAttempt: number = 0
+let maxRetryAttempts: number = 3
+let isCancelledByUser: boolean = false
 
 /**
  * Get available Provider list
@@ -286,9 +289,57 @@ function parsePhase(text: string, fileName: string): UploadProgress | null {
 }
 
 /**
- * Start uploading IPA file
+ * Start uploading IPA file with retry logic
  */
-export function startUpload(
+export async function startUpload(
+    config: UploadConfig,
+    mainWindow: BrowserWindow,
+    retryAttempts: number = 3
+): Promise<UploadResult> {
+    maxRetryAttempts = retryAttempts
+    currentRetryAttempt = 0
+    isCancelledByUser = false
+
+    let lastResult: UploadResult = { success: false, errorMessage: 'Unknown error' }
+
+    while (currentRetryAttempt < maxRetryAttempts) {
+        currentRetryAttempt++
+
+        if (isCancelledByUser) {
+            return { success: false, errorMessage: 'User cancelled upload' }
+        }
+
+        if (currentRetryAttempt > 1) {
+            sendLog(mainWindow, `---`)
+            sendLog(mainWindow, `[RETRY] Attempt ${currentRetryAttempt} of ${maxRetryAttempts}...`)
+            // Send retry progress to UI
+            mainWindow.webContents.send('upload-retry', {
+                attempt: currentRetryAttempt,
+                maxAttempts: maxRetryAttempts
+            })
+            // Wait 2 seconds before retry
+            await new Promise(resolve => setTimeout(resolve, 2000))
+        }
+
+        lastResult = await performSingleUpload(config, mainWindow)
+
+        if (lastResult.success || isCancelledByUser) {
+            return lastResult
+        }
+
+        // Check if we should retry
+        if (currentRetryAttempt < maxRetryAttempts) {
+            sendLog(mainWindow, `[INFO] Upload failed, will retry (${maxRetryAttempts - currentRetryAttempt} attempts remaining)...`)
+        }
+    }
+
+    return lastResult
+}
+
+/**
+ * Perform a single upload attempt (internal function)
+ */
+function performSingleUpload(
     config: UploadConfig,
     mainWindow: BrowserWindow
 ): Promise<UploadResult> {
@@ -483,6 +534,7 @@ export function startUpload(
  * Cancel upload
  */
 export function cancelUpload(mainWindow: BrowserWindow): boolean {
+    isCancelledByUser = true
     if (currentUploadProcess && currentUploadConfig) {
         const fileName = path.basename(currentUploadConfig.ipaPath)
 

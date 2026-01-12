@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { LogMessage, UploadResult, UploadProgress, UploadPhase } from '../types'
 import { LogViewer } from '../components/LogViewer'
+import { IPInfoBanner } from '../components/IPInfoBanner'
 import { useTranslation } from '../i18n'
 import './Progress.css'
 
@@ -9,13 +10,15 @@ interface ProgressProps {
     appleId: string
     onComplete: (success: boolean) => void
     onCancel: () => void
+    onRetry: () => void
 }
 
-export function Progress({ ipaFileName, appleId, onComplete }: ProgressProps) {
+export function Progress({ ipaFileName, appleId, onComplete, onRetry }: ProgressProps) {
     const { t } = useTranslation()
     const [logs, setLogs] = useState<LogMessage[]>([])
     const [status, setStatus] = useState<'uploading' | 'success' | 'failed' | 'cancelled'>('uploading')
     const [errorMessage, setErrorMessage] = useState<string>('')
+    const [retryInfo, setRetryInfo] = useState<{ attempt: number; maxAttempts: number } | null>(null)
 
     // Progress state
     const [uploadProgress, setUploadProgress] = useState<UploadProgress>({
@@ -40,6 +43,13 @@ export function Progress({ ipaFileName, appleId, onComplete }: ProgressProps) {
             setStatus('failed')
             setErrorMessage(data.errorMessage || 'Unknown error')
         }
+        setRetryInfo(null)
+    }, [])
+
+    const handleUploadRetry = useCallback((_event: any, data: { attempt: number; maxAttempts: number }) => {
+        setRetryInfo(data)
+        // Reset status to uploading for retry attempt
+        setStatus('uploading')
     }, [])
 
     useEffect(() => {
@@ -47,14 +57,16 @@ export function Progress({ ipaFileName, appleId, onComplete }: ProgressProps) {
         window.api.onUploadLog(handleUploadLog)
         window.api.onUploadProgress(handleUploadProgress)
         window.api.onUploadComplete(handleUploadComplete)
+        window.api.onUploadRetry(handleUploadRetry)
 
         return () => {
             // Cleanup event listeners
             window.api.offUploadLog(handleUploadLog)
             window.api.offUploadProgress(handleUploadProgress)
             window.api.offUploadComplete(handleUploadComplete)
+            window.api.offUploadRetry(handleUploadRetry)
         }
-    }, [handleUploadLog, handleUploadProgress, handleUploadComplete])
+    }, [handleUploadLog, handleUploadProgress, handleUploadComplete, handleUploadRetry])
 
     const handleCancel = async () => {
         const cancelled = await window.api.cancelUpload()
@@ -134,6 +146,8 @@ export function Progress({ ipaFileName, appleId, onComplete }: ProgressProps) {
     return (
         <div className="progress-page animate-fade-in">
             <div className="progress-container">
+                <IPInfoBanner />
+
                 {/* Status Card */}
                 <div className={`progress-status-card status-${statusDisplay.color}`}>
                     <span className={`progress-icon ${status === 'uploading' && uploadProgress.phase !== 'completed' ? 'animate-pulse' : ''}`}>
@@ -142,6 +156,11 @@ export function Progress({ ipaFileName, appleId, onComplete }: ProgressProps) {
                     <div className="progress-info">
                         <h2>{statusDisplay.title}</h2>
                         <p>{statusDisplay.description}</p>
+                        {retryInfo && retryInfo.attempt > 1 && (
+                            <span className="retry-badge">
+                                🔄 {t('progress.retry_attempt', { attempt: retryInfo.attempt, maxAttempts: retryInfo.maxAttempts })}
+                            </span>
+                        )}
                     </div>
                 </div>
 
@@ -234,6 +253,15 @@ export function Progress({ ipaFileName, appleId, onComplete }: ProgressProps) {
                         <button className="btn btn-danger btn-lg" onClick={handleCancel}>
                             {t('progress.cancel_upload')}
                         </button>
+                    ) : status === 'failed' ? (
+                        <>
+                            <button className="btn btn-primary btn-lg" onClick={onRetry}>
+                                {t('progress.manual_retry')}
+                            </button>
+                            <button className="btn btn-secondary btn-lg" onClick={handleDone}>
+                                {t('common.done')}
+                            </button>
+                        </>
                     ) : (
                         <button className="btn btn-primary btn-lg" onClick={handleDone}>
                             {t('common.done')}

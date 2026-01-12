@@ -1,4 +1,4 @@
-import require$$1$2, { ipcMain as ipcMain$1, shell as shell$1, app as app$1, BrowserWindow, dialog } from "electron";
+import require$$1$2, { net, ipcMain as ipcMain$1, shell as shell$1, app as app$1, BrowserWindow, dialog } from "electron";
 import { fileURLToPath } from "node:url";
 import path$6 from "node:path";
 import * as fs$3 from "fs";
@@ -15079,6 +15079,9 @@ function deleteUploadHistory(id2) {
 let currentUploadProcess = null;
 let currentUploadConfig = null;
 let uploadStartTime = "";
+let currentRetryAttempt = 0;
+let maxRetryAttempts = 3;
+let isCancelledByUser = false;
 async function fetchProviders(appleId, password) {
   return new Promise((resolve2) => {
     var _a, _b;
@@ -15265,7 +15268,36 @@ function parsePhase(text, fileName) {
   }
   return null;
 }
-function startUpload(config, mainWindow) {
+async function startUpload(config, mainWindow, retryAttempts = 3) {
+  maxRetryAttempts = retryAttempts;
+  currentRetryAttempt = 0;
+  isCancelledByUser = false;
+  let lastResult = { success: false, errorMessage: "Unknown error" };
+  while (currentRetryAttempt < maxRetryAttempts) {
+    currentRetryAttempt++;
+    if (isCancelledByUser) {
+      return { success: false, errorMessage: "User cancelled upload" };
+    }
+    if (currentRetryAttempt > 1) {
+      sendLog(mainWindow, `---`);
+      sendLog(mainWindow, `[RETRY] Attempt ${currentRetryAttempt} of ${maxRetryAttempts}...`);
+      mainWindow.webContents.send("upload-retry", {
+        attempt: currentRetryAttempt,
+        maxAttempts: maxRetryAttempts
+      });
+      await new Promise((resolve2) => setTimeout(resolve2, 2e3));
+    }
+    lastResult = await performSingleUpload(config, mainWindow);
+    if (lastResult.success || isCancelledByUser) {
+      return lastResult;
+    }
+    if (currentRetryAttempt < maxRetryAttempts) {
+      sendLog(mainWindow, `[INFO] Upload failed, will retry (${maxRetryAttempts - currentRetryAttempt} attempts remaining)...`);
+    }
+  }
+  return lastResult;
+}
+function performSingleUpload(config, mainWindow) {
   return new Promise((resolve2) => {
     var _a, _b;
     const iTMSTransporterPath = getITMSTransporterPath();
@@ -15411,6 +15443,7 @@ function startUpload(config, mainWindow) {
   });
 }
 function cancelUpload(mainWindow) {
+  isCancelledByUser = true;
   if (currentUploadProcess && currentUploadConfig) {
     const fileName = require$$0.basename(currentUploadConfig.ipaPath);
     sendLog(mainWindow, "[INFO] Cancelling upload...");
@@ -15454,6 +15487,43 @@ function sendLog(mainWindow, message) {
 function sendProgress(mainWindow, progress) {
   mainWindow.webContents.send("upload-progress", progress);
 }
+async function getIpInfo() {
+  return new Promise((resolve2) => {
+    const request = net.request({
+      method: "GET",
+      url: "http://ip-api.com/json"
+    });
+    let responseData = "";
+    request.on("response", (response) => {
+      response.on("data", (chunk) => {
+        responseData += chunk.toString();
+      });
+      response.on("end", () => {
+        try {
+          const data = JSON.parse(responseData);
+          if (data.status === "success") {
+            resolve2(data);
+          } else {
+            resolve2(null);
+          }
+        } catch {
+          resolve2(null);
+        }
+      });
+      response.on("error", () => {
+        resolve2(null);
+      });
+    });
+    request.on("error", () => {
+      resolve2(null);
+    });
+    setTimeout(() => {
+      request.abort();
+      resolve2(null);
+    }, 1e4);
+    request.end();
+  });
+}
 const __dirname$1 = path$6.dirname(fileURLToPath(import.meta.url));
 const isDev = !!process.env["VITE_DEV_SERVER_URL"];
 const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
@@ -15476,7 +15546,6 @@ function createWindow() {
       contextIsolation: true
     }
   });
-  win.webContents.openDevTools();
   win.webContents.on("did-finish-load", () => {
     win == null ? void 0 : win.webContents.send("main-process-message", (/* @__PURE__ */ new Date()).toLocaleString());
   });
@@ -15519,7 +15588,7 @@ ipcMain$1.handle("select-ipa-file", async () => {
 ipcMain$1.handle("start-upload", async (_event, config) => {
   if (!win) return { success: false, errorMessage: "窗口未初始化" };
   if (isUploading()) return { success: false, errorMessage: "已有上传任务进行中" };
-  return await startUpload(config, win);
+  return await startUpload(config, win, config.retryAttempts || 1);
 });
 ipcMain$1.handle("cancel-upload", async () => {
   if (!win) return false;
@@ -15558,6 +15627,9 @@ ipcMain$1.handle("clear-upload-history", () => {
 });
 ipcMain$1.handle("delete-upload-history", (_event, id2) => {
   return deleteUploadHistory(id2);
+});
+ipcMain$1.handle("get-ip-info", async () => {
+  return await getIpInfo();
 });
 app$1.on("window-all-closed", () => {
   if (process.platform !== "darwin") {

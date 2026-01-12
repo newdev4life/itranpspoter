@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, ReactNode } from 'react'
 import { zhTW } from './locales/zh-TW'
 
 // Since we only maintain one language for now (as requested "add chinese localizations"), 

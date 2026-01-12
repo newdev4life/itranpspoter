@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { CredentialListItem, UploadConfig, Provider } from '../types'
+import { CredentialListItem, UploadConfig, Provider, IpInfo } from '../types'
 import { useTranslation } from '../i18n'
+import { IPInfoBanner } from '../components/IPInfoBanner'
 import './Upload.css'
 
 interface UploadProps {
@@ -23,6 +24,14 @@ export function Upload({ onStartUpload }: UploadProps) {
     const [selectedProvider, setSelectedProvider] = useState<string>('')
     const [fetchingProviders, setFetchingProviders] = useState(false)
     const [providerError, setProviderError] = useState<string>('')
+
+    // Retry attempts
+    const [retryAttempts, setRetryAttempts] = useState<number>(1)
+
+    // Confirmation dialog state
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+    const [ipInfo, setIpInfo] = useState<IpInfo | null>(null)
+    const [pendingUploadConfig, setPendingUploadConfig] = useState<UploadConfig | null>(null)
 
     useEffect(() => {
         loadCredentials()
@@ -157,13 +166,34 @@ export function Upload({ onStartUpload }: UploadProps) {
             }
         }
 
-        setLoading(true)
-        onStartUpload({
+        // Fetch IP info for confirmation dialog
+        const fetchedIpInfo = await window.api.getIpInfo()
+        setIpInfo(fetchedIpInfo)
+
+        // Store pending upload config
+        setPendingUploadConfig({
             ipaPath,
             appleId: finalAppleId,
             appSpecificPassword: finalPassword!,
-            ascProvider: selectedProvider
+            ascProvider: selectedProvider,
+            retryAttempts
         })
+
+        // Show confirmation dialog
+        setShowConfirmDialog(true)
+    }
+
+    const handleConfirmUpload = () => {
+        if (pendingUploadConfig) {
+            setLoading(true)
+            setShowConfirmDialog(false)
+            onStartUpload(pendingUploadConfig)
+        }
+    }
+
+    const handleCancelConfirm = () => {
+        setShowConfirmDialog(false)
+        setPendingUploadConfig(null)
     }
 
     return (
@@ -180,6 +210,8 @@ export function Upload({ onStartUpload }: UploadProps) {
                     <p>{t('upload.desc')}</p>
                 </div>
             </div>
+
+            <IPInfoBanner />
 
             <div className="upload-card">
                 {/* IPA Path */}
@@ -381,6 +413,32 @@ export function Upload({ onStartUpload }: UploadProps) {
                     )}
                 </div>
 
+                {/* Retry Attempts Control */}
+                <div className="form-group">
+                    <div className="form-label-row">
+                        <label className="form-label">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1 4V10H7" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                <path d="M23 20V14H17" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14L18.36 18.36A9 9 0 0 1 3.51 15" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                            {t('upload.retry_attempts')}
+                        </label>
+                    </div>
+                    <div className="retry-control">
+                        {[1, 2, 3, 5].map(num => (
+                            <button
+                                key={num}
+                                type="button"
+                                className={`retry-option ${retryAttempts === num ? 'active' : ''}`}
+                                onClick={() => setRetryAttempts(num)}
+                            >
+                                {num}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Action Button */}
                 <button
                     className="btn-submit"
@@ -399,6 +457,57 @@ export function Upload({ onStartUpload }: UploadProps) {
                     </svg>
                 </button>
             </div>
+
+            {/* Confirmation Dialog */}
+            {showConfirmDialog && (
+                <div className="confirm-dialog-overlay" onClick={handleCancelConfirm}>
+                    <div className="confirm-dialog" onClick={(e) => e.stopPropagation()}>
+                        <div className="confirm-dialog-header">
+                            <span className="confirm-dialog-icon">📤</span>
+                            <h3>{t('upload.confirm.title')}</h3>
+                        </div>
+                        <p className="confirm-dialog-message">{t('upload.confirm.message')}</p>
+
+                        <div className="confirm-dialog-info">
+                            <div className="confirm-info-row">
+                                <span className="confirm-info-label">{t('upload.confirm.apple_id')}</span>
+                                <span className="confirm-info-value">{pendingUploadConfig?.appleId}</span>
+                            </div>
+                            <div className="confirm-info-row">
+                                <span className="confirm-info-label">{t('upload.confirm.file')}</span>
+                                <span className="confirm-info-value" title={pendingUploadConfig?.ipaPath}>
+                                    {pendingUploadConfig?.ipaPath?.split('/').pop()}
+                                </span>
+                            </div>
+                            {ipInfo && (
+                                <>
+                                    <div className="confirm-info-row">
+                                        <span className="confirm-info-label">{t('upload.confirm.ip')}</span>
+                                        <span className="confirm-info-value ip-value">{ipInfo.query}</span>
+                                    </div>
+                                    <div className="confirm-info-row">
+                                        <span className="confirm-info-label">{t('upload.confirm.location')}</span>
+                                        <span className="confirm-info-value">{ipInfo.city}, {ipInfo.regionName}, {ipInfo.country}</span>
+                                    </div>
+                                    <div className="confirm-info-row">
+                                        <span className="confirm-info-label">{t('upload.confirm.isp')}</span>
+                                        <span className="confirm-info-value">{ipInfo.isp}</span>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+
+                        <div className="confirm-dialog-actions">
+                            <button className="btn-confirm-cancel" onClick={handleCancelConfirm}>
+                                {t('upload.confirm.cancel')}
+                            </button>
+                            <button className="btn-confirm-proceed" onClick={handleConfirmUpload}>
+                                {t('upload.confirm.proceed')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
