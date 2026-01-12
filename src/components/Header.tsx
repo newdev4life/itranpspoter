@@ -1,4 +1,5 @@
 import { Page } from '../types'
+import { useTranslation } from '../i18n'
 import './Header.css'
 
 interface HeaderProps {
@@ -8,6 +9,7 @@ interface HeaderProps {
 }
 
 export function Header({ currentPage, onNavigate, isUploading }: HeaderProps) {
+    const { t } = useTranslation()
     return (
         <header className="app-header">
             <div className="header-content">
@@ -22,7 +24,7 @@ export function Header({ currentPage, onNavigate, isUploading }: HeaderProps) {
                         <h1>ITRANSPORTER</h1>
                         <div className="brand-status">
                             <span className="status-dot"></span>
-                            <span className="status-text">IPA TRANSPORTER HELPER</span>
+                            <span className="status-text">{t('header.title')}</span>
                         </div>
                     </div>
                 </div>
@@ -38,7 +40,7 @@ export function Header({ currentPage, onNavigate, isUploading }: HeaderProps) {
                                 <path d="M8 12V4M8 4L5 7M8 4L11 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                 <path d="M3 13H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                             </svg>
-                            Upload
+                            {t('common.upload')}
                         </button>
                         <button
                             className={`toggle-item ${currentPage === 'history' ? 'active' : ''}`}
@@ -49,7 +51,7 @@ export function Header({ currentPage, onNavigate, isUploading }: HeaderProps) {
                                 <path d="M8 4V8L10.5 10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                 <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" />
                             </svg>
-                            History
+                            {t('common.history')}
                         </button>
                     </div>
                 </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { CredentialListItem, UploadConfig, Provider } from '../types'
+import { useTranslation } from '../i18n'
 import './Upload.css'
 
 interface UploadProps {
@@ -7,6 +8,7 @@ interface UploadProps {
 }
 
 export function Upload({ onStartUpload }: UploadProps) {
+    const { t } = useTranslation()
     const [credentials, setCredentials] = useState<CredentialListItem[]>([])
     const [selectedCredential, setSelectedCredential] = useState<string>('')
     const [appleId, setAppleId] = useState('')
@@ -70,12 +72,12 @@ export function Upload({ onStartUpload }: UploadProps) {
         const currentPassword = useNewCredential ? password : (await window.api.getCredential(selectedCredential))?.password
 
         if (!currentAppleId || !currentPassword) {
-            setProviderError('Please fill in Apple ID and App-Specific Password first')
+            setProviderError(t('upload.error.fill_cred_first'))
             return
         }
 
         if (useNewCredential && !validateEmail(currentAppleId)) {
-            setProviderError('Please enter a valid Apple ID (Email)')
+            setProviderError(t('upload.error.invalid_id'))
             return
         }
 
@@ -97,10 +99,10 @@ export function Upload({ onStartUpload }: UploadProps) {
                     setSelectedProvider(result.providers[0].shortName)
                 }
             } else {
-                setProviderError(result.errorMessage || 'Failed to fetch Provider list')
+                setProviderError(result.errorMessage || t('upload.error.fetch_failed'))
             }
         } catch (error) {
-            setProviderError('Error occurred while fetching Provider list')
+            setProviderError(t('upload.error.fetch_error'))
         }
 
         setFetchingProviders(false)
@@ -110,17 +112,17 @@ export function Upload({ onStartUpload }: UploadProps) {
     const saveCurrentCredential = async () => {
         if (!appleId || !password) return
         if (!validateEmail(appleId)) {
-            alert('Please enter a valid Apple ID (Email)')
+            alert(t('upload.error.invalid_id'))
             return
         }
         try {
             await window.api.saveCredential({ appleId, password })
             // Refresh list
             loadCredentials()
-            alert('Credential saved')
+            alert(t('upload.cred_saved'))
         } catch (e) {
             console.error(e)
-            alert('Save failed')
+            alert(t('upload.save_failed'))
         }
     }
 
@@ -128,7 +130,7 @@ export function Upload({ onStartUpload }: UploadProps) {
         e.preventDefault()
 
         if (!ipaPath) {
-            alert('Please select IPA file')
+            alert(t('upload.error.no_ipa'))
             return
         }
 
@@ -136,12 +138,12 @@ export function Upload({ onStartUpload }: UploadProps) {
         const finalPassword = useNewCredential ? password : (await window.api.getCredential(selectedCredential))?.password
 
         if (!finalAppleId || !finalPassword) {
-            alert('Please fill in complete credential information')
+            alert(t('upload.error.incomplete_cred'))
             return
         }
 
         if (useNewCredential && !validateEmail(finalAppleId)) {
-            alert('Please enter a valid Apple ID (Email)')
+            alert(t('upload.error.invalid_id'))
             return
         }
 
@@ -150,7 +152,7 @@ export function Upload({ onStartUpload }: UploadProps) {
                 await handleFetchProviders()
                 return
             } else {
-                alert('Please select Provider')
+                alert(t('upload.error.no_provider'))
                 return
             }
         }
@@ -174,8 +176,8 @@ export function Upload({ onStartUpload }: UploadProps) {
                     </svg>
                 </div>
                 <div>
-                    <h2>Upload Configuration</h2>
-                    <p>Setup your Apple ID and IPA file</p>
+                    <h2>{t('upload.config')}</h2>
+                    <p>{t('upload.desc')}</p>
                 </div>
             </div>
 
@@ -189,7 +191,7 @@ export function Upload({ onStartUpload }: UploadProps) {
                                 <circle cx="12" cy="12" r="3" stroke="#4B5563" strokeWidth="2" />
                                 <path d="M12 2V5M12 19V22M22 12H19M5 12H2" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" />
                             </svg>
-                            IPA File Path
+                            {t('upload.path_label')}
                         </label>
                     </div>
                     <div className="input-row">
@@ -197,7 +199,7 @@ export function Upload({ onStartUpload }: UploadProps) {
                             type="text"
                             className="form-input"
                             value={ipaPath}
-                            placeholder="Click browse to select .ipa file"
+                            placeholder={t('upload.browse_placeholder')}
                             readOnly
                             onClick={handleSelectIpa}
                         />
@@ -206,7 +208,7 @@ export function Upload({ onStartUpload }: UploadProps) {
                                 <path d="M8 12V4M8 4L5 7M8 4L11 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                 <path d="M3 13H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                             </svg>
-                            Browse
+                            {t('common.browse')}
                         </button>
                     </div>
                 </div>
@@ -219,7 +221,7 @@ export function Upload({ onStartUpload }: UploadProps) {
                                 <circle cx="12" cy="8" r="4" stroke="#4B5563" strokeWidth="2" />
                                 <path d="M4 20C4 16.6863 7.58172 14 12 14C16.4183 14 20 16.6863 20 20" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" />
                             </svg>
-                            Apple ID
+                            {t('upload.apple_id_label')}
                         </label>
                         {credentials.length > 0 && (
                             <a
@@ -241,7 +243,7 @@ export function Upload({ onStartUpload }: UploadProps) {
                                     setProviderError('')
                                 }}
                             >
-                                {useNewCredential ? 'Select Saved Credential ∨' : 'Use New Credential'}
+                                {useNewCredential ? `${t('upload.select_saved')} ∨` : t('upload.use_new')}
                             </a>
                         )}
                     </div>
@@ -271,7 +273,7 @@ export function Upload({ onStartUpload }: UploadProps) {
                                 }}
                                 onBlur={() => {
                                     if (appleId && !validateEmail(appleId)) {
-                                        setAppleIdError('Invalid email format')
+                                        setAppleIdError(t('upload.invalid_email'))
                                     }
                                 }}
                                 placeholder="example@icloud.com"
@@ -290,13 +292,13 @@ export function Upload({ onStartUpload }: UploadProps) {
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M21 2L19 4M19 4L22 7L18.5 10.5L15.5 7.5M19 4L15.5 7.5M12.39 10.61C13.3644 11.5749 13.9797 12.8443 14.1385 14.2087C14.2974 15.573 13.9906 16.9518 13.2689 18.1177C12.5472 19.2836 11.4539 20.1695 10.1668 20.6321C8.8797 21.0947 7.47468 21.1068 6.17992 20.6666C4.88517 20.2264 3.77655 19.3595 3.03407 18.2059C2.29159 17.0523 1.96051 15.6784 2.09566 14.3109C2.23082 12.9435 2.82366 11.6629 3.78041 10.6799C4.73717 9.69692 5.99993 9.06993 7.36 8.9L7.5 8.88" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
-                                App-Specific Password
+                                {t('upload.app_password_label')}
                             </label>
                             <a
                                 className="label-action"
                                 onClick={() => window.api.openExternal('https://account.apple.com')}
                             >
-                                Manage Apple ID ↗
+                                {t('upload.manage_apple_id')} ↗
                             </a>
                         </div>
                         <div className="input-row">
@@ -313,7 +315,7 @@ export function Upload({ onStartUpload }: UploadProps) {
                                 <button
                                     className="btn-icon-action"
                                     onClick={saveCurrentCredential}
-                                    title="Save Credential"
+                                    title={t('upload.save_credential')}
                                 >
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16L21 8V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -333,7 +335,7 @@ export function Upload({ onStartUpload }: UploadProps) {
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M3 21H21M6 18V11M10 18V11M14 18V11M18 18V11M12 7L21 12M12 7L3 12M12 7V3" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
-                            Provider (Team)
+                            {t('upload.provider_label')}
                         </label>
                     </div>
 
@@ -346,14 +348,14 @@ export function Upload({ onStartUpload }: UploadProps) {
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M13.65 2.35C12.2 0.9 10.21 0 8 0C3.58 0 0.01 3.58 0.01 8C0.01 12.42 3.58 16 8 16C11.73 16 14.84 13.45 15.73 10H13.65C12.83 12.33 10.61 14 8 14C4.69 14 2 11.31 2 8C2 4.69 4.69 2 8 2C9.66 2 11.14 2.69 12.22 3.78L9 7H16V0L13.65 2.35Z" fill="currentColor" />
                             </svg>
-                            Fetch Providers
+                            {t('upload.fetch_providers')}
                         </button>
                     )}
 
                     {fetchingProviders && (
                         <div className="provider-loading">
                             <div className="loading-spinner"></div>
-                            Fetching provider list...
+                            {t('upload.fetching_providers')}
                         </div>
                     )}
 
@@ -363,7 +365,7 @@ export function Upload({ onStartUpload }: UploadProps) {
                             value={selectedProvider}
                             onChange={(e) => setSelectedProvider(e.target.value)}
                         >
-                            <option value="">Select Team</option>
+                            <option value="">{t('upload.select_team')}</option>
                             {providers.map(p => (
                                 <option key={p.teamId} value={p.teamId}>
                                     {p.teamName} ({p.teamId})
@@ -391,7 +393,7 @@ export function Upload({ onStartUpload }: UploadProps) {
                         !selectedProvider
                     }
                 >
-                    {loading ? 'Processing...' : 'Start Upload'}
+                    {loading ? t('common.processing') : t('upload.start_upload')}
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>

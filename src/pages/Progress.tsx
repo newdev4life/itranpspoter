@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { LogMessage, UploadResult, UploadProgress, UploadPhase } from '../types'
 import { LogViewer } from '../components/LogViewer'
+import { useTranslation } from '../i18n'
 import './Progress.css'
 
 interface ProgressProps {
@@ -11,6 +12,7 @@ interface ProgressProps {
 }
 
 export function Progress({ ipaFileName, appleId, onComplete }: ProgressProps) {
+    const { t } = useTranslation()
     const [logs, setLogs] = useState<LogMessage[]>([])
     const [status, setStatus] = useState<'uploading' | 'success' | 'failed' | 'cancelled'>('uploading')
     const [errorMessage, setErrorMessage] = useState<string>('')
@@ -18,7 +20,7 @@ export function Progress({ ipaFileName, appleId, onComplete }: ProgressProps) {
     // Progress state
     const [uploadProgress, setUploadProgress] = useState<UploadProgress>({
         phase: 'preparing',
-        phaseText: 'Preparing',
+        phaseText: t('progress.preparing'),
         progress: 0,
         fileName: ipaFileName
     })
@@ -88,15 +90,15 @@ export function Progress({ ipaFileName, appleId, onComplete }: ProgressProps) {
         if (status === 'success') {
             return {
                 icon: '✅',
-                title: 'Upload Successful',
-                description: 'Successfully uploaded to App Store Connect',
+                title: t('progress.success_title'),
+                description: t('progress.success_desc'),
                 color: 'success'
             }
         }
         if (status === 'failed') {
             return {
                 icon: '❌',
-                title: 'Upload Failed',
+                title: t('progress.failed_title'),
                 description: errorMessage,
                 color: 'error'
             }
@@ -104,18 +106,18 @@ export function Progress({ ipaFileName, appleId, onComplete }: ProgressProps) {
         if (status === 'cancelled') {
             return {
                 icon: '⏹️',
-                title: 'Upload Cancelled',
-                description: 'You have cancelled this upload',
+                title: t('progress.cancelled_title'),
+                description: t('progress.cancelled_desc'),
                 color: 'warning'
             }
         }
         // uploading
         return {
             icon: getPhaseIcon(uploadProgress.phase),
-            title: uploadProgress.phaseText,
+            title: uploadProgress.phaseText, // phaseText usually comes from backend, but initial one is 'Preparing' which we handled. Backend might send English. If so, we might need to map it.
             description: uploadProgress.phase === 'uploading'
                 ? `${uploadProgress.progress.toFixed(1)}%`
-                : 'Please do not close the app',
+                : t('progress.dont_close'),
             color: 'primary'
         }
     }
@@ -147,7 +149,7 @@ export function Progress({ ipaFileName, appleId, onComplete }: ProgressProps) {
                 {status === 'uploading' && (
                     <div className="progress-card">
                         <div className="progress-card-header">
-                            <h3>Upload Progress</h3>
+                            <h3>{t('progress.upload_progress')}</h3>
                             <span className="progress-percentage">{uploadProgress.progress.toFixed(1)}%</span>
                         </div>
                         <div className="progress-bar-wrapper">
@@ -171,31 +173,31 @@ export function Progress({ ipaFileName, appleId, onComplete }: ProgressProps) {
 
                 {/* Steps Card */}
                 <div className="progress-card">
-                    <h3 className="progress-card-title">Upload Steps</h3>
+                    <h3 className="progress-card-title">{t('progress.upload_steps')}</h3>
                     <div className="progress-steps">
                         <div className={`step ${uploadProgress.phase === 'preparing' ? 'active' : ''} ${['authenticating', 'analyzing', 'uploading', 'committing', 'completed'].includes(uploadProgress.phase) ? 'done' : ''}`}>
                             <div className="step-icon">1</div>
-                            <span>Prepare</span>
+                            <span>{t('progress.step.prepare')}</span>
                         </div>
                         <div className="step-line" />
                         <div className={`step ${uploadProgress.phase === 'authenticating' ? 'active' : ''} ${['analyzing', 'uploading', 'committing', 'completed'].includes(uploadProgress.phase) ? 'done' : ''}`}>
                             <div className="step-icon">2</div>
-                            <span>Auth</span>
+                            <span>{t('progress.step.auth')}</span>
                         </div>
                         <div className="step-line" />
                         <div className={`step ${uploadProgress.phase === 'analyzing' ? 'active' : ''} ${['uploading', 'committing', 'completed'].includes(uploadProgress.phase) ? 'done' : ''}`}>
                             <div className="step-icon">3</div>
-                            <span>Analyze</span>
+                            <span>{t('progress.step.analyze')}</span>
                         </div>
                         <div className="step-line" />
                         <div className={`step ${uploadProgress.phase === 'uploading' ? 'active' : ''} ${['committing', 'completed'].includes(uploadProgress.phase) ? 'done' : ''}`}>
                             <div className="step-icon">4</div>
-                            <span>Upload</span>
+                            <span>{t('progress.step.upload')}</span>
                         </div>
                         <div className="step-line" />
                         <div className={`step ${uploadProgress.phase === 'committing' || uploadProgress.phase === 'completed' ? 'active done' : ''}`}>
                             <div className="step-icon">5</div>
-                            <span>Commit</span>
+                            <span>{t('progress.step.commit')}</span>
                         </div>
                     </div>
                 </div>
@@ -206,7 +208,7 @@ export function Progress({ ipaFileName, appleId, onComplete }: ProgressProps) {
                         <div className="meta-item">
                             <span className="meta-icon">📦</span>
                             <div className="meta-content">
-                                <span className="meta-label">File</span>
+                                <span className="meta-label">{t('progress.file')}</span>
                                 <span className="meta-value">{ipaFileName}</span>
                             </div>
                         </div>
@@ -222,7 +224,7 @@ export function Progress({ ipaFileName, appleId, onComplete }: ProgressProps) {
 
                 {/* Log Viewer Card */}
                 <div className="progress-card progress-logs-card">
-                    <h3 className="progress-card-title">Upload Logs</h3>
+                    <h3 className="progress-card-title">{t('progress.logs')}</h3>
                     <LogViewer logs={logs} />
                 </div>
 
@@ -230,11 +232,11 @@ export function Progress({ ipaFileName, appleId, onComplete }: ProgressProps) {
                 <div className="progress-actions">
                     {status === 'uploading' ? (
                         <button className="btn btn-danger btn-lg" onClick={handleCancel}>
-                            Cancel Upload
+                            {t('progress.cancel_upload')}
                         </button>
                     ) : (
                         <button className="btn btn-primary btn-lg" onClick={handleDone}>
-                            Done
+                            {t('common.done')}
                         </button>
                     )}
                 </div>

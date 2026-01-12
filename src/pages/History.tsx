@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { UploadHistoryRecord } from '../types'
+import { useTranslation } from '../i18n'
 import './History.css'
 
 export function History() {
+    const { t } = useTranslation()
     const [history, setHistory] = useState<UploadHistoryRecord[]>([])
     const [loading, setLoading] = useState(true)
 
@@ -19,14 +21,14 @@ export function History() {
 
     const handleDelete = async (id: string, e: React.MouseEvent) => {
         e.stopPropagation()
-        if (confirm('Are you sure you want to delete this record?')) {
+        if (confirm(t('history.delete_confirm'))) {
             await window.api.deleteUploadHistory(id)
             loadHistory()
         }
     }
 
     const handleClearAll = async () => {
-        if (confirm('Are you sure you want to clear all upload history? This action cannot be undone.')) {
+        if (confirm(t('history.clear_confirm'))) {
             await window.api.clearUploadHistory()
             loadHistory()
         }
@@ -51,7 +53,7 @@ export function History() {
                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 3L4.5 8.5L2 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
-                        Success
+                        {t('common.success')}
                     </span>
                 )
             case 'failed':
@@ -61,7 +63,7 @@ export function History() {
                             <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.5" />
                             <path d="M4 4L8 8M8 4L4 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                         </svg>
-                        Failed
+                        {t('common.failed')}
                     </span>
                 )
             case 'cancelled':
@@ -71,7 +73,7 @@ export function History() {
                             <path d="M6 4V6.5M6 8.5H6.005" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                             <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.5" />
                         </svg>
-                        Cancelled
+                        {t('common.cancelled')}
                     </span>
                 )
         }
@@ -82,7 +84,7 @@ export function History() {
             <div className="history-page">
                 <div className="history-loading">
                     <div className="loading-spinner"></div>
-                    <span>Loading...</span>
+                    <span>{t('common.loading')}</span>
                 </div>
             </div>
         )
@@ -100,8 +102,8 @@ export function History() {
                         </svg>
                     </div>
                     <div className="history-text">
-                        <h2>Upload History</h2>
-                        <p>Track past upload status and files</p>
+                        <h2>{t('history.title')}</h2>
+                        <p>{t('history.desc')}</p>
                     </div>
                 </div>
                 {history.length > 0 && (
@@ -109,7 +111,7 @@ export function History() {
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M1.75 3.5H12.25M5.25 3.5V2.33333C5.25 1.97971 5.39048 1.64057 5.64052 1.39052C5.89057 1.14048 6.22971 1 6.58333 1H7.41667C7.77029 1 8.10943 1.14048 8.35948 1.39052C8.60952 1.64057 8.75 1.97971 8.75 2.33333V3.5M10.5 3.5V11.6667C10.5 12.0203 10.3595 12.3594 10.1095 12.6095C9.85943 12.8595 9.52029 13 9.16667 13H4.83333C4.47971 13 4.14057 12.8595 3.89052 12.6095C3.64048 12.3594 3.5 12.0203 3.5 11.6667V3.5H10.5Z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
-                        Clear All
+                        {t('history.clear_all')}
                     </button>
                 )}
             </div>
@@ -117,10 +119,10 @@ export function History() {
             <div className="history-card">
                 {/* Table Header */}
                 <div className="history-table-header">
-                    <div className="col-status">Status</div>
-                    <div className="col-filename">Filename</div>
-                    <div className="col-apple-id">APPLE ID</div>
-                    <div className="col-date">Date</div>
+                    <div className="col-status">{t('history.status')}</div>
+                    <div className="col-filename">{t('history.filename')}</div>
+                    <div className="col-apple-id">{t('history.apple_id')}</div>
+                    <div className="col-date">{t('history.date')}</div>
                 </div>
 
                 {/* Table Body */}
@@ -134,8 +136,8 @@ export function History() {
                                     <path d="M16 8V14M32 8V14" stroke="#D1D5DB" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
                             </div>
-                            <h3>No upload history</h3>
-                            <p>Uploaded files will appear here</p>
+                            <h3>{t('history.empty_title')}</h3>
+                            <p>{t('history.empty_desc')}</p>
                         </div>
                     ) : (
                         history.map((record) => (
@@ -154,7 +156,7 @@ export function History() {
                                     <button
                                         className="btn-delete"
                                         onClick={(e) => handleDelete(record.id, e)}
-                                        title="Delete"
+                                        title={t('common.delete')}
                                     >
                                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M1.75 3.5H12.25M5.25 3.5V2.33333C5.25 1.97971 5.39048 1.64057 5.64052 1.39052C5.89057 1.14048 6.22971 1 6.58333 1H7.41667C7.77029 1 8.10943 1.14048 8.35948 1.39052C8.60952 1.64057 8.75 1.97971 8.75 2.33333V3.5M10.5 3.5V11.6667C10.5 12.0203 10.3595 12.3594 10.1095 12.6095C9.85943 12.8595 9.52029 13 9.16667 13H4.83333C4.47971 13 4.14057 12.8595 3.89052 12.6095C3.64048 12.3594 3.5 12.0203 3.5 11.6667V3.5H10.5Z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />

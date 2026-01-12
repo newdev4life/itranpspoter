@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { EnvironmentStatus } from '../types'
+import { useTranslation } from '../i18n'
 import './EnvironmentCheck.css'
 
 interface EnvironmentCheckProps {
@@ -7,6 +8,7 @@ interface EnvironmentCheckProps {
 }
 
 export function EnvironmentCheck({ onReady }: EnvironmentCheckProps) {
+    const { t } = useTranslation()
     const [status, setStatus] = useState<EnvironmentStatus | null>(null)
     const [loading, setLoading] = useState(true)
     const [installing, setInstalling] = useState(false)
@@ -50,7 +52,7 @@ export function EnvironmentCheck({ onReady }: EnvironmentCheckProps) {
                 }, 3000)
             }
         } catch (error) {
-            setInstallMessage('Install command failed')
+            setInstallMessage(t('env.install_fail'))
         }
         setInstalling(false)
     }
@@ -79,8 +81,8 @@ export function EnvironmentCheck({ onReady }: EnvironmentCheckProps) {
                     <span className="check-icon-large" style={{ fontSize: '48px' }}>⚠️</span>
                 )}
 
-                <h2>{loading ? 'Checking Environment' : (status?.allReady ? 'Environment Check Passed' : 'Environment Check Failed')}</h2>
-                <p>Ensure Xcode CLT and Transporter are installed on your Mac</p>
+                <h2>{loading ? t('env.checking') : (status?.allReady ? t('env.passed') : t('env.failed'))}</h2>
+                <p>{t('env.desc')}</p>
             </div>
 
             {/* List Card */}
@@ -89,11 +91,11 @@ export function EnvironmentCheck({ onReady }: EnvironmentCheckProps) {
                     {/* Transporter Item */}
                     <div className="status-list-item">
                         <div className="status-item-info">
-                            <span className="status-item-title">Transporter.app</span>
+                            <span className="status-item-title">{t('env.transporter')}</span>
                             <span className="status-item-desc">
                                 {status.transporterInstalled
-                                    ? 'Installed'
-                                    : <a href="#" onClick={(e) => { e.preventDefault(); openTransporterDownload(); }} style={{ color: 'var(--color-primary)' }}>Click to download</a>
+                                    ? t('env.installed')
+                                    : <a href="#" onClick={(e) => { e.preventDefault(); openTransporterDownload(); }} style={{ color: 'var(--color-primary)' }}>{t('env.download')}</a>
                                 }
                             </span>
                         </div>
@@ -105,11 +107,11 @@ export function EnvironmentCheck({ onReady }: EnvironmentCheckProps) {
                     {/* altool / xcrun Item */}
                     <div className="status-list-item">
                         <div className="status-item-info">
-                            <span className="status-item-title">Command Line Tools</span>
+                            <span className="status-item-title">{t('env.clt')}</span>
                             <span className="status-item-desc">
                                 {status.commandLineToolsInstalled
-                                    ? 'Ready'
-                                    : (installing ? 'Installing...' : <a href="#" onClick={(e) => { e.preventDefault(); installCLT(); }} style={{ color: 'var(--color-primary)' }}>Click to install CLT</a>)
+                                    ? t('env.ready')
+                                    : (installing ? t('env.installing') : <a href="#" onClick={(e) => { e.preventDefault(); installCLT(); }} style={{ color: 'var(--color-primary)' }}>{t('env.install_clt')}</a>)
                                 }
                             </span>
                         </div>
@@ -131,7 +133,7 @@ export function EnvironmentCheck({ onReady }: EnvironmentCheckProps) {
             {!loading && status && !status.allReady && (
                 <div className="check-actions">
                     <button className="btn btn-primary" onClick={checkEnvironment} disabled={installing}>
-                        Recheck
+                        {t('env.recheck')}
                     </button>
                 </div>
             )}

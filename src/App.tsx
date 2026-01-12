@@ -7,9 +7,10 @@ import { Upload } from './pages/Upload'
 import { Progress } from './pages/Progress'
 import { History } from './pages/History'
 import { Credentials } from './pages/Credentials'
+import { I18nProvider } from './i18n'
 import './App.css'
 
-function App() {
+function AppContent() {
   const [currentPage, setCurrentPage] = useState<Page>('environment')
   const [isUploading, setIsUploading] = useState(false)
   const [uploadConfig, setUploadConfig] = useState<UploadConfig | null>(null)
@@ -131,6 +132,14 @@ function App() {
         {renderPage()}
       </main>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <I18nProvider>
+      <AppContent />
+    </I18nProvider>
   )
 }
 

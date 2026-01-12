@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { CredentialListItem } from '../types'
+import { useTranslation } from '../i18n'
 import './Credentials.css'
 
 export function Credentials() {
+    const { t } = useTranslation()
     const [credentials, setCredentials] = useState<CredentialListItem[]>([])
     const [loading, setLoading] = useState(true)
 
@@ -18,7 +20,7 @@ export function Credentials() {
     }
 
     const handleDelete = async (appleId: string) => {
-        if (confirm(`Are you sure you want to delete credential "${appleId}"?\nYou will need to re-enter the password after deletion.`)) {
+        if (confirm(t('cred.delete_confirm', { id: appleId }))) {
             await window.api.deleteCredential(appleId)
             loadCredentials()
         }
@@ -39,7 +41,7 @@ export function Credentials() {
             <div className="credentials-page animate-fade-in">
                 <div className="credentials-loading">
                     <span className="animate-spin">⟳</span>
-                    <p>Loading...</p>
+                    <p>{t('common.loading')}</p>
                 </div>
             </div>
         )
@@ -49,23 +51,23 @@ export function Credentials() {
         <div className="credentials-page animate-fade-in">
             <div className="credentials-header">
                 <div>
-                    <h2>Saved Credentials</h2>
-                    <p>Manage your Apple ID and App-Specific Passwords</p>
+                    <h2>{t('cred.title')}</h2>
+                    <p>{t('cred.desc')}</p>
                 </div>
             </div>
 
             <div className="credentials-notice">
                 <span className="notice-icon">🔒</span>
                 <p>
-                    Passwords are encrypted and stored locally. Credentials are saved automatically after successful upload.
+                    {t('cred.notice')}
                 </p>
             </div>
 
             {credentials.length === 0 ? (
                 <div className="credentials-empty">
                     <span className="empty-icon">🔑</span>
-                    <h3>No saved credentials</h3>
-                    <p>Credentials will be automatically saved here after successful IPA upload</p>
+                    <h3>{t('cred.empty_title')}</h3>
+                    <p>{t('cred.empty_desc')}</p>
                 </div>
             ) : (
                 <div className="credentials-list">
@@ -79,11 +81,11 @@ export function Credentials() {
                                 <div className="credential-secondary">
                                     <span className="credential-stat">
                                         <span className="stat-icon">📤</span>
-                                        Uploaded {cred.uploadCount} times
+                                        {t('cred.uploaded_count', { count: cred.uploadCount })}
                                     </span>
                                     <span className="credential-stat">
                                         <span className="stat-icon">🕐</span>
-                                        Last used: {formatDate(cred.lastUsed)}
+                                        {t('cred.last_used', { date: formatDate(cred.lastUsed) })}
                                     </span>
                                 </div>
                             </div>
@@ -91,7 +93,7 @@ export function Credentials() {
                                 className="btn btn-sm btn-danger"
                                 onClick={() => handleDelete(cred.appleId)}
                             >
-                                Delete
+                                {t('common.delete')}
                             </button>
                         </div>
                     ))}
@@ -99,10 +101,10 @@ export function Credentials() {
             )}
 
             <div className="credentials-help">
-                <h4>About App-Specific Password</h4>
+                <h4>{t('cred.about_password')}</h4>
                 <p>
-                    App-Specific Password is a dedicated password provided by Apple for third-party apps, distinct from your Apple ID password.
-                    You can generate it in the security settings at <a href="#" onClick={(e) => { e.preventDefault(); window.api.openExternal('https://account.apple.com'); }}>account.apple.com</a>.
+                    {t('cred.about_desc')}
+                    {t('cred.generate_link')} <a href="#" onClick={(e) => { e.preventDefault(); window.api.openExternal('https://account.apple.com'); }}>account.apple.com</a>.
                 </p>
             </div>
         </div>
