@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
@@ -57,7 +57,7 @@ function createWindow() {
   })
 
   // Open DevTools for debugging
-  // win.webContents.openDevTools()
+  win.webContents.openDevTools()
 
   // Test active push message to Renderer-process.
   win.webContents.on('did-finish-load', () => {
@@ -139,6 +139,13 @@ ipcMain.handle('is-uploading', () => {
 // 获取 Providers 列表
 ipcMain.handle('fetch-providers', async (_event, data: { appleId: string; password: string }) => {
   return await fetchProviders(data.appleId, data.password)
+})
+
+// Open External URL
+ipcMain.handle('open-external', async (_event, url: string) => {
+  if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+    await shell.openExternal(url)
+  }
 })
 
 // 获取凭证列表（不含密码）

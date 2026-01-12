@@ -10,6 +10,7 @@ export function Upload({ onStartUpload }: UploadProps) {
     const [credentials, setCredentials] = useState<CredentialListItem[]>([])
     const [selectedCredential, setSelectedCredential] = useState<string>('')
     const [appleId, setAppleId] = useState('')
+    const [appleIdError, setAppleIdError] = useState('')
     const [password, setPassword] = useState('')
     const [ipaPath, setIpaPath] = useState('')
     const [useNewCredential, setUseNewCredential] = useState(true)
@@ -52,6 +53,11 @@ export function Upload({ onStartUpload }: UploadProps) {
         }
     }
 
+    const validateEmail = (email: string) => {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        return re.test(email)
+    }
+
     const handleSelectIpa = async () => {
         const path = await window.api.selectIpaFile()
         if (path) {
@@ -65,6 +71,11 @@ export function Upload({ onStartUpload }: UploadProps) {
 
         if (!currentAppleId || !currentPassword) {
             setProviderError('Please fill in Apple ID and App-Specific Password first')
+            return
+        }
+
+        if (useNewCredential && !validateEmail(currentAppleId)) {
+            setProviderError('Please enter a valid Apple ID (Email)')
             return
         }
 
@@ -98,6 +109,10 @@ export function Upload({ onStartUpload }: UploadProps) {
     // Helper to save credential
     const saveCurrentCredential = async () => {
         if (!appleId || !password) return
+        if (!validateEmail(appleId)) {
+            alert('Please enter a valid Apple ID (Email)')
+            return
+        }
         try {
             await window.api.saveCredential({ appleId, password })
             // Refresh list
@@ -122,6 +137,11 @@ export function Upload({ onStartUpload }: UploadProps) {
 
         if (!finalAppleId || !finalPassword) {
             alert('Please fill in complete credential information')
+            return
+        }
+
+        if (useNewCredential && !validateEmail(finalAppleId)) {
+            alert('Please enter a valid Apple ID (Email)')
             return
         }
 
@@ -245,9 +265,19 @@ export function Upload({ onStartUpload }: UploadProps) {
                                 type="email"
                                 className="form-input"
                                 value={appleId}
-                                onChange={(e) => setAppleId(e.target.value)}
+                                onChange={(e) => {
+                                    setAppleId(e.target.value)
+                                    if (appleIdError) setAppleIdError('')
+                                }}
+                                onBlur={() => {
+                                    if (appleId && !validateEmail(appleId)) {
+                                        setAppleIdError('Invalid email format')
+                                    }
+                                }}
                                 placeholder="example@icloud.com"
+                                style={appleIdError ? { borderColor: '#EF4444' } : {}}
                             />
+                            {appleIdError && <span className="input-error-msg" style={{ color: '#EF4444', fontSize: '12px', marginTop: '4px', display: 'block' }}>{appleIdError}</span>}
                         </div>
                     )}
                 </div>
@@ -264,7 +294,7 @@ export function Upload({ onStartUpload }: UploadProps) {
                             </label>
                             <a
                                 className="label-action"
-                                onClick={() => window.open('https://appleid.apple.com', '_blank')}
+                                onClick={() => window.api.openExternal('https://account.apple.com')}
                             >
                                 Manage Apple ID ↗
                             </a>

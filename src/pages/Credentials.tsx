@@ -102,7 +102,7 @@ export function Credentials() {
                 <h4>About App-Specific Password</h4>
                 <p>
                     App-Specific Password is a dedicated password provided by Apple for third-party apps, distinct from your Apple ID password.
-                    You can generate it in the security settings at <a href="https://appleid.apple.com" target="_blank" rel="noopener noreferrer">appleid.apple.com</a>.
+                    You can generate it in the security settings at <a href="#" onClick={(e) => { e.preventDefault(); window.api.openExternal('https://account.apple.com'); }}>account.apple.com</a>.
                 </p>
             </div>
         </div>
