@@ -22,9 +22,15 @@ export interface UploadHistoryRecord {
     errorMessage?: string
 }
 
+export interface WebhookSettings {
+    url: string
+    enabled: boolean
+}
+
 interface StoreSchema {
     credentials: Credential[]
     uploadHistory: UploadHistoryRecord[]
+    webhookSettings: WebhookSettings
 }
 
 // 初始化 store
@@ -32,7 +38,11 @@ const store = new Store<StoreSchema>({
     name: 'iTransporter-data',
     defaults: {
         credentials: [],
-        uploadHistory: []
+        uploadHistory: [],
+        webhookSettings: {
+            url: '',
+            enabled: false
+        }
     }
 })
 
@@ -195,4 +205,27 @@ export function deleteUploadHistory(id: string): boolean {
         return true
     }
     return false
+}
+
+// ==================== Webhook Settings ====================
+
+/**
+ * Get webhook settings
+ */
+export function getWebhookSettings(): WebhookSettings {
+    return store.get('webhookSettings', { url: '', enabled: false })
+}
+
+/**
+ * Set webhook settings
+ */
+export function setWebhookSettings(settings: WebhookSettings): void {
+    store.set('webhookSettings', settings)
+}
+
+/**
+ * Clear webhook settings
+ */
+export function clearWebhookSettings(): void {
+    store.set('webhookSettings', { url: '', enabled: false })
 }

@@ -89,6 +89,7 @@ export async function getEnvironmentStatus(): Promise<EnvironmentStatus> {
 /**
  * 获取 iTMSTransporter 可执行文件路径
  * Prefers Transporter.app path, falls back to standalone installation
+ * Throws error if no valid path is found
  */
 export function getITMSTransporterPath(): string {
     if (fs.existsSync(ITMS_TRANSPORTER_PATH)) {
@@ -97,7 +98,7 @@ export function getITMSTransporterPath(): string {
     if (fs.existsSync(STANDALONE_ITMS_TRANSPORTER_PATH)) {
         return STANDALONE_ITMS_TRANSPORTER_PATH
     }
-    return ITMS_TRANSPORTER_PATH // Default fallback
+    throw new Error('iTMSTransporter not found. Please install Transporter from App Store or download standalone iTMSTransporter from Apple.')
 }
 
 /**

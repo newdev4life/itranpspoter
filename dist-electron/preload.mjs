@@ -31,6 +31,10 @@ electron.contextBridge.exposeInMainWorld("api", {
   deleteUploadHistory: (id) => electron.ipcRenderer.invoke("delete-upload-history", id),
   // IP Info
   getIpInfo: () => electron.ipcRenderer.invoke("get-ip-info"),
+  // Webhook Settings
+  getWebhookSettings: () => electron.ipcRenderer.invoke("get-webhook-settings"),
+  setWebhookSettings: (settings) => electron.ipcRenderer.invoke("set-webhook-settings", settings),
+  testWebhook: (url) => electron.ipcRenderer.invoke("test-webhook", url),
   // 上下文菜单
   onContextMenu: (callback) => electron.ipcRenderer.on("show-context-menu", callback),
   offContextMenu: (callback) => electron.ipcRenderer.off("show-context-menu", callback),

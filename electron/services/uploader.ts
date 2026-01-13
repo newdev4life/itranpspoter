@@ -2,6 +2,7 @@ import { spawn, ChildProcess } from 'child_process'
 import { BrowserWindow } from 'electron'
 import { getITMSTransporterPath } from './environment'
 import { addUploadHistory, saveCredential } from './store'
+import { sendWebhookNotification } from './webhook'
 import * as path from 'path'
 
 export interface UploadConfig {
@@ -460,6 +461,16 @@ function performSingleUpload(
                 })
 
                 mainWindow.webContents.send('upload-complete', { success: true })
+
+                // Send webhook notification for success
+                sendWebhookNotification({
+                    fileName,
+                    status: 'success',
+                    appleId: config.appleId,
+                    startTime: uploadStartTime,
+                    endTime
+                })
+
                 resolve({ success: true })
             } else {
                 sendLog(mainWindow, '---')
@@ -487,6 +498,17 @@ function performSingleUpload(
                     success: false,
                     errorMessage: errorOutput || `Exit code: ${code}`
                 })
+
+                // Send webhook notification for failure
+                sendWebhookNotification({
+                    fileName,
+                    status: 'failed',
+                    appleId: config.appleId,
+                    startTime: uploadStartTime,
+                    endTime,
+                    errorMessage: errorOutput || `Exit code: ${code}`
+                })
+
                 resolve({ success: false, errorMessage: errorOutput || `Exit code: ${code}` })
             }
 
@@ -522,6 +544,17 @@ function performSingleUpload(
                 success: false,
                 errorMessage: error.message
             })
+
+            // Send webhook notification for process error
+            sendWebhookNotification({
+                fileName,
+                status: 'failed',
+                appleId: config.appleId,
+                startTime: uploadStartTime,
+                endTime,
+                errorMessage: error.message
+            })
+
             resolve({ success: false, errorMessage: error.message })
 
             currentUploadProcess = null
@@ -549,11 +582,23 @@ export function cancelUpload(mainWindow: BrowserWindow): boolean {
 
         // Record cancelled upload history
         const endTime = new Date().toISOString()
+        const appleId = currentUploadConfig.appleId
+        const ipaPath = currentUploadConfig.ipaPath
         addUploadHistory({
             fileName,
-            filePath: currentUploadConfig.ipaPath,
-            appleId: currentUploadConfig.appleId,
+            filePath: ipaPath,
+            appleId: appleId,
             status: 'cancelled',
+            startTime: uploadStartTime,
+            endTime,
+            errorMessage: 'User cancelled upload'
+        })
+
+        // Send webhook notification for cancellation (before nullifying config)
+        sendWebhookNotification({
+            fileName,
+            status: 'cancelled',
+            appleId: appleId,
             startTime: uploadStartTime,
             endTime,
             errorMessage: 'User cancelled upload'

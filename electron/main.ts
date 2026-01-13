@@ -11,10 +11,13 @@ import {
   deleteCredential,
   getUploadHistory,
   clearUploadHistory,
-  deleteUploadHistory
+  deleteUploadHistory,
+  getWebhookSettings,
+  setWebhookSettings
 } from './services/store'
 import { startUpload, cancelUpload, isUploading, fetchProviders } from './services/uploader'
 import { getIpInfo } from './services/ipInfo'
+import { testWebhook } from './services/webhook'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -189,6 +192,24 @@ ipcMain.handle('delete-upload-history', (_event, id: string) => {
 // IP Info - Fetch user's IP geolocation
 ipcMain.handle('get-ip-info', async () => {
   return await getIpInfo()
+})
+
+// ==================== Webhook Settings ====================
+
+// Get webhook settings
+ipcMain.handle('get-webhook-settings', () => {
+  return getWebhookSettings()
+})
+
+// Set webhook settings
+ipcMain.handle('set-webhook-settings', (_event, settings: { url: string; enabled: boolean }) => {
+  setWebhookSettings(settings)
+  return true
+})
+
+// Test webhook
+ipcMain.handle('test-webhook', async (_event, url: string) => {
+  return await testWebhook(url)
 })
 
 // ==================== App Lifecycle ====================

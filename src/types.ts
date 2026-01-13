@@ -95,7 +95,7 @@ export interface UploadProgress {
 }
 
 // Page Type
-export type Page = 'environment' | 'upload' | 'progress' | 'history' | 'credentials'
+export type Page = 'environment' | 'upload' | 'progress' | 'history' | 'credentials' | 'settings'
 
 // IP Info
 export interface IpInfo {
@@ -113,6 +113,19 @@ export interface IpInfo {
     org: string
     as: string
     query: string
+}
+
+// Webhook Settings
+export interface WebhookSettings {
+    url: string
+    enabled: boolean
+}
+
+// Webhook Test Result
+export interface WebhookTestResult {
+    success: boolean
+    code?: number
+    message?: string
 }
 
 // Declare Global API Types
@@ -144,6 +157,10 @@ declare global {
             deleteUploadHistory: (id: string) => Promise<boolean>
             // IP Info
             getIpInfo: () => Promise<IpInfo | null>
+            // Webhook Settings
+            getWebhookSettings: () => Promise<WebhookSettings>
+            setWebhookSettings: (settings: WebhookSettings) => Promise<boolean>
+            testWebhook: (url: string) => Promise<WebhookTestResult>
             // Context Menu
             onContextMenu: (callback: (event: any, data: { isEditable: boolean; hasSelection: boolean; editFlags: any; x: number; y: number }) => void) => void
             offContextMenu: (callback: (event: any, data: any) => void) => void

@@ -1,0 +1,308 @@
+/* Settings Page Styles */
+
+.settings-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.settings-header {
+    margin-bottom: 32px;
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    color: #6B7280;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 0;
+    margin-bottom: 20px;
+    transition: color 0.2s;
+}
+
+.btn-back:hover {
+    color: #4B6EFF;
+}
+
+.btn-back svg {
+    width: 20px;
+    height: 20px;
+}
+
+.header-title {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.header-icon {
+    width: 48px;
+    height: 48px;
+    background: #E8F2FF;
+    color: #4B6EFF;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.header-title h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1D1D1F;
+    margin: 0 0 4px 0;
+}
+
+.header-title p {
+    font-size: 14px;
+    color: #86909C;
+    margin: 0;
+}
+
+/* Settings Card */
+.settings-card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 0;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+}
+
+/* Settings Section */
+.settings-section {
+    padding: 24px;
+}
+
+.section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.section-icon {
+    width: 40px;
+    height: 40px;
+    background: #F3F4F6;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6B7280;
+    flex-shrink: 0;
+}
+
+.section-title {
+    flex: 1;
+}
+
+.section-title h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1D1D1F;
+    margin: 0 0 4px 0;
+}
+
+.section-title p {
+    font-size: 13px;
+    color: #9CA3AF;
+    margin: 0;
+}
+
+.section-toggle {
+    flex-shrink: 0;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #E5E7EB;
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-switch input:checked+.toggle-slider {
+    background-color: #4B6EFF;
+}
+
+.toggle-switch input:checked+.toggle-slider:before {
+    transform: translateX(20px);
+}
+
+/* Webhook URL Group */
+.webhook-url-group {
+    margin-bottom: 16px;
+}
+
+.input-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6B7280;
+    margin-bottom: 8px;
+}
+
+.input-row {
+    display: flex;
+    gap: 12px;
+}
+
+.form-input {
+    flex: 1;
+    height: 48px;
+    padding: 0 16px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1D1D1F;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.form-input:focus {
+    background: #FFFFFF;
+    border-color: #3B82F6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.form-input::placeholder {
+    color: #9CA3AF;
+}
+
+/* Test Webhook Button */
+.btn-test-webhook {
+    height: 48px;
+    padding: 0 20px;
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+    color: #6B7280;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.btn-test-webhook:hover:not(:disabled) {
+    border-color: #4B6EFF;
+    color: #4B6EFF;
+    background: #EEF2FF;
+}
+
+.btn-test-webhook:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-test-webhook svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #E5E7EB;
+    border-top-color: #4B6EFF;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.loading-spinner.small {
+    width: 14px;
+    height: 14px;
+    border-width: 2px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Webhook Test Result */
+.webhook-test-result {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.webhook-test-result.success {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16A34A;
+}
+
+.webhook-test-result.error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #DC2626;
+}
+
+/* Webhook Info */
+.webhook-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px;
+    background: #F8FAFC;
+    border-radius: 10px;
+    font-size: 13px;
+    color: #6B7280;
+    line-height: 1.5;
+}
+
+.webhook-info svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: #9CA3AF;
+}

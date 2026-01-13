@@ -7,6 +7,7 @@ import { Upload } from './pages/Upload'
 import { Progress } from './pages/Progress'
 import { History } from './pages/History'
 import { Credentials } from './pages/Credentials'
+import { Settings } from './pages/Settings'
 import { I18nProvider } from './i18n'
 import './App.css'
 
@@ -127,6 +128,9 @@ function AppContent() {
 
       case 'credentials':
         return <Credentials />
+
+      case 'settings':
+        return <Settings onBack={() => setCurrentPage('upload')} />
 
       default:
         return <Upload onStartUpload={handleStartUpload} />

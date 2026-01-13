@@ -100,6 +100,12 @@ contextBridge.exposeInMainWorld('api', {
   // IP Info
   getIpInfo: () => ipcRenderer.invoke('get-ip-info'),
 
+  // Webhook Settings
+  getWebhookSettings: () => ipcRenderer.invoke('get-webhook-settings'),
+  setWebhookSettings: (settings: { url: string; enabled: boolean }) =>
+    ipcRenderer.invoke('set-webhook-settings', settings),
+  testWebhook: (url: string) => ipcRenderer.invoke('test-webhook', url),
+
   // 上下文菜单
   onContextMenu: (callback: (event: any, data: { isEditable: boolean; hasSelection: boolean; editFlags: any; x: number; y: number }) => void) =>
     ipcRenderer.on('show-context-menu', callback),

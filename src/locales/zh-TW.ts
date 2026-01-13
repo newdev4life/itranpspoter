@@ -72,6 +72,21 @@ export const zhTW = {
     'upload.confirm.isp': 'ISP',
     'upload.confirm.proceed': '確認上傳',
     'upload.confirm.cancel': '取消',
+    'upload.webhook_label': 'Webhook 通知',
+    'upload.webhook_on': '開啟',
+    'upload.webhook_off': '關閉',
+    'upload.test_webhook': '測試',
+
+    // Settings
+    'settings.title': '設定',
+    'settings.desc': '配置應用程式選項',
+    'settings.back': '返回',
+    'settings.webhook_title': 'Webhook 通知',
+    'settings.webhook_desc': '上傳狀態變更時發送通知至您的 Webhook',
+    'settings.webhook_url': 'Webhook URL',
+    'settings.test_webhook': '測試',
+    'settings.webhook_info': '支援飛書/Lark 機器人 Webhook。上傳成功、失敗或取消時將發送通知。',
+    'common.settings': '設定',
 
     // History
     'history.title': '上傳歷史',

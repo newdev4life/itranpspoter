@@ -131,3 +131,49 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+/* ==================== Settings Button ==================== */
+
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    -webkit-app-region: no-drag;
+}
+
+.btn-settings {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: none;
+    background: #FFFFFF;
+    color: #6B7280;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    transition: all 0.2s;
+}
+
+.btn-settings:hover:not(:disabled) {
+    color: #4B6EFF;
+    background: #F3F4F6;
+}
+
+.btn-settings.active {
+    background: #1D1D1F;
+    color: #FFFFFF;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.btn-settings:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-settings svg {
+    width: 18px;
+    height: 18px;
+}
