@@ -10,11 +10,10 @@ A modern macOS application for uploading IPA files to App Store Connect.
 The official [Transporter](https://apps.apple.com/app/transporter/id1450874784) app requires you to sign in with your Apple ID directly, which can be problematic in certain scenarios:
 
 - **Virtual macOS Systems** - VMs and cloud-based macOS environments often cannot authenticate with Apple ID due to system restrictions
-- **CI/CD Pipelines** - Automated build systems need a non-interactive way to upload IPAs
 - **Team Workflows** - Developers may prefer using App-Specific Passwords instead of sharing Apple ID credentials
 - **Security Concerns** - Using App-Specific Passwords limits access scope compared to full Apple ID login
 - **No Full Xcode Required** - Only needs Xcode Command Line Tools, not the full 12GB+ Xcode installation
-- **Transporter Without Login** - Just install the Transporter app from App Store, no need to sign in to it
+- **Transporter or iTMSTransporter** - Just install the Transporter app from App Store or the [standalone iTMSTransporter](https://help.apple.com/itc/transporteruserguide/en.lproj/static.html#apdAe41970bd)
 
 iTransporter solves this by leveraging the `iTMSTransporter` command-line tool (bundled with Transporter) to upload IPAs using only your **Apple ID email** and an **App-Specific Password** — no interactive login required.
 
@@ -34,7 +33,9 @@ iTransporter solves this by leveraging the `iTMSTransporter` command-line tool (
 ## Requirements
 
 - macOS 10.15 or later
-- [Transporter](https://apps.apple.com/app/transporter/id1450874784) app installed (no need to sign in)
+- **One of the following:**
+  - [Transporter](https://apps.apple.com/app/transporter/id1450874784) app installed via Mac App Store
+  - [iTMSTransporter](https://help.apple.com/itc/transporteruserguide/en.lproj/static.html#apdAe41970bd) standalone tool installed at `/usr/local/itms/bin/iTMSTransporter`
 - Xcode Command Line Tools
 
 ## Installation
@@ -100,7 +101,7 @@ npm run build -- --mac --arm64
 
 ## License
 
-MIT License © 2024 jimjay
+MIT License © 2026 jimjay
 
 ## Contributing
 

@@ -39,6 +39,11 @@ export function EnvironmentCheck({ onReady }: EnvironmentCheckProps) {
         window.api.openExternal('https://apps.apple.com/app/transporter/id1450874784')
     }
 
+    const openITMSDownload = () => {
+        // Open iTMSTransporter download page from Apple Help
+        window.api.openExternal('https://help.apple.com/itc/transporteruserguide/en.lproj/static.html#apdAe41970bd')
+    }
+
     const installCLT = async () => {
         setInstalling(true)
         setInstallMessage('')
@@ -88,19 +93,26 @@ export function EnvironmentCheck({ onReady }: EnvironmentCheckProps) {
             {/* List Card */}
             {status && (
                 <div className="status-list-card">
-                    {/* Transporter Item */}
+                    {/* Transporter / iTMSTransporter Item */}
                     <div className="status-list-item">
                         <div className="status-item-info">
                             <span className="status-item-title">{t('env.transporter')}</span>
                             <span className="status-item-desc">
-                                {status.transporterInstalled
-                                    ? t('env.installed')
-                                    : <a href="#" onClick={(e) => { e.preventDefault(); openTransporterDownload(); }} style={{ color: 'var(--color-primary)' }}>{t('env.download')}</a>
-                                }
+                                {(status.transporterInstalled || status.iTMSTransporterExists) ? (
+                                    t('env.installed')
+                                ) : status.standaloneITMSTransporterExists ? (
+                                    <>{t('env.standalone_itms')} - {t('env.installed')}</>
+                                ) : (
+                                    <span className="download-options">
+                                        <a href="#" onClick={(e) => { e.preventDefault(); openTransporterDownload(); }} style={{ color: 'var(--color-primary)' }}>{t('env.download')}</a>
+                                        <span className="download-or"> {t('env.or')} </span>
+                                        <a href="#" onClick={(e) => { e.preventDefault(); openITMSDownload(); }} style={{ color: 'var(--color-primary)' }}>{t('env.itms_download')}</a>
+                                    </span>
+                                )}
                             </span>
                         </div>
                         <div className="status-item-icon">
-                            {renderStatusIcon(status.transporterInstalled)}
+                            {renderStatusIcon(status.iTMSTransporterExists || status.standaloneITMSTransporterExists)}
                         </div>
                     </div>
 

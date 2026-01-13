@@ -140,3 +140,16 @@
         transform: rotate(360deg);
     }
 }
+
+/* Download options styling */
+.download-options {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+}
+
+.download-or {
+    color: var(--color-text-secondary);
+    font-size: 12px;
+}

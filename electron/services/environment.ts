@@ -9,6 +9,9 @@ export interface EnvironmentStatus {
     transporterPath: string
     iTMSTransporterPath: string
     iTMSTransporterExists: boolean
+    // Standalone iTMSTransporter (installed separately without Transporter.app)
+    standaloneITMSTransporterExists: boolean
+    standaloneITMSTransporterPath: string
     commandLineToolsInstalled: boolean
     commandLineToolsPath: string
     allReady: boolean
@@ -16,6 +19,7 @@ export interface EnvironmentStatus {
 
 const TRANSPORTER_PATH = '/Applications/Transporter.app'
 const ITMS_TRANSPORTER_PATH = '/Applications/Transporter.app/Contents/itms/bin/iTMSTransporter'
+const STANDALONE_ITMS_TRANSPORTER_PATH = '/usr/local/itms/bin/iTMSTransporter'
 
 /**
  * 检查 Transporter.app 是否已安装
@@ -25,10 +29,17 @@ export function checkTransporter(): boolean {
 }
 
 /**
- * 检查 iTMSTransporter 可执行文件是否存在
+ * 检查 iTMSTransporter 可执行文件是否存在 (from Transporter.app)
  */
 export function checkITMSTransporter(): boolean {
     return fs.existsSync(ITMS_TRANSPORTER_PATH)
+}
+
+/**
+ * 检查 standalone iTMSTransporter 是否存在 (installed separately)
+ */
+export function checkStandaloneITMSTransporter(): boolean {
+    return fs.existsSync(STANDALONE_ITMS_TRANSPORTER_PATH)
 }
 
 /**
@@ -54,24 +65,39 @@ export async function checkCommandLineTools(): Promise<{ installed: boolean; pat
 export async function getEnvironmentStatus(): Promise<EnvironmentStatus> {
     const transporterInstalled = checkTransporter()
     const iTMSTransporterExists = checkITMSTransporter()
+    const standaloneITMSTransporterExists = checkStandaloneITMSTransporter()
     const cltStatus = await checkCommandLineTools()
+
+    // Environment is ready if:
+    // - Either Transporter.app with iTMSTransporter exists, OR standalone iTMSTransporter exists
+    // - AND Command Line Tools are installed
+    const hasAnyITMSTransporter = iTMSTransporterExists || standaloneITMSTransporterExists
 
     return {
         transporterInstalled,
         transporterPath: TRANSPORTER_PATH,
         iTMSTransporterPath: ITMS_TRANSPORTER_PATH,
         iTMSTransporterExists,
+        standaloneITMSTransporterExists,
+        standaloneITMSTransporterPath: STANDALONE_ITMS_TRANSPORTER_PATH,
         commandLineToolsInstalled: cltStatus.installed,
         commandLineToolsPath: cltStatus.path,
-        allReady: transporterInstalled && iTMSTransporterExists && cltStatus.installed
+        allReady: hasAnyITMSTransporter && cltStatus.installed
     }
 }
 
 /**
  * 获取 iTMSTransporter 可执行文件路径
+ * Prefers Transporter.app path, falls back to standalone installation
  */
 export function getITMSTransporterPath(): string {
-    return ITMS_TRANSPORTER_PATH
+    if (fs.existsSync(ITMS_TRANSPORTER_PATH)) {
+        return ITMS_TRANSPORTER_PATH
+    }
+    if (fs.existsSync(STANDALONE_ITMS_TRANSPORTER_PATH)) {
+        return STANDALONE_ITMS_TRANSPORTER_PATH
+    }
+    return ITMS_TRANSPORTER_PATH // Default fallback
 }
 
 /**

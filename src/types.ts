@@ -4,6 +4,8 @@ export interface EnvironmentStatus {
     transporterPath: string
     iTMSTransporterPath: string
     iTMSTransporterExists: boolean
+    standaloneITMSTransporterExists: boolean
+    standaloneITMSTransporterPath: string
     commandLineToolsInstalled: boolean
     commandLineToolsPath: string
     allReady: boolean
