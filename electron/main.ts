@@ -47,6 +47,9 @@ process.env.VITE_PUBLIC = isDev ? path.join(__dirname, '../public') : RENDERER_D
 let win: BrowserWindow | null
 
 function createWindow() {
+
+  const isDev = !app.isPackaged;
+
   win = new BrowserWindow({
     width: 1000,
     height: 800,
@@ -59,11 +62,14 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.mjs'),
       nodeIntegration: false,
       contextIsolation: true,
+      devTools: isDev
     },
   })
 
   // Open DevTools for debugging
-  win.webContents.openDevTools()
+  if (isDev) {
+    win.webContents.openDevTools({ mode: 'detach' })
+  }
 
   // Test active push message to Renderer-process.
   win.webContents.on('did-finish-load', () => {
