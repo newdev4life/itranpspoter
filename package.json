@@ -1,7 +1,7 @@
 {
   "name": "iTransporter",
   "private": true,
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A modern IPA uploader for App Store Connect",
   "author": "jimjay",
   "type": "module",
