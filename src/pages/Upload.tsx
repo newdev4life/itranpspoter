@@ -5,9 +5,10 @@ import './Upload.css'
 
 interface UploadProps {
     onStartUpload: (config: UploadConfig) => void
+    isUploading: boolean
 }
 
-export function Upload({ onStartUpload }: UploadProps) {
+export function Upload({ onStartUpload, isUploading }: UploadProps) {
     const { t } = useTranslation()
     const [credentials, setCredentials] = useState<CredentialListItem[]>([])
     const [selectedCredential, setSelectedCredential] = useState<string>('')
@@ -16,7 +17,6 @@ export function Upload({ onStartUpload }: UploadProps) {
     const [password, setPassword] = useState('')
     const [ipaPath, setIpaPath] = useState('')
     const [useNewCredential, setUseNewCredential] = useState(true)
-    const [loading, setLoading] = useState(false)
 
     // Provider related state
     const [providers, setProviders] = useState<Provider[]>([])
@@ -190,7 +190,6 @@ export function Upload({ onStartUpload }: UploadProps) {
 
     const handleConfirmUpload = () => {
         if (pendingUploadConfig) {
-            setLoading(true)
             setShowConfirmDialog(false)
             onStartUpload(pendingUploadConfig)
         }
@@ -421,14 +420,14 @@ export function Upload({ onStartUpload }: UploadProps) {
                     className="btn-submit"
                     onClick={handleSubmit}
                     disabled={
-                        loading ||
+                        isUploading ||
                         !ipaPath ||
                         (!useNewCredential && !selectedCredential) ||
                         (useNewCredential && (!appleId || !password)) ||
                         !selectedProvider
                     }
                 >
-                    {loading ? t('common.processing') : t('upload.start_upload')}
+                    {isUploading ? t('common.processing') : t('upload.start_upload')}
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>

@@ -320,7 +320,7 @@
 }
 
 .confirm-dialog {
-    background: var(--color-bg-primary);
+    background: #FFFFFF;
     border-radius: var(--radius-lg);
     padding: var(--space-xl);
     max-width: 420px;

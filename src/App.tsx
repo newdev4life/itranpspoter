@@ -92,6 +92,7 @@ export default function App() {
                 main={
                     <Upload
                         onStartUpload={handleStartUpload}
+                        isUploading={isUploading}
                     />
                 }
                 bottom={
