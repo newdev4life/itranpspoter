@@ -16,14 +16,20 @@ export function Settings({ onBack }: SettingsProps) {
     const [webhookTesting, setWebhookTesting] = useState<boolean>(false)
     const [webhookTestResult, setWebhookTestResult] = useState<WebhookTestResult | null>(null)
 
+    // Retry attempts state
+    const [retryAttempts, setRetryAttempts] = useState<number>(3)
+
     useEffect(() => {
-        loadWebhookSettings()
+        loadSettings()
     }, [])
 
-    const loadWebhookSettings = async () => {
-        const settings = await window.api.getWebhookSettings()
-        setWebhookUrl(settings.url)
-        setWebhookEnabled(settings.enabled)
+    const loadSettings = async () => {
+        const webhookSettings = await window.api.getWebhookSettings()
+        setWebhookUrl(webhookSettings.url)
+        setWebhookEnabled(webhookSettings.enabled)
+
+        const retry = await window.api.getRetryAttempts()
+        setRetryAttempts(retry)
     }
 
     const handleWebhookSave = async (url: string, enabled: boolean) => {
@@ -43,6 +49,11 @@ export function Settings({ onBack }: SettingsProps) {
         if (result.success) {
             await window.api.setWebhookSettings({ url: webhookUrl, enabled: webhookEnabled })
         }
+    }
+
+    const handleRetryAttemptsChange = async (attempts: number) => {
+        setRetryAttempts(attempts)
+        await window.api.setRetryAttempts(attempts)
     }
 
     return (
@@ -69,6 +80,38 @@ export function Settings({ onBack }: SettingsProps) {
             </div>
 
             <div className="settings-card">
+                {/* Retry Attempts Section */}
+                <div className="settings-section">
+                    <div className="section-header">
+                        <div className="section-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1 4V10H7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                <path d="M23 20V14H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14L18.36 18.36A9 9 0 0 1 3.51 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        </div>
+                        <div className="section-title">
+                            <h3>{t('settings.retry_title')}</h3>
+                            <p>{t('settings.retry_desc')}</p>
+                        </div>
+                    </div>
+
+                    <div className="retry-options">
+                        {[1, 2, 3, 5].map(num => (
+                            <button
+                                key={num}
+                                type="button"
+                                className={`retry-option ${retryAttempts === num ? 'active' : ''}`}
+                                onClick={() => handleRetryAttemptsChange(num)}
+                            >
+                                {num}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="section-divider"></div>
+
                 {/* Webhook Settings Section */}
                 <div className="settings-section">
                     <div className="section-header">
@@ -154,3 +197,4 @@ export function Settings({ onBack }: SettingsProps) {
         </div>
     )
 }
+

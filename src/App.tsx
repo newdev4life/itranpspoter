@@ -1,163 +1,121 @@
 import { useState, useEffect } from 'react'
-import { Page, UploadConfig, EnvironmentStatus } from './types'
+import { Page, UploadConfig } from './types'
 import { Header } from './components/Header'
+import { WorkspaceLayout } from './components/WorkspaceLayout'
+import { StatusSidebar } from './components/StatusSidebar'
+import { BottomPanel } from './components/BottomPanel'
 import { ContextMenu } from './components/ContextMenu'
-import { EnvironmentCheck } from './pages/EnvironmentCheck'
 import { Upload } from './pages/Upload'
-import { Progress } from './pages/Progress'
 import { History } from './pages/History'
-import { Credentials } from './pages/Credentials'
 import { Settings } from './pages/Settings'
-import { I18nProvider } from './i18n'
 import './App.css'
 
-function AppContent() {
-  const [currentPage, setCurrentPage] = useState<Page>('environment')
-  const [isUploading, setIsUploading] = useState(false)
-  const [uploadConfig, setUploadConfig] = useState<UploadConfig | null>(null)
-  const [environmentReady, setEnvironmentReady] = useState(false)
+export default function App() {
+    const [currentPage, setCurrentPage] = useState<Page>('workspace')
+    const [isUploading, setIsUploading] = useState(false)
+    const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'failed' | 'cancelled'>('idle')
+    const [_environmentReady, setEnvironmentReady] = useState(false)
+    const [currentUploadConfig, setCurrentUploadConfig] = useState<UploadConfig | null>(null)
 
-  // Check if there is an ongoing upload
-  useEffect(() => {
-    const checkUploading = async () => {
-      const uploading = await window.api.isUploading()
-      setIsUploading(uploading)
-      if (uploading) {
-        setCurrentPage('progress')
-      }
-    }
-    checkUploading()
-  }, [])
+    // Check if currently uploading on mount
+    useEffect(() => {
+        window.api.isUploading().then(uploading => {
+            if (uploading) {
+                setIsUploading(true)
+                setUploadStatus('uploading')
+            }
+        })
+    }, [])
 
-  // Check if environment is ready
-  useEffect(() => {
-    const checkEnvironment = async () => {
-      const status: EnvironmentStatus = await window.api.checkEnvironment()
-      if (status.allReady) {
-        setEnvironmentReady(true)
-        if (currentPage === 'environment') {
-          setCurrentPage('upload')
+    // Listen for upload completion
+    useEffect(() => {
+        const handleComplete = (_event: any, data: { success: boolean }) => {
+            setIsUploading(false)
+            setUploadStatus(data.success ? 'success' : 'failed')
         }
-      }
-    }
-    checkEnvironment()
-  }, [])
 
-  const handleNavigate = (page: Page) => {
-    // If uploading, can only view progress page
-    if (isUploading && page !== 'progress') {
-      return
-    }
-
-    // If environment is not ready and trying to access non-environment check page
-    if (!environmentReady && page !== 'environment') {
-      setCurrentPage('environment')
-      return
-    }
-
-    setCurrentPage(page)
-  }
-
-  const handleEnvironmentReady = () => {
-    setEnvironmentReady(true)
-    setCurrentPage('upload')
-  }
-
-  const handleStartUpload = async (config: UploadConfig) => {
-    setUploadConfig(config)
-    setIsUploading(true)
-    setCurrentPage('progress')
-
-    // Start upload
-    await window.api.startUpload(config)
-  }
-
-  const handleUploadComplete = (_success: boolean) => {
-    setIsUploading(false)
-    setUploadConfig(null)
-    // Return to upload page
-    setCurrentPage('upload')
-  }
-
-  const handleUploadCancel = () => {
-    setIsUploading(false)
-    setUploadConfig(null)
-    setCurrentPage('upload')
-  }
-
-  const handleRetry = async () => {
-    if (uploadConfig) {
-      setIsUploading(true)
-      // Clear logs by resetting the page briefly
-      setCurrentPage('upload')
-      setTimeout(() => {
-        setCurrentPage('progress')
-        window.api.startUpload(uploadConfig)
-      }, 100)
-    }
-  }
-
-  const getFileName = (path: string) => {
-    return path.split('/').pop() || path
-  }
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'environment':
-        return <EnvironmentCheck onReady={handleEnvironmentReady} />
-
-      case 'upload':
-        return <Upload onStartUpload={handleStartUpload} />
-
-      case 'progress':
-        if (!uploadConfig) {
-          return <Upload onStartUpload={handleStartUpload} />
+        window.api.onUploadComplete(handleComplete)
+        return () => {
+            window.api.offUploadComplete(handleComplete)
         }
+    }, [])
+
+    const handleNavigate = (page: Page) => {
+        if (isUploading && page !== 'workspace') {
+            // Don't allow navigation away during upload
+            return
+        }
+        setCurrentPage(page)
+    }
+
+    const handleStartUpload = async (config: UploadConfig) => {
+        setCurrentUploadConfig(config)
+        setIsUploading(true)
+        setUploadStatus('uploading')
+
+        try {
+            await window.api.startUpload(config)
+        } catch (error) {
+            console.error('Upload failed:', error)
+        }
+    }
+
+    const handleUploadRetry = () => {
+        if (currentUploadConfig) {
+            handleStartUpload(currentUploadConfig)
+        }
+    }
+
+    const handleEnvironmentReady = (ready: boolean) => {
+        setEnvironmentReady(ready)
+    }
+
+    const handleBackFromSettings = () => {
+        setCurrentPage('workspace')
+    }
+
+    const renderContent = () => {
+        if (currentPage === 'history') {
+            return <History />
+        }
+
+        if (currentPage === 'settings') {
+            return <Settings onBack={handleBackFromSettings} />
+        }
+
+        // Workspace view with three-column layout
         return (
-          <Progress
-            ipaFileName={getFileName(uploadConfig.ipaPath)}
-            appleId={uploadConfig.appleId}
-            onComplete={handleUploadComplete}
-            onCancel={handleUploadCancel}
-            onRetry={handleRetry}
-          />
+            <WorkspaceLayout
+                sidebar={
+                    <StatusSidebar onEnvironmentReady={handleEnvironmentReady} />
+                }
+                main={
+                    <Upload
+                        onStartUpload={handleStartUpload}
+                    />
+                }
+                bottom={
+                    <BottomPanel
+                        isUploading={isUploading}
+                        uploadStatus={uploadStatus}
+                        onRetry={handleUploadRetry}
+                    />
+                }
+            />
         )
-
-      case 'history':
-        return <History />
-
-      case 'credentials':
-        return <Credentials />
-
-      case 'settings':
-        return <Settings onBack={() => setCurrentPage('upload')} />
-
-      default:
-        return <Upload onStartUpload={handleStartUpload} />
     }
-  }
 
-  return (
-    <div className="app-container">
-      <ContextMenu />
-      <Header
-        currentPage={currentPage}
-        onNavigate={handleNavigate}
-        isUploading={isUploading}
-      />
-      <main className="app-content">
-        {renderPage()}
-      </main>
-    </div>
-  )
+    return (
+        <div className="app-container">
+            <Header
+                currentPage={currentPage}
+                onNavigate={handleNavigate}
+                isUploading={isUploading}
+            />
+            <main className={`app-content ${currentPage === 'workspace' ? 'workspace-content' : ''}`}>
+                {renderContent()}
+            </main>
+            <ContextMenu />
+        </div>
+    )
 }
-
-function App() {
-  return (
-    <I18nProvider>
-      <AppContent />
-    </I18nProvider>
-  )
-}
-
-export default App

@@ -1,0 +1,64 @@
+/* Workspace Layout - Three Column + Bottom Panel */
+
+.workspace-layout {
+    display: flex;
+    height: 100%;
+    overflow: hidden;
+    background: var(--color-bg-window);
+}
+
+/* Left Sidebar */
+.workspace-sidebar {
+    width: 200px;
+    min-width: 200px;
+    flex-shrink: 0;
+    background: var(--color-bg-sidebar);
+    border-right: 0.5px solid var(--color-divider);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main Area (Center + Bottom) */
+.workspace-main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+}
+
+/* Center Content */
+.workspace-center {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-lg);
+    min-height: 0;
+}
+
+/* Bottom Panel */
+.workspace-bottom {
+    flex-shrink: 0;
+    min-height: 180px;
+    max-height: 280px;
+    background: var(--color-bg-primary);
+    border-top: 0.5px solid var(--color-divider);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Responsive adjustments */
+@media (max-width: 700px) {
+    .workspace-layout {
+        flex-direction: column;
+    }
+
+    .workspace-sidebar {
+        width: 100%;
+        min-width: 100%;
+        border-right: none;
+        border-bottom: 0.5px solid var(--color-divider);
+        max-height: 120px;
+    }
+}

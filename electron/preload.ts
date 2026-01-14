@@ -115,7 +115,11 @@ contextBridge.exposeInMainWorld('api', {
   // 执行编辑命令
   execCommand: (command: string) => {
     document.execCommand(command)
-  }
+  },
+
+  // 重试次数设置
+  getRetryAttempts: () => ipcRenderer.invoke('get-retry-attempts'),
+  setRetryAttempts: (attempts: number) => ipcRenderer.invoke('set-retry-attempts', attempts)
 } as ElectronAPI)
 
 // 保留原有的 ipcRenderer 暴露（兼容性）

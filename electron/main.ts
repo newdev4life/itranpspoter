@@ -13,7 +13,9 @@ import {
   clearUploadHistory,
   deleteUploadHistory,
   getWebhookSettings,
-  setWebhookSettings
+  setWebhookSettings,
+  getRetryAttempts,
+  setRetryAttempts
 } from './services/store'
 import { startUpload, cancelUpload, isUploading, fetchProviders } from './services/uploader'
 import { getIpInfo } from './services/ipInfo'
@@ -61,7 +63,7 @@ function createWindow() {
   })
 
   // Open DevTools for debugging
-  // win.webContents.openDevTools()
+  win.webContents.openDevTools()
 
   // Test active push message to Renderer-process.
   win.webContents.on('did-finish-load', () => {
@@ -210,6 +212,19 @@ ipcMain.handle('set-webhook-settings', (_event, settings: { url: string; enabled
 // Test webhook
 ipcMain.handle('test-webhook', async (_event, url: string) => {
   return await testWebhook(url)
+})
+
+// ==================== Retry Attempts Settings ====================
+
+// Get retry attempts setting
+ipcMain.handle('get-retry-attempts', () => {
+  return getRetryAttempts()
+})
+
+// Set retry attempts setting
+ipcMain.handle('set-retry-attempts', (_event, attempts: number) => {
+  setRetryAttempts(attempts)
+  return true
 })
 
 // ==================== App Lifecycle ====================

@@ -5,6 +5,12 @@
   scroll-behavior: smooth;
 }
 
+/* Workspace content takes full height without padding */
+.app-content.workspace-content {
+  padding: 0;
+  overflow: hidden;
+}
+
 /* Focus styles - native macOS ring */
 *:focus-visible {
   outline: none;

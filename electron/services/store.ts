@@ -31,6 +31,7 @@ interface StoreSchema {
     credentials: Credential[]
     uploadHistory: UploadHistoryRecord[]
     webhookSettings: WebhookSettings
+    retryAttempts: number
 }
 
 // 初始化 store
@@ -42,7 +43,8 @@ const store = new Store<StoreSchema>({
         webhookSettings: {
             url: '',
             enabled: false
-        }
+        },
+        retryAttempts: 3
     }
 })
 
@@ -228,4 +230,20 @@ export function setWebhookSettings(settings: WebhookSettings): void {
  */
 export function clearWebhookSettings(): void {
     store.set('webhookSettings', { url: '', enabled: false })
+}
+
+// ==================== Retry Attempts Settings ====================
+
+/**
+ * Get retry attempts setting
+ */
+export function getRetryAttempts(): number {
+    return store.get('retryAttempts', 3)
+}
+
+/**
+ * Set retry attempts setting
+ */
+export function setRetryAttempts(attempts: number): void {
+    store.set('retryAttempts', Math.max(1, Math.min(attempts, 10)))
 }

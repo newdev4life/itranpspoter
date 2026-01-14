@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { CredentialListItem, UploadConfig, Provider, IpInfo } from '../types'
 import { useTranslation } from '../i18n'
-import { IPInfoBanner } from '../components/IPInfoBanner'
 import './Upload.css'
 
 interface UploadProps {
@@ -25,8 +24,8 @@ export function Upload({ onStartUpload }: UploadProps) {
     const [fetchingProviders, setFetchingProviders] = useState(false)
     const [providerError, setProviderError] = useState<string>('')
 
-    // Retry attempts
-    const [retryAttempts, setRetryAttempts] = useState<number>(1)
+    // Retry attempts (loaded from settings)
+    const [retryAttempts, setRetryAttempts] = useState<number>(3)
 
     // Confirmation dialog state
     const [showConfirmDialog, setShowConfirmDialog] = useState(false)
@@ -35,7 +34,13 @@ export function Upload({ onStartUpload }: UploadProps) {
 
     useEffect(() => {
         loadCredentials()
+        loadRetryAttempts()
     }, [])
+
+    const loadRetryAttempts = async () => {
+        const attempts = await window.api.getRetryAttempts()
+        setRetryAttempts(attempts)
+    }
 
     const loadCredentials = async () => {
         const list = await window.api.getCredentialsList()
@@ -210,8 +215,6 @@ export function Upload({ onStartUpload }: UploadProps) {
                     <p>{t('upload.desc')}</p>
                 </div>
             </div>
-
-            <IPInfoBanner />
 
             <div className="upload-card">
                 {/* IPA Path */}
@@ -411,32 +414,6 @@ export function Upload({ onStartUpload }: UploadProps) {
                             {providerError}
                         </div>
                     )}
-                </div>
-
-                {/* Retry Attempts Control */}
-                <div className="form-group">
-                    <div className="form-label-row">
-                        <label className="form-label">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1 4V10H7" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M23 20V14H17" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14L18.36 18.36A9 9 0 0 1 3.51 15" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                            {t('upload.retry_attempts')}
-                        </label>
-                    </div>
-                    <div className="retry-control">
-                        {[1, 2, 3, 5].map(num => (
-                            <button
-                                key={num}
-                                type="button"
-                                className={`retry-option ${retryAttempts === num ? 'active' : ''}`}
-                                onClick={() => setRetryAttempts(num)}
-                            >
-                                {num}
-                            </button>
-                        ))}
-                    </div>
                 </div>
 
                 {/* Action Button */}

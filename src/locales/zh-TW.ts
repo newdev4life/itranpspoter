@@ -23,7 +23,7 @@ export const zhTW = {
     'env.passed': '環境檢查通過',
     'env.failed': '環境檢查失敗',
     'env.desc': '請確保您的 Mac 上已安裝 Xcode CLT 及 Transporter 或 iTMSTransporter',
-    'env.transporter': 'Transporter 應用程式',
+    'env.transporter': 'Transporter 服务',
     'env.standalone_itms': 'iTMSTransporter (獨立安裝)',
     'env.installed': '已安裝',
     'env.download': '從 App Store 下載',
@@ -81,6 +81,8 @@ export const zhTW = {
     'settings.title': '設定',
     'settings.desc': '配置應用程式選項',
     'settings.back': '返回',
+    'settings.retry_title': '失敗重試次數',
+    'settings.retry_desc': '上傳失敗時自動重試的次數',
     'settings.webhook_title': 'Webhook 通知',
     'settings.webhook_desc': '上傳狀態變更時發送通知至您的 Webhook',
     'settings.webhook_url': 'Webhook URL',
@@ -144,5 +146,11 @@ export const zhTW = {
     'ipinfo.org': '組織',
     'ipinfo.coordinates': '座標',
     'ipinfo.timezone': '時區',
-    'ipinfo.as': 'AS'
+    'ipinfo.as': 'AS',
+
+    // Bottom Panel / Status Sidebar
+    'env.title': '環境狀態',
+    'progress.idle': '準備就緒，等待上傳',
+    'progress.tab_progress': '進度',
+    'progress.tab_logs': '日誌'
 }

@@ -306,3 +306,40 @@
     margin-top: 2px;
     color: #9CA3AF;
 }
+
+/* Section Divider */
+.section-divider {
+    height: 1px;
+    background: #E5E7EB;
+    margin: 0;
+}
+
+/* Retry Options */
+.retry-options {
+    display: flex;
+    gap: 8px;
+}
+
+.retry-option {
+    width: 48px;
+    height: 40px;
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #6B7280;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.retry-option:hover {
+    border-color: #4B6EFF;
+    color: #4B6EFF;
+}
+
+.retry-option.active {
+    background: #4B6EFF;
+    border-color: #4B6EFF;
+    color: white;
+}

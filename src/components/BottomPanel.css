@@ -1,0 +1,218 @@
+/* Bottom Panel - Progress and Logs */
+
+.bottom-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--color-bg-primary);
+}
+
+/* Tabs */
+.panel-tabs {
+    display: flex;
+    gap: 2px;
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--color-bg-tertiary);
+    border-bottom: 0.5px solid var(--color-divider);
+    flex-shrink: 0;
+}
+
+.panel-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    height: 24px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-secondary);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.panel-tab:hover:not(.active) {
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--color-text-primary);
+}
+
+.panel-tab.active {
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+    box-shadow: var(--shadow-sm);
+}
+
+.panel-tab .log-count {
+    font-size: var(--font-size-xs);
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-left: 2px;
+}
+
+/* Panel Content */
+.panel-content {
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.progress-tab-content,
+.logs-tab-content {
+    height: 100%;
+    overflow-y: auto;
+    padding: var(--space-md) var(--space-lg);
+}
+
+/* Empty State */
+.panel-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: var(--space-sm);
+    color: var(--color-text-tertiary);
+}
+
+.panel-empty .empty-icon {
+    font-size: 32px;
+    opacity: 0.6;
+}
+
+.panel-empty p {
+    font-size: var(--font-size-sm);
+    margin: 0;
+}
+
+/* Progress Display */
+.panel-progress {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.progress-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.progress-phase {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.phase-icon {
+    font-size: 18px;
+}
+
+.phase-text {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+}
+
+.retry-badge {
+    font-size: var(--font-size-xs);
+    background: var(--color-warning-light);
+    color: #B25E00;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: var(--space-sm);
+}
+
+.progress-percentage {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+}
+
+.progress-bar-wrapper {
+    height: 8px;
+    background: var(--color-bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary) 0%, #5AC8FA 100%);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+/* Result Display */
+.panel-result {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+}
+
+.panel-result.success {
+    background: var(--color-success-light);
+}
+
+.panel-result.error {
+    background: var(--color-error-light);
+}
+
+.panel-result.warning {
+    background: var(--color-warning-light);
+}
+
+.result-icon {
+    font-size: 28px;
+}
+
+.result-info {
+    flex: 1;
+}
+
+.result-info h4 {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    margin: 0 0 4px 0;
+}
+
+.panel-result.success .result-info h4 {
+    color: #1D8C30;
+}
+
+.panel-result.error .result-info h4 {
+    color: #D93025;
+}
+
+.panel-result.warning .result-info h4 {
+    color: #B25E00;
+}
+
+.result-info p {
+    font-size: var(--font-size-sm);
+    margin: 0;
+    color: var(--color-text-secondary);
+}
+
+/* Logs Tab */
+.logs-tab-content {
+    padding: 0;
+}
+
+.logs-tab-content .log-container {
+    height: 100%;
+    border-radius: 0;
+}

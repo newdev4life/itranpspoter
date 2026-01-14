@@ -95,7 +95,7 @@ export interface UploadProgress {
 }
 
 // Page Type
-export type Page = 'environment' | 'upload' | 'progress' | 'history' | 'credentials' | 'settings'
+export type Page = 'workspace' | 'history' | 'settings'
 
 // IP Info
 export interface IpInfo {
@@ -165,6 +165,9 @@ declare global {
             onContextMenu: (callback: (event: any, data: { isEditable: boolean; hasSelection: boolean; editFlags: any; x: number; y: number }) => void) => void
             offContextMenu: (callback: (event: any, data: any) => void) => void
             execCommand: (command: string) => void
+            // Retry Attempts Setting
+            getRetryAttempts: () => Promise<number>
+            setRetryAttempts: (attempts: number) => Promise<boolean>
         }
     }
 }

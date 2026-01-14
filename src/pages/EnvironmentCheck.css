@@ -1,70 +1,73 @@
-/* Environment Check styles */
+/* Environment Check Styles */
 
 .environment-check {
-    max-width: 600px;
-    margin: 0 auto;
-    padding-top: 60px;
-    animation: fadeIn 0.4s ease-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2xl);
+    min-height: 400px;
+    text-align: center;
 }
 
 .check-header {
-    text-align: center;
-    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
 }
 
 .check-spinner-wrapper {
-    margin-bottom: 24px;
+    width: 64px;
+    height: 64px;
     display: flex;
+    align-items: center;
     justify-content: center;
 }
 
 .check-spinner {
-    width: 64px;
-    height: 64px;
-    border: 4px solid rgba(0, 122, 255, 0.1);
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--color-border);
     border-top-color: var(--color-primary);
     border-radius: 50%;
-    animation: spin 1s linear infinite;
+    animation: spin 0.8s linear infinite;
 }
 
 .check-icon-large {
-    font-size: 64px;
-    line-height: 1;
-    margin-bottom: 24px;
-    display: block;
+    font-size: 56px;
 }
 
 .check-header h2 {
-    margin-bottom: 12px;
-    font-size: 24px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    color: var(--color-text-primary);
-}
-
-.check-header p {
-    color: #86909C;
-    /* Specific gray from design */
-    font-size: 16px;
+    font-size: var(--font-size-2xl);
     margin: 0;
 }
 
-/* New Status List Card */
+.check-header p {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 400px;
+}
+
+/* Status List Card */
 .status-list-card {
-    background: #F8F9FA;
-    /* Light gray background for the list container */
-    border-radius: 12px;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-    margin-bottom: 32px;
+    background: var(--color-bg-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    box-shadow: var(--shadow-sm);
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: var(--space-lg);
 }
 
 .status-list-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 24px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: var(--space-md);
+    border-bottom: 0.5px solid var(--color-divider);
 }
 
 .status-list-item:last-child {
@@ -74,82 +77,79 @@
 .status-item-info {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
 }
 
 .status-item-title {
-    font-size: 16px;
-    font-weight: 500;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
     color: var(--color-text-primary);
-    margin-bottom: 4px;
 }
 
 .status-item-desc {
-    font-size: 13px;
+    font-size: var(--font-size-xs);
     color: var(--color-text-secondary);
 }
 
-.status-item-icon {
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+.status-item-desc a {
+    color: var(--color-primary);
 }
 
-/* Specific Checkmark Style */
-.status-icon-check {
-    color: #34C759;
-    /* Apple Green */
-    font-size: 20px;
-    background: rgba(52, 199, 89, 0.1);
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.status-icon-check::before {
-    content: '✓';
-    font-weight: 800;
-    font-size: 14px;
-}
-
-.status-icon-pending {
-    width: 18px;
-    height: 18px;
-    border: 2px solid #C7C7CC;
-    border-radius: 50%;
-}
-
-.status-icon-error {
-    color: var(--color-error);
-    font-size: 20px;
-}
-
-.check-actions {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* Download options styling */
 .download-options {
-    display: inline-flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px;
+    display: inline;
 }
 
 .download-or {
-    color: var(--color-text-secondary);
+    color: var(--color-text-tertiary);
+}
+
+.status-item-icon {
+    flex-shrink: 0;
+}
+
+.status-icon-check {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color-success);
+    position: relative;
+}
+
+.status-icon-check::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
     font-size: 12px;
+    font-weight: bold;
+}
+
+.status-icon-pending {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color-warning);
+    position: relative;
+}
+
+.status-icon-pending::after {
+    content: '!';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Actions */
+.check-actions {
+    display: flex;
+    gap: var(--space-md);
 }

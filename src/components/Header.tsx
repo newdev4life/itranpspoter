@@ -32,9 +32,9 @@ export function Header({ currentPage, onNavigate, isUploading }: HeaderProps) {
                 <div className="header-nav">
                     <div className="nav-toggle">
                         <button
-                            className={`toggle-item ${currentPage === 'upload' || currentPage === 'progress' || currentPage === 'environment' ? 'active' : ''}`}
-                            onClick={() => onNavigate('upload')}
-                            disabled={isUploading && currentPage !== 'progress'}
+                            className={`toggle-item ${currentPage === 'workspace' ? 'active' : ''}`}
+                            onClick={() => onNavigate('workspace')}
+                            disabled={isUploading && currentPage !== 'workspace'}
                         >
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M8 12V4M8 4L5 7M8 4L11 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
