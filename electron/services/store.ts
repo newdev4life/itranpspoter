@@ -20,6 +20,8 @@ export interface UploadHistoryRecord {
     startTime: string
     endTime: string
     errorMessage?: string
+    ipRegion?: string      // IP region, e.g., "Taiwan, Taipei"
+    duration?: string      // Upload duration, e.g., "2m 30s"
 }
 
 export interface WebhookSettings {

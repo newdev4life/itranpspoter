@@ -99,7 +99,7 @@
 /* Table Header */
 .history-table-header {
     display: grid;
-    grid-template-columns: 100px 1fr 200px 160px;
+    grid-template-columns: 90px 1fr 180px 130px 70px 140px;
     padding: 14px 24px;
     background: #F9FAFB;
     border-bottom: 1px solid #E5E7EB;
@@ -122,7 +122,7 @@
 /* Table Row */
 .history-row {
     display: grid;
-    grid-template-columns: 100px 1fr 200px 160px;
+    grid-template-columns: 90px 1fr 180px 130px 70px 140px;
     padding: 16px 24px;
     border-bottom: 1px solid #F3F4F6;
     align-items: center;
@@ -159,6 +159,20 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.col-region {
+    font-size: 12px;
+    color: #6B7280;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.col-duration {
+    font-size: 12px;
+    color: #6B7280;
+    font-family: 'SF Mono', Menlo, monospace;
 }
 
 .col-date {

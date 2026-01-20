@@ -3,6 +3,7 @@ import { BrowserWindow } from 'electron'
 import { getITMSTransporterPath } from './environment'
 import { addUploadHistory, saveCredential } from './store'
 import { sendWebhookNotification } from './webhook'
+import { getIpInfo } from './ipInfo'
 import * as path from 'path'
 
 export interface UploadConfig {
@@ -31,7 +32,8 @@ export type UploadPhase =
     | 'uploading'      // Uploading
     | 'committing'     // Committing
     | 'completed'      // Completed
-    | 'failed'         // Failed
+    | 'retrying'       // Retrying after failure
+    | 'failed'         // Failed (all retries exhausted)
 
 export interface UploadProgress {
     phase: UploadPhase
@@ -49,6 +51,27 @@ let uploadStartTime: string = ''
 let currentRetryAttempt: number = 0
 let maxRetryAttempts: number = 3
 let isCancelledByUser: boolean = false
+let currentIpRegion: string = ''
+
+/**
+ * Format duration from milliseconds to human-readable string
+ * e.g., "2m 30s", "1h 5m 20s", "45s"
+ */
+function formatDuration(ms: number): string {
+    const seconds = Math.floor(ms / 1000)
+    const minutes = Math.floor(seconds / 60)
+    const hours = Math.floor(minutes / 60)
+
+    const remainingMinutes = minutes % 60
+    const remainingSeconds = seconds % 60
+
+    const parts: string[] = []
+    if (hours > 0) parts.push(`${hours}h`)
+    if (remainingMinutes > 0) parts.push(`${remainingMinutes}m`)
+    if (remainingSeconds > 0 || parts.length === 0) parts.push(`${remainingSeconds}s`)
+
+    return parts.join(' ')
+}
 
 /**
  * Get available Provider list
@@ -300,7 +323,21 @@ export async function startUpload(
     maxRetryAttempts = retryAttempts
     currentRetryAttempt = 0
     isCancelledByUser = false
+    uploadStartTime = new Date().toISOString()
 
+    // Capture IP info at the start of upload
+    try {
+        const ipInfo = await getIpInfo()
+        if (ipInfo) {
+            currentIpRegion = `${ipInfo.country}, ${ipInfo.city}`
+        } else {
+            currentIpRegion = ''
+        }
+    } catch {
+        currentIpRegion = ''
+    }
+
+    const fileName = path.basename(config.ipaPath)
     let lastResult: UploadResult = { success: false, errorMessage: 'Unknown error' }
 
     while (currentRetryAttempt < maxRetryAttempts) {
@@ -313,7 +350,13 @@ export async function startUpload(
         if (currentRetryAttempt > 1) {
             sendLog(mainWindow, `---`)
             sendLog(mainWindow, `[RETRY] Attempt ${currentRetryAttempt} of ${maxRetryAttempts}...`)
-            // Send retry progress to UI
+            // Send retry progress to UI - use 'retrying' phase instead of 'failed'
+            sendProgress(mainWindow, {
+                phase: 'retrying',
+                phaseText: `Retrying (${currentRetryAttempt}/${maxRetryAttempts})`,
+                progress: 0,
+                fileName
+            })
             mainWindow.webContents.send('upload-retry', {
                 attempt: currentRetryAttempt,
                 maxAttempts: maxRetryAttempts
@@ -334,11 +377,58 @@ export async function startUpload(
         }
     }
 
+    // All retries exhausted - NOW send final failure state
+    const endTime = new Date().toISOString()
+
+    sendProgress(mainWindow, {
+        phase: 'failed',
+        phaseText: 'Failed',
+        progress: 0,
+        fileName
+    })
+
+    // Calculate duration for failed upload
+    const startMs = new Date(uploadStartTime).getTime()
+    const endMs = new Date(endTime).getTime()
+    const duration = formatDuration(endMs - startMs)
+
+    // Add upload history (failed) - only after all retries exhausted
+    addUploadHistory({
+        fileName,
+        filePath: config.ipaPath,
+        appleId: config.appleId,
+        status: 'failed',
+        startTime: uploadStartTime,
+        endTime,
+        errorMessage: lastResult.errorMessage || 'Upload failed after all retries',
+        ipRegion: currentIpRegion || undefined,
+        duration
+    })
+
+    mainWindow.webContents.send('upload-complete', {
+        success: false,
+        errorMessage: lastResult.errorMessage
+    })
+
+    // Send webhook notification for failure - only after all retries exhausted
+    sendWebhookNotification({
+        fileName,
+        status: 'failed',
+        appleId: config.appleId,
+        startTime: uploadStartTime,
+        endTime,
+        errorMessage: lastResult.errorMessage || 'Upload failed after all retries',
+        ipRegion: currentIpRegion || undefined,
+        duration
+    })
+
     return lastResult
 }
 
 /**
  * Perform a single upload attempt (internal function)
+ * Note: This function should NOT send 'failed' phase, add history, or send webhook
+ * as retries may be pending. Final failure handling is done in startUpload.
  */
 function performSingleUpload(
     config: UploadConfig,
@@ -348,16 +438,17 @@ function performSingleUpload(
         const iTMSTransporterPath = getITMSTransporterPath()
         const fileName = path.basename(config.ipaPath)
 
-        uploadStartTime = new Date().toISOString()
         currentUploadConfig = config
 
-        // Send initial progress status
-        sendProgress(mainWindow, {
-            phase: 'preparing',
-            phaseText: 'Preparing',
-            progress: 0,
-            fileName
-        })
+        // Send initial progress status (only on first attempt)
+        if (currentRetryAttempt === 1) {
+            sendProgress(mainWindow, {
+                phase: 'preparing',
+                phaseText: 'Preparing',
+                progress: 0,
+                fileName
+            })
+        }
 
         // Send start log
         sendLog(mainWindow, `[INFO] Start upload: ${fileName}`)
@@ -404,9 +495,9 @@ function performSingleUpload(
                 return
             }
 
-            // Parse phase
+            // Parse phase - but don't send 'failed' phase here (handled by startUpload)
             const phase = parsePhase(text, fileName)
-            if (phase) {
+            if (phase && phase.phase !== 'failed') {
                 // Keep previous progress percentage (if same phase)
                 if (lastProgress && phase.phase === 'uploading' && lastProgress.phase === 'uploading') {
                     phase.progress = lastProgress.progress
@@ -450,6 +541,11 @@ function performSingleUpload(
                 // Save credential (upload success)
                 saveCredential(config.appleId, config.appSpecificPassword)
 
+                // Calculate duration
+                const startMs = new Date(uploadStartTime).getTime()
+                const endMs = new Date(endTime).getTime()
+                const duration = formatDuration(endMs - startMs)
+
                 // Add upload history
                 addUploadHistory({
                     fileName,
@@ -457,7 +553,9 @@ function performSingleUpload(
                     appleId: config.appleId,
                     status: 'success',
                     startTime: uploadStartTime,
-                    endTime
+                    endTime,
+                    ipRegion: currentIpRegion || undefined,
+                    duration
                 })
 
                 mainWindow.webContents.send('upload-complete', { success: true })
@@ -468,47 +566,19 @@ function performSingleUpload(
                     status: 'success',
                     appleId: config.appleId,
                     startTime: uploadStartTime,
-                    endTime
+                    endTime,
+                    ipRegion: currentIpRegion || undefined,
+                    duration
                 })
 
                 resolve({ success: true })
             } else {
+                // Log the failure, but DON'T send 'failed' phase or history
+                // The retry logic in startUpload will handle retries or final failure
                 sendLog(mainWindow, '---')
                 sendLog(mainWindow, `[FAILED] Upload Failed (Exit code: ${code})`)
 
-                sendProgress(mainWindow, {
-                    phase: 'failed',
-                    phaseText: 'Failed',
-                    progress: lastProgress?.progress || 0,
-                    fileName
-                })
-
-                // Add upload history (failed)
-                addUploadHistory({
-                    fileName,
-                    filePath: config.ipaPath,
-                    appleId: config.appleId,
-                    status: 'failed',
-                    startTime: uploadStartTime,
-                    endTime,
-                    errorMessage: errorOutput || `Exit code: ${code}`
-                })
-
-                mainWindow.webContents.send('upload-complete', {
-                    success: false,
-                    errorMessage: errorOutput || `Exit code: ${code}`
-                })
-
-                // Send webhook notification for failure
-                sendWebhookNotification({
-                    fileName,
-                    status: 'failed',
-                    appleId: config.appleId,
-                    startTime: uploadStartTime,
-                    endTime,
-                    errorMessage: errorOutput || `Exit code: ${code}`
-                })
-
+                // Just resolve with error, let startUpload handle retry/final failure
                 resolve({ success: false, errorMessage: errorOutput || `Exit code: ${code}` })
             }
 
@@ -518,43 +588,9 @@ function performSingleUpload(
 
         // Listen for process error
         currentUploadProcess.on('error', (error: Error) => {
-            const endTime = new Date().toISOString()
-
             sendLog(mainWindow, `[ERROR] Process failed to start: ${error.message}`)
 
-            sendProgress(mainWindow, {
-                phase: 'failed',
-                phaseText: 'Start failed',
-                progress: 0,
-                fileName
-            })
-
-            // Add upload history (failed)
-            addUploadHistory({
-                fileName,
-                filePath: config.ipaPath,
-                appleId: config.appleId,
-                status: 'failed',
-                startTime: uploadStartTime,
-                endTime,
-                errorMessage: error.message
-            })
-
-            mainWindow.webContents.send('upload-complete', {
-                success: false,
-                errorMessage: error.message
-            })
-
-            // Send webhook notification for process error
-            sendWebhookNotification({
-                fileName,
-                status: 'failed',
-                appleId: config.appleId,
-                startTime: uploadStartTime,
-                endTime,
-                errorMessage: error.message
-            })
-
+            // Just resolve with error, let startUpload handle retry/final failure
             resolve({ success: false, errorMessage: error.message })
 
             currentUploadProcess = null
@@ -584,6 +620,12 @@ export function cancelUpload(mainWindow: BrowserWindow): boolean {
         const endTime = new Date().toISOString()
         const appleId = currentUploadConfig.appleId
         const ipaPath = currentUploadConfig.ipaPath
+
+        // Calculate duration
+        const startMs = new Date(uploadStartTime).getTime()
+        const endMs = new Date(endTime).getTime()
+        const duration = formatDuration(endMs - startMs)
+
         addUploadHistory({
             fileName,
             filePath: ipaPath,
@@ -591,7 +633,9 @@ export function cancelUpload(mainWindow: BrowserWindow): boolean {
             status: 'cancelled',
             startTime: uploadStartTime,
             endTime,
-            errorMessage: 'User cancelled upload'
+            errorMessage: 'User cancelled upload',
+            ipRegion: currentIpRegion || undefined,
+            duration
         })
 
         // Send webhook notification for cancellation (before nullifying config)
@@ -601,7 +645,9 @@ export function cancelUpload(mainWindow: BrowserWindow): boolean {
             appleId: appleId,
             startTime: uploadStartTime,
             endTime,
-            errorMessage: 'User cancelled upload'
+            errorMessage: 'User cancelled upload',
+            ipRegion: currentIpRegion || undefined,
+            duration
         })
 
         currentUploadProcess.kill('SIGTERM')

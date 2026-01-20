@@ -97,6 +97,8 @@ export const zhTW = {
     'history.status': '狀態',
     'history.filename': '文件名',
     'history.apple_id': 'APPLE ID',
+    'history.region': '區域',
+    'history.duration': '耗時',
     'history.date': '日期',
     'history.empty_title': '無上傳歷史',
     'history.empty_desc': '上傳的文件將顯示在這裡',

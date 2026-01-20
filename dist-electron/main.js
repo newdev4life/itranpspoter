@@ -8502,55 +8502,49 @@ names$1.default = names;
       keyValues.push([E.propertyName, propertyName]);
   }
 })(errors);
-var hasRequiredBoolSchema;
-function requireBoolSchema() {
-  if (hasRequiredBoolSchema) return boolSchema;
-  hasRequiredBoolSchema = 1;
-  Object.defineProperty(boolSchema, "__esModule", { value: true });
-  boolSchema.boolOrEmptySchema = boolSchema.topBoolOrEmptySchema = void 0;
-  const errors_12 = errors;
-  const codegen_12 = codegen;
-  const names_12 = names$1;
-  const boolError = {
-    message: "boolean schema is false"
+Object.defineProperty(boolSchema, "__esModule", { value: true });
+boolSchema.boolOrEmptySchema = boolSchema.topBoolOrEmptySchema = void 0;
+const errors_1$3 = errors;
+const codegen_1$t = codegen;
+const names_1$6 = names$1;
+const boolError = {
+  message: "boolean schema is false"
+};
+function topBoolOrEmptySchema(it) {
+  const { gen, schema, validateName } = it;
+  if (schema === false) {
+    falseSchemaError(it, false);
+  } else if (typeof schema == "object" && schema.$async === true) {
+    gen.return(names_1$6.default.data);
+  } else {
+    gen.assign((0, codegen_1$t._)`${validateName}.errors`, null);
+    gen.return(true);
+  }
+}
+boolSchema.topBoolOrEmptySchema = topBoolOrEmptySchema;
+function boolOrEmptySchema(it, valid2) {
+  const { gen, schema } = it;
+  if (schema === false) {
+    gen.var(valid2, false);
+    falseSchemaError(it);
+  } else {
+    gen.var(valid2, true);
+  }
+}
+boolSchema.boolOrEmptySchema = boolOrEmptySchema;
+function falseSchemaError(it, overrideAllErrors) {
+  const { gen, data } = it;
+  const cxt = {
+    gen,
+    keyword: "false schema",
+    data,
+    schema: false,
+    schemaCode: false,
+    schemaValue: false,
+    params: {},
+    it
   };
-  function topBoolOrEmptySchema(it) {
-    const { gen, schema, validateName } = it;
-    if (schema === false) {
-      falseSchemaError(it, false);
-    } else if (typeof schema == "object" && schema.$async === true) {
-      gen.return(names_12.default.data);
-    } else {
-      gen.assign((0, codegen_12._)`${validateName}.errors`, null);
-      gen.return(true);
-    }
-  }
-  boolSchema.topBoolOrEmptySchema = topBoolOrEmptySchema;
-  function boolOrEmptySchema(it, valid2) {
-    const { gen, schema } = it;
-    if (schema === false) {
-      gen.var(valid2, false);
-      falseSchemaError(it);
-    } else {
-      gen.var(valid2, true);
-    }
-  }
-  boolSchema.boolOrEmptySchema = boolOrEmptySchema;
-  function falseSchemaError(it, overrideAllErrors) {
-    const { gen, data } = it;
-    const cxt = {
-      gen,
-      keyword: "false schema",
-      data,
-      schema: false,
-      schemaCode: false,
-      schemaValue: false,
-      params: {},
-      it
-    };
-    (0, errors_12.reportError)(cxt, boolError, void 0, overrideAllErrors);
-  }
-  return boolSchema;
+  (0, errors_1$3.reportError)(cxt, boolError, void 0, overrideAllErrors);
 }
 var dataType = {};
 var rules = {};
@@ -8773,41 +8767,35 @@ function getTypeErrorContext(it) {
   };
 }
 var defaults = {};
-var hasRequiredDefaults;
-function requireDefaults() {
-  if (hasRequiredDefaults) return defaults;
-  hasRequiredDefaults = 1;
-  Object.defineProperty(defaults, "__esModule", { value: true });
-  defaults.assignDefaults = void 0;
-  const codegen_12 = codegen;
-  const util_12 = util;
-  function assignDefaults(it, ty) {
-    const { properties: properties2, items: items2 } = it.schema;
-    if (ty === "object" && properties2) {
-      for (const key in properties2) {
-        assignDefault(it, key, properties2[key].default);
-      }
-    } else if (ty === "array" && Array.isArray(items2)) {
-      items2.forEach((sch, i) => assignDefault(it, i, sch.default));
+Object.defineProperty(defaults, "__esModule", { value: true });
+defaults.assignDefaults = void 0;
+const codegen_1$r = codegen;
+const util_1$p = util;
+function assignDefaults(it, ty) {
+  const { properties: properties2, items: items2 } = it.schema;
+  if (ty === "object" && properties2) {
+    for (const key in properties2) {
+      assignDefault(it, key, properties2[key].default);
     }
+  } else if (ty === "array" && Array.isArray(items2)) {
+    items2.forEach((sch, i) => assignDefault(it, i, sch.default));
   }
-  defaults.assignDefaults = assignDefaults;
-  function assignDefault(it, prop, defaultValue) {
-    const { gen, compositeRule, data, opts } = it;
-    if (defaultValue === void 0)
-      return;
-    const childData = (0, codegen_12._)`${data}${(0, codegen_12.getProperty)(prop)}`;
-    if (compositeRule) {
-      (0, util_12.checkStrictMode)(it, `default is ignored for: ${childData}`);
-      return;
-    }
-    let condition = (0, codegen_12._)`${childData} === undefined`;
-    if (opts.useDefaults === "empty") {
-      condition = (0, codegen_12._)`${condition} || ${childData} === null || ${childData} === ""`;
-    }
-    gen.if(condition, (0, codegen_12._)`${childData} = ${(0, codegen_12.stringify)(defaultValue)}`);
+}
+defaults.assignDefaults = assignDefaults;
+function assignDefault(it, prop, defaultValue) {
+  const { gen, compositeRule, data, opts } = it;
+  if (defaultValue === void 0)
+    return;
+  const childData = (0, codegen_1$r._)`${data}${(0, codegen_1$r.getProperty)(prop)}`;
+  if (compositeRule) {
+    (0, util_1$p.checkStrictMode)(it, `default is ignored for: ${childData}`);
+    return;
   }
-  return defaults;
+  let condition = (0, codegen_1$r._)`${childData} === undefined`;
+  if (opts.useDefaults === "empty") {
+    condition = (0, codegen_1$r._)`${condition} || ${childData} === null || ${childData} === ""`;
+  }
+  gen.if(condition, (0, codegen_1$r._)`${childData} = ${(0, codegen_1$r.stringify)(defaultValue)}`);
 }
 var keyword = {};
 var code = {};
@@ -8937,206 +8925,194 @@ function validateUnion(cxt) {
   cxt.result(valid2, () => cxt.reset(), () => cxt.error(true));
 }
 code.validateUnion = validateUnion;
-var hasRequiredKeyword;
-function requireKeyword() {
-  if (hasRequiredKeyword) return keyword;
-  hasRequiredKeyword = 1;
-  Object.defineProperty(keyword, "__esModule", { value: true });
-  keyword.validateKeywordUsage = keyword.validSchemaType = keyword.funcKeywordCode = keyword.macroKeywordCode = void 0;
-  const codegen_12 = codegen;
-  const names_12 = names$1;
-  const code_12 = code;
-  const errors_12 = errors;
-  function macroKeywordCode(cxt, def2) {
-    const { gen, keyword: keyword2, schema, parentSchema, it } = cxt;
-    const macroSchema = def2.macro.call(it.self, schema, parentSchema, it);
-    const schemaRef = useKeyword(gen, keyword2, macroSchema);
-    if (it.opts.validateSchema !== false)
-      it.self.validateSchema(macroSchema, true);
-    const valid2 = gen.name("valid");
-    cxt.subschema({
-      schema: macroSchema,
-      schemaPath: codegen_12.nil,
-      errSchemaPath: `${it.errSchemaPath}/${keyword2}`,
-      topSchemaRef: schemaRef,
-      compositeRule: true
-    }, valid2);
-    cxt.pass(valid2, () => cxt.error(true));
-  }
-  keyword.macroKeywordCode = macroKeywordCode;
-  function funcKeywordCode(cxt, def2) {
-    var _a;
-    const { gen, keyword: keyword2, schema, parentSchema, $data, it } = cxt;
-    checkAsyncKeyword(it, def2);
-    const validate2 = !$data && def2.compile ? def2.compile.call(it.self, schema, parentSchema, it) : def2.validate;
-    const validateRef = useKeyword(gen, keyword2, validate2);
-    const valid2 = gen.let("valid");
-    cxt.block$data(valid2, validateKeyword);
-    cxt.ok((_a = def2.valid) !== null && _a !== void 0 ? _a : valid2);
-    function validateKeyword() {
-      if (def2.errors === false) {
-        assignValid();
-        if (def2.modifying)
-          modifyData(cxt);
-        reportErrs(() => cxt.error());
-      } else {
-        const ruleErrs = def2.async ? validateAsync() : validateSync();
-        if (def2.modifying)
-          modifyData(cxt);
-        reportErrs(() => addErrs(cxt, ruleErrs));
-      }
-    }
-    function validateAsync() {
-      const ruleErrs = gen.let("ruleErrs", null);
-      gen.try(() => assignValid((0, codegen_12._)`await `), (e) => gen.assign(valid2, false).if((0, codegen_12._)`${e} instanceof ${it.ValidationError}`, () => gen.assign(ruleErrs, (0, codegen_12._)`${e}.errors`), () => gen.throw(e)));
-      return ruleErrs;
-    }
-    function validateSync() {
-      const validateErrs = (0, codegen_12._)`${validateRef}.errors`;
-      gen.assign(validateErrs, null);
-      assignValid(codegen_12.nil);
-      return validateErrs;
-    }
-    function assignValid(_await = def2.async ? (0, codegen_12._)`await ` : codegen_12.nil) {
-      const passCxt = it.opts.passContext ? names_12.default.this : names_12.default.self;
-      const passSchema = !("compile" in def2 && !$data || def2.schema === false);
-      gen.assign(valid2, (0, codegen_12._)`${_await}${(0, code_12.callValidateCode)(cxt, validateRef, passCxt, passSchema)}`, def2.modifying);
-    }
-    function reportErrs(errors2) {
-      var _a2;
-      gen.if((0, codegen_12.not)((_a2 = def2.valid) !== null && _a2 !== void 0 ? _a2 : valid2), errors2);
-    }
-  }
-  keyword.funcKeywordCode = funcKeywordCode;
-  function modifyData(cxt) {
-    const { gen, data, it } = cxt;
-    gen.if(it.parentData, () => gen.assign(data, (0, codegen_12._)`${it.parentData}[${it.parentDataProperty}]`));
-  }
-  function addErrs(cxt, errs) {
-    const { gen } = cxt;
-    gen.if((0, codegen_12._)`Array.isArray(${errs})`, () => {
-      gen.assign(names_12.default.vErrors, (0, codegen_12._)`${names_12.default.vErrors} === null ? ${errs} : ${names_12.default.vErrors}.concat(${errs})`).assign(names_12.default.errors, (0, codegen_12._)`${names_12.default.vErrors}.length`);
-      (0, errors_12.extendErrors)(cxt);
-    }, () => cxt.error());
-  }
-  function checkAsyncKeyword({ schemaEnv }, def2) {
-    if (def2.async && !schemaEnv.$async)
-      throw new Error("async keyword in sync schema");
-  }
-  function useKeyword(gen, keyword2, result) {
-    if (result === void 0)
-      throw new Error(`keyword "${keyword2}" failed to compile`);
-    return gen.scopeValue("keyword", typeof result == "function" ? { ref: result } : { ref: result, code: (0, codegen_12.stringify)(result) });
-  }
-  function validSchemaType(schema, schemaType, allowUndefined = false) {
-    return !schemaType.length || schemaType.some((st) => st === "array" ? Array.isArray(schema) : st === "object" ? schema && typeof schema == "object" && !Array.isArray(schema) : typeof schema == st || allowUndefined && typeof schema == "undefined");
-  }
-  keyword.validSchemaType = validSchemaType;
-  function validateKeywordUsage({ schema, opts, self: self2, errSchemaPath }, def2, keyword2) {
-    if (Array.isArray(def2.keyword) ? !def2.keyword.includes(keyword2) : def2.keyword !== keyword2) {
-      throw new Error("ajv implementation error");
-    }
-    const deps = def2.dependencies;
-    if (deps === null || deps === void 0 ? void 0 : deps.some((kwd) => !Object.prototype.hasOwnProperty.call(schema, kwd))) {
-      throw new Error(`parent schema must have dependencies of ${keyword2}: ${deps.join(",")}`);
-    }
-    if (def2.validateSchema) {
-      const valid2 = def2.validateSchema(schema[keyword2]);
-      if (!valid2) {
-        const msg = `keyword "${keyword2}" value is invalid at path "${errSchemaPath}": ` + self2.errorsText(def2.validateSchema.errors);
-        if (opts.validateSchema === "log")
-          self2.logger.error(msg);
-        else
-          throw new Error(msg);
-      }
-    }
-  }
-  keyword.validateKeywordUsage = validateKeywordUsage;
-  return keyword;
+Object.defineProperty(keyword, "__esModule", { value: true });
+keyword.validateKeywordUsage = keyword.validSchemaType = keyword.funcKeywordCode = keyword.macroKeywordCode = void 0;
+const codegen_1$p = codegen;
+const names_1$4 = names$1;
+const code_1$9 = code;
+const errors_1$1 = errors;
+function macroKeywordCode(cxt, def2) {
+  const { gen, keyword: keyword2, schema, parentSchema, it } = cxt;
+  const macroSchema = def2.macro.call(it.self, schema, parentSchema, it);
+  const schemaRef = useKeyword(gen, keyword2, macroSchema);
+  if (it.opts.validateSchema !== false)
+    it.self.validateSchema(macroSchema, true);
+  const valid2 = gen.name("valid");
+  cxt.subschema({
+    schema: macroSchema,
+    schemaPath: codegen_1$p.nil,
+    errSchemaPath: `${it.errSchemaPath}/${keyword2}`,
+    topSchemaRef: schemaRef,
+    compositeRule: true
+  }, valid2);
+  cxt.pass(valid2, () => cxt.error(true));
 }
+keyword.macroKeywordCode = macroKeywordCode;
+function funcKeywordCode(cxt, def2) {
+  var _a;
+  const { gen, keyword: keyword2, schema, parentSchema, $data, it } = cxt;
+  checkAsyncKeyword(it, def2);
+  const validate2 = !$data && def2.compile ? def2.compile.call(it.self, schema, parentSchema, it) : def2.validate;
+  const validateRef = useKeyword(gen, keyword2, validate2);
+  const valid2 = gen.let("valid");
+  cxt.block$data(valid2, validateKeyword);
+  cxt.ok((_a = def2.valid) !== null && _a !== void 0 ? _a : valid2);
+  function validateKeyword() {
+    if (def2.errors === false) {
+      assignValid();
+      if (def2.modifying)
+        modifyData(cxt);
+      reportErrs(() => cxt.error());
+    } else {
+      const ruleErrs = def2.async ? validateAsync() : validateSync();
+      if (def2.modifying)
+        modifyData(cxt);
+      reportErrs(() => addErrs(cxt, ruleErrs));
+    }
+  }
+  function validateAsync() {
+    const ruleErrs = gen.let("ruleErrs", null);
+    gen.try(() => assignValid((0, codegen_1$p._)`await `), (e) => gen.assign(valid2, false).if((0, codegen_1$p._)`${e} instanceof ${it.ValidationError}`, () => gen.assign(ruleErrs, (0, codegen_1$p._)`${e}.errors`), () => gen.throw(e)));
+    return ruleErrs;
+  }
+  function validateSync() {
+    const validateErrs = (0, codegen_1$p._)`${validateRef}.errors`;
+    gen.assign(validateErrs, null);
+    assignValid(codegen_1$p.nil);
+    return validateErrs;
+  }
+  function assignValid(_await = def2.async ? (0, codegen_1$p._)`await ` : codegen_1$p.nil) {
+    const passCxt = it.opts.passContext ? names_1$4.default.this : names_1$4.default.self;
+    const passSchema = !("compile" in def2 && !$data || def2.schema === false);
+    gen.assign(valid2, (0, codegen_1$p._)`${_await}${(0, code_1$9.callValidateCode)(cxt, validateRef, passCxt, passSchema)}`, def2.modifying);
+  }
+  function reportErrs(errors2) {
+    var _a2;
+    gen.if((0, codegen_1$p.not)((_a2 = def2.valid) !== null && _a2 !== void 0 ? _a2 : valid2), errors2);
+  }
+}
+keyword.funcKeywordCode = funcKeywordCode;
+function modifyData(cxt) {
+  const { gen, data, it } = cxt;
+  gen.if(it.parentData, () => gen.assign(data, (0, codegen_1$p._)`${it.parentData}[${it.parentDataProperty}]`));
+}
+function addErrs(cxt, errs) {
+  const { gen } = cxt;
+  gen.if((0, codegen_1$p._)`Array.isArray(${errs})`, () => {
+    gen.assign(names_1$4.default.vErrors, (0, codegen_1$p._)`${names_1$4.default.vErrors} === null ? ${errs} : ${names_1$4.default.vErrors}.concat(${errs})`).assign(names_1$4.default.errors, (0, codegen_1$p._)`${names_1$4.default.vErrors}.length`);
+    (0, errors_1$1.extendErrors)(cxt);
+  }, () => cxt.error());
+}
+function checkAsyncKeyword({ schemaEnv }, def2) {
+  if (def2.async && !schemaEnv.$async)
+    throw new Error("async keyword in sync schema");
+}
+function useKeyword(gen, keyword2, result) {
+  if (result === void 0)
+    throw new Error(`keyword "${keyword2}" failed to compile`);
+  return gen.scopeValue("keyword", typeof result == "function" ? { ref: result } : { ref: result, code: (0, codegen_1$p.stringify)(result) });
+}
+function validSchemaType(schema, schemaType, allowUndefined = false) {
+  return !schemaType.length || schemaType.some((st) => st === "array" ? Array.isArray(schema) : st === "object" ? schema && typeof schema == "object" && !Array.isArray(schema) : typeof schema == st || allowUndefined && typeof schema == "undefined");
+}
+keyword.validSchemaType = validSchemaType;
+function validateKeywordUsage({ schema, opts, self: self2, errSchemaPath }, def2, keyword2) {
+  if (Array.isArray(def2.keyword) ? !def2.keyword.includes(keyword2) : def2.keyword !== keyword2) {
+    throw new Error("ajv implementation error");
+  }
+  const deps = def2.dependencies;
+  if (deps === null || deps === void 0 ? void 0 : deps.some((kwd) => !Object.prototype.hasOwnProperty.call(schema, kwd))) {
+    throw new Error(`parent schema must have dependencies of ${keyword2}: ${deps.join(",")}`);
+  }
+  if (def2.validateSchema) {
+    const valid2 = def2.validateSchema(schema[keyword2]);
+    if (!valid2) {
+      const msg = `keyword "${keyword2}" value is invalid at path "${errSchemaPath}": ` + self2.errorsText(def2.validateSchema.errors);
+      if (opts.validateSchema === "log")
+        self2.logger.error(msg);
+      else
+        throw new Error(msg);
+    }
+  }
+}
+keyword.validateKeywordUsage = validateKeywordUsage;
 var subschema = {};
-var hasRequiredSubschema;
-function requireSubschema() {
-  if (hasRequiredSubschema) return subschema;
-  hasRequiredSubschema = 1;
-  Object.defineProperty(subschema, "__esModule", { value: true });
-  subschema.extendSubschemaMode = subschema.extendSubschemaData = subschema.getSubschema = void 0;
-  const codegen_12 = codegen;
-  const util_12 = util;
-  function getSubschema(it, { keyword: keyword2, schemaProp, schema, schemaPath, errSchemaPath, topSchemaRef }) {
-    if (keyword2 !== void 0 && schema !== void 0) {
-      throw new Error('both "keyword" and "schema" passed, only one allowed');
-    }
-    if (keyword2 !== void 0) {
-      const sch = it.schema[keyword2];
-      return schemaProp === void 0 ? {
-        schema: sch,
-        schemaPath: (0, codegen_12._)`${it.schemaPath}${(0, codegen_12.getProperty)(keyword2)}`,
-        errSchemaPath: `${it.errSchemaPath}/${keyword2}`
-      } : {
-        schema: sch[schemaProp],
-        schemaPath: (0, codegen_12._)`${it.schemaPath}${(0, codegen_12.getProperty)(keyword2)}${(0, codegen_12.getProperty)(schemaProp)}`,
-        errSchemaPath: `${it.errSchemaPath}/${keyword2}/${(0, util_12.escapeFragment)(schemaProp)}`
-      };
-    }
-    if (schema !== void 0) {
-      if (schemaPath === void 0 || errSchemaPath === void 0 || topSchemaRef === void 0) {
-        throw new Error('"schemaPath", "errSchemaPath" and "topSchemaRef" are required with "schema"');
-      }
-      return {
-        schema,
-        schemaPath,
-        topSchemaRef,
-        errSchemaPath
-      };
-    }
-    throw new Error('either "keyword" or "schema" must be passed');
+Object.defineProperty(subschema, "__esModule", { value: true });
+subschema.extendSubschemaMode = subschema.extendSubschemaData = subschema.getSubschema = void 0;
+const codegen_1$o = codegen;
+const util_1$n = util;
+function getSubschema(it, { keyword: keyword2, schemaProp, schema, schemaPath, errSchemaPath, topSchemaRef }) {
+  if (keyword2 !== void 0 && schema !== void 0) {
+    throw new Error('both "keyword" and "schema" passed, only one allowed');
   }
-  subschema.getSubschema = getSubschema;
-  function extendSubschemaData(subschema2, it, { dataProp, dataPropType: dpType, data, dataTypes, propertyName }) {
-    if (data !== void 0 && dataProp !== void 0) {
-      throw new Error('both "data" and "dataProp" passed, only one allowed');
-    }
-    const { gen } = it;
-    if (dataProp !== void 0) {
-      const { errorPath, dataPathArr, opts } = it;
-      const nextData = gen.let("data", (0, codegen_12._)`${it.data}${(0, codegen_12.getProperty)(dataProp)}`, true);
-      dataContextProps(nextData);
-      subschema2.errorPath = (0, codegen_12.str)`${errorPath}${(0, util_12.getErrorPath)(dataProp, dpType, opts.jsPropertySyntax)}`;
-      subschema2.parentDataProperty = (0, codegen_12._)`${dataProp}`;
-      subschema2.dataPathArr = [...dataPathArr, subschema2.parentDataProperty];
-    }
-    if (data !== void 0) {
-      const nextData = data instanceof codegen_12.Name ? data : gen.let("data", data, true);
-      dataContextProps(nextData);
-      if (propertyName !== void 0)
-        subschema2.propertyName = propertyName;
-    }
-    if (dataTypes)
-      subschema2.dataTypes = dataTypes;
-    function dataContextProps(_nextData) {
-      subschema2.data = _nextData;
-      subschema2.dataLevel = it.dataLevel + 1;
-      subschema2.dataTypes = [];
-      it.definedProperties = /* @__PURE__ */ new Set();
-      subschema2.parentData = it.data;
-      subschema2.dataNames = [...it.dataNames, _nextData];
-    }
+  if (keyword2 !== void 0) {
+    const sch = it.schema[keyword2];
+    return schemaProp === void 0 ? {
+      schema: sch,
+      schemaPath: (0, codegen_1$o._)`${it.schemaPath}${(0, codegen_1$o.getProperty)(keyword2)}`,
+      errSchemaPath: `${it.errSchemaPath}/${keyword2}`
+    } : {
+      schema: sch[schemaProp],
+      schemaPath: (0, codegen_1$o._)`${it.schemaPath}${(0, codegen_1$o.getProperty)(keyword2)}${(0, codegen_1$o.getProperty)(schemaProp)}`,
+      errSchemaPath: `${it.errSchemaPath}/${keyword2}/${(0, util_1$n.escapeFragment)(schemaProp)}`
+    };
   }
-  subschema.extendSubschemaData = extendSubschemaData;
-  function extendSubschemaMode(subschema2, { jtdDiscriminator, jtdMetadata, compositeRule, createErrors, allErrors }) {
-    if (compositeRule !== void 0)
-      subschema2.compositeRule = compositeRule;
-    if (createErrors !== void 0)
-      subschema2.createErrors = createErrors;
-    if (allErrors !== void 0)
-      subschema2.allErrors = allErrors;
-    subschema2.jtdDiscriminator = jtdDiscriminator;
-    subschema2.jtdMetadata = jtdMetadata;
+  if (schema !== void 0) {
+    if (schemaPath === void 0 || errSchemaPath === void 0 || topSchemaRef === void 0) {
+      throw new Error('"schemaPath", "errSchemaPath" and "topSchemaRef" are required with "schema"');
+    }
+    return {
+      schema,
+      schemaPath,
+      topSchemaRef,
+      errSchemaPath
+    };
   }
-  subschema.extendSubschemaMode = extendSubschemaMode;
-  return subschema;
+  throw new Error('either "keyword" or "schema" must be passed');
 }
+subschema.getSubschema = getSubschema;
+function extendSubschemaData(subschema2, it, { dataProp, dataPropType: dpType, data, dataTypes, propertyName }) {
+  if (data !== void 0 && dataProp !== void 0) {
+    throw new Error('both "data" and "dataProp" passed, only one allowed');
+  }
+  const { gen } = it;
+  if (dataProp !== void 0) {
+    const { errorPath, dataPathArr, opts } = it;
+    const nextData = gen.let("data", (0, codegen_1$o._)`${it.data}${(0, codegen_1$o.getProperty)(dataProp)}`, true);
+    dataContextProps(nextData);
+    subschema2.errorPath = (0, codegen_1$o.str)`${errorPath}${(0, util_1$n.getErrorPath)(dataProp, dpType, opts.jsPropertySyntax)}`;
+    subschema2.parentDataProperty = (0, codegen_1$o._)`${dataProp}`;
+    subschema2.dataPathArr = [...dataPathArr, subschema2.parentDataProperty];
+  }
+  if (data !== void 0) {
+    const nextData = data instanceof codegen_1$o.Name ? data : gen.let("data", data, true);
+    dataContextProps(nextData);
+    if (propertyName !== void 0)
+      subschema2.propertyName = propertyName;
+  }
+  if (dataTypes)
+    subschema2.dataTypes = dataTypes;
+  function dataContextProps(_nextData) {
+    subschema2.data = _nextData;
+    subschema2.dataLevel = it.dataLevel + 1;
+    subschema2.dataTypes = [];
+    it.definedProperties = /* @__PURE__ */ new Set();
+    subschema2.parentData = it.data;
+    subschema2.dataNames = [...it.dataNames, _nextData];
+  }
+}
+subschema.extendSubschemaData = extendSubschemaData;
+function extendSubschemaMode(subschema2, { jtdDiscriminator, jtdMetadata, compositeRule, createErrors, allErrors }) {
+  if (compositeRule !== void 0)
+    subschema2.compositeRule = compositeRule;
+  if (createErrors !== void 0)
+    subschema2.createErrors = createErrors;
+  if (allErrors !== void 0)
+    subschema2.allErrors = allErrors;
+  subschema2.jtdDiscriminator = jtdDiscriminator;
+  subschema2.jtdMetadata = jtdMetadata;
+}
+subschema.extendSubschemaMode = extendSubschemaMode;
 var resolve$1 = {};
 var jsonSchemaTraverse = { exports: {} };
 var traverse$1 = jsonSchemaTraverse.exports = function(schema, opts, cb) {
@@ -9372,13 +9348,13 @@ function getSchemaRefs(schema, baseId) {
 resolve$1.getSchemaRefs = getSchemaRefs;
 Object.defineProperty(validate, "__esModule", { value: true });
 validate.getData = validate.KeywordCxt = validate.validateFunctionCode = void 0;
-const boolSchema_1 = requireBoolSchema();
+const boolSchema_1 = boolSchema;
 const dataType_1$1 = dataType;
 const applicability_1 = applicability;
 const dataType_2 = dataType;
-const defaults_1 = requireDefaults();
-const keyword_1 = requireKeyword();
-const subschema_1 = requireSubschema();
+const defaults_1 = defaults;
+const keyword_1 = keyword;
+const subschema_1 = subschema;
 const codegen_1$n = codegen;
 const names_1$3 = names$1;
 const resolve_1$2 = resolve$1;
@@ -15131,7 +15107,7 @@ function getRetryAttempts() {
 function setRetryAttempts(attempts) {
   store.set("retryAttempts", Math.max(1, Math.min(attempts, 10)));
 }
-function formatDuration(ms) {
+function formatDuration$1(ms) {
   const seconds = Math.floor(ms / 1e3);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
@@ -15160,6 +15136,10 @@ function buildMessageText(payload) {
 `;
   message += `👤 Apple ID: ${payload.appleId}
 `;
+  if (payload.ipRegion) {
+    message += `🌍 Region: ${payload.ipRegion}
+`;
+  }
   if (payload.status === "success" && payload.duration) {
     message += `⏱️ Duration: ${payload.duration}
 `;
@@ -15179,7 +15159,7 @@ async function sendWebhookNotification(payload) {
   if (payload.status === "success" && payload.startTime && payload.endTime) {
     const startMs = new Date(payload.startTime).getTime();
     const endMs = new Date(payload.endTime).getTime();
-    payload.duration = formatDuration(endMs - startMs);
+    payload.duration = formatDuration$1(endMs - startMs);
   }
   const messageText = buildMessageText(payload);
   const requestBody = {
@@ -15233,12 +15213,62 @@ async function testWebhook(url) {
     return { success: false, message: errorMessage };
   }
 }
+async function getIpInfo() {
+  return new Promise((resolve2) => {
+    const request = net.request({
+      method: "GET",
+      url: "http://ip-api.com/json"
+    });
+    let responseData = "";
+    request.on("response", (response) => {
+      response.on("data", (chunk) => {
+        responseData += chunk.toString();
+      });
+      response.on("end", () => {
+        try {
+          const data = JSON.parse(responseData);
+          if (data.status === "success") {
+            resolve2(data);
+          } else {
+            resolve2(null);
+          }
+        } catch {
+          resolve2(null);
+        }
+      });
+      response.on("error", () => {
+        resolve2(null);
+      });
+    });
+    request.on("error", () => {
+      resolve2(null);
+    });
+    setTimeout(() => {
+      request.abort();
+      resolve2(null);
+    }, 1e4);
+    request.end();
+  });
+}
 let currentUploadProcess = null;
 let currentUploadConfig = null;
 let uploadStartTime = "";
 let currentRetryAttempt = 0;
 let maxRetryAttempts = 3;
 let isCancelledByUser = false;
+let currentIpRegion = "";
+function formatDuration(ms) {
+  const seconds = Math.floor(ms / 1e3);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  const remainingSeconds = seconds % 60;
+  const parts = [];
+  if (hours > 0) parts.push(`${hours}h`);
+  if (remainingMinutes > 0) parts.push(`${remainingMinutes}m`);
+  if (remainingSeconds > 0 || parts.length === 0) parts.push(`${remainingSeconds}s`);
+  return parts.join(" ");
+}
 async function fetchProviders(appleId, password) {
   return new Promise((resolve2) => {
     var _a, _b;
@@ -15429,6 +15459,18 @@ async function startUpload(config, mainWindow, retryAttempts = 3) {
   maxRetryAttempts = retryAttempts;
   currentRetryAttempt = 0;
   isCancelledByUser = false;
+  uploadStartTime = (/* @__PURE__ */ new Date()).toISOString();
+  try {
+    const ipInfo = await getIpInfo();
+    if (ipInfo) {
+      currentIpRegion = `${ipInfo.country}, ${ipInfo.city}`;
+    } else {
+      currentIpRegion = "";
+    }
+  } catch {
+    currentIpRegion = "";
+  }
+  const fileName = require$$0.basename(config.ipaPath);
   let lastResult = { success: false, errorMessage: "Unknown error" };
   while (currentRetryAttempt < maxRetryAttempts) {
     currentRetryAttempt++;
@@ -15438,6 +15480,12 @@ async function startUpload(config, mainWindow, retryAttempts = 3) {
     if (currentRetryAttempt > 1) {
       sendLog(mainWindow, `---`);
       sendLog(mainWindow, `[RETRY] Attempt ${currentRetryAttempt} of ${maxRetryAttempts}...`);
+      sendProgress(mainWindow, {
+        phase: "retrying",
+        phaseText: `Retrying (${currentRetryAttempt}/${maxRetryAttempts})`,
+        progress: 0,
+        fileName
+      });
       mainWindow.webContents.send("upload-retry", {
         attempt: currentRetryAttempt,
         maxAttempts: maxRetryAttempts
@@ -15452,6 +15500,41 @@ async function startUpload(config, mainWindow, retryAttempts = 3) {
       sendLog(mainWindow, `[INFO] Upload failed, will retry (${maxRetryAttempts - currentRetryAttempt} attempts remaining)...`);
     }
   }
+  const endTime = (/* @__PURE__ */ new Date()).toISOString();
+  sendProgress(mainWindow, {
+    phase: "failed",
+    phaseText: "Failed",
+    progress: 0,
+    fileName
+  });
+  const startMs = new Date(uploadStartTime).getTime();
+  const endMs = new Date(endTime).getTime();
+  const duration = formatDuration(endMs - startMs);
+  addUploadHistory({
+    fileName,
+    filePath: config.ipaPath,
+    appleId: config.appleId,
+    status: "failed",
+    startTime: uploadStartTime,
+    endTime,
+    errorMessage: lastResult.errorMessage || "Upload failed after all retries",
+    ipRegion: currentIpRegion || void 0,
+    duration
+  });
+  mainWindow.webContents.send("upload-complete", {
+    success: false,
+    errorMessage: lastResult.errorMessage
+  });
+  sendWebhookNotification({
+    fileName,
+    status: "failed",
+    appleId: config.appleId,
+    startTime: uploadStartTime,
+    endTime,
+    errorMessage: lastResult.errorMessage || "Upload failed after all retries",
+    ipRegion: currentIpRegion || void 0,
+    duration
+  });
   return lastResult;
 }
 function performSingleUpload(config, mainWindow) {
@@ -15459,14 +15542,15 @@ function performSingleUpload(config, mainWindow) {
     var _a, _b;
     const iTMSTransporterPath = getITMSTransporterPath();
     const fileName = require$$0.basename(config.ipaPath);
-    uploadStartTime = (/* @__PURE__ */ new Date()).toISOString();
     currentUploadConfig = config;
-    sendProgress(mainWindow, {
-      phase: "preparing",
-      phaseText: "Preparing",
-      progress: 0,
-      fileName
-    });
+    if (currentRetryAttempt === 1) {
+      sendProgress(mainWindow, {
+        phase: "preparing",
+        phaseText: "Preparing",
+        progress: 0,
+        fileName
+      });
+    }
     sendLog(mainWindow, `[INFO] Start upload: ${fileName}`);
     sendLog(mainWindow, `[INFO] Apple ID: ${config.appleId}`);
     if (config.ascProvider) {
@@ -15503,7 +15587,7 @@ function performSingleUpload(config, mainWindow) {
         return;
       }
       const phase = parsePhase(text, fileName);
-      if (phase) {
+      if (phase && phase.phase !== "failed") {
         if (lastProgress && phase.phase === "uploading" && lastProgress.phase === "uploading") {
           phase.progress = lastProgress.progress;
         }
@@ -15534,13 +15618,18 @@ function performSingleUpload(config, mainWindow) {
           fileName
         });
         saveCredential(config.appleId, config.appSpecificPassword);
+        const startMs = new Date(uploadStartTime).getTime();
+        const endMs = new Date(endTime).getTime();
+        const duration = formatDuration(endMs - startMs);
         addUploadHistory({
           fileName,
           filePath: config.ipaPath,
           appleId: config.appleId,
           status: "success",
           startTime: uploadStartTime,
-          endTime
+          endTime,
+          ipRegion: currentIpRegion || void 0,
+          duration
         });
         mainWindow.webContents.send("upload-complete", { success: true });
         sendWebhookNotification({
@@ -15548,74 +15637,21 @@ function performSingleUpload(config, mainWindow) {
           status: "success",
           appleId: config.appleId,
           startTime: uploadStartTime,
-          endTime
+          endTime,
+          ipRegion: currentIpRegion || void 0,
+          duration
         });
         resolve2({ success: true });
       } else {
         sendLog(mainWindow, "---");
         sendLog(mainWindow, `[FAILED] Upload Failed (Exit code: ${code2})`);
-        sendProgress(mainWindow, {
-          phase: "failed",
-          phaseText: "Failed",
-          progress: (lastProgress == null ? void 0 : lastProgress.progress) || 0,
-          fileName
-        });
-        addUploadHistory({
-          fileName,
-          filePath: config.ipaPath,
-          appleId: config.appleId,
-          status: "failed",
-          startTime: uploadStartTime,
-          endTime,
-          errorMessage: errorOutput || `Exit code: ${code2}`
-        });
-        mainWindow.webContents.send("upload-complete", {
-          success: false,
-          errorMessage: errorOutput || `Exit code: ${code2}`
-        });
-        sendWebhookNotification({
-          fileName,
-          status: "failed",
-          appleId: config.appleId,
-          startTime: uploadStartTime,
-          endTime,
-          errorMessage: errorOutput || `Exit code: ${code2}`
-        });
         resolve2({ success: false, errorMessage: errorOutput || `Exit code: ${code2}` });
       }
       currentUploadProcess = null;
       currentUploadConfig = null;
     });
     currentUploadProcess.on("error", (error2) => {
-      const endTime = (/* @__PURE__ */ new Date()).toISOString();
       sendLog(mainWindow, `[ERROR] Process failed to start: ${error2.message}`);
-      sendProgress(mainWindow, {
-        phase: "failed",
-        phaseText: "Start failed",
-        progress: 0,
-        fileName
-      });
-      addUploadHistory({
-        fileName,
-        filePath: config.ipaPath,
-        appleId: config.appleId,
-        status: "failed",
-        startTime: uploadStartTime,
-        endTime,
-        errorMessage: error2.message
-      });
-      mainWindow.webContents.send("upload-complete", {
-        success: false,
-        errorMessage: error2.message
-      });
-      sendWebhookNotification({
-        fileName,
-        status: "failed",
-        appleId: config.appleId,
-        startTime: uploadStartTime,
-        endTime,
-        errorMessage: error2.message
-      });
       resolve2({ success: false, errorMessage: error2.message });
       currentUploadProcess = null;
       currentUploadConfig = null;
@@ -15636,6 +15672,9 @@ function cancelUpload(mainWindow) {
     const endTime = (/* @__PURE__ */ new Date()).toISOString();
     const appleId = currentUploadConfig.appleId;
     const ipaPath = currentUploadConfig.ipaPath;
+    const startMs = new Date(uploadStartTime).getTime();
+    const endMs = new Date(endTime).getTime();
+    const duration = formatDuration(endMs - startMs);
     addUploadHistory({
       fileName,
       filePath: ipaPath,
@@ -15643,7 +15682,9 @@ function cancelUpload(mainWindow) {
       status: "cancelled",
       startTime: uploadStartTime,
       endTime,
-      errorMessage: "User cancelled upload"
+      errorMessage: "User cancelled upload",
+      ipRegion: currentIpRegion || void 0,
+      duration
     });
     sendWebhookNotification({
       fileName,
@@ -15651,7 +15692,9 @@ function cancelUpload(mainWindow) {
       appleId,
       startTime: uploadStartTime,
       endTime,
-      errorMessage: "User cancelled upload"
+      errorMessage: "User cancelled upload",
+      ipRegion: currentIpRegion || void 0,
+      duration
     });
     currentUploadProcess.kill("SIGTERM");
     currentUploadProcess = null;
@@ -15676,43 +15719,6 @@ function sendLog(mainWindow, message) {
 }
 function sendProgress(mainWindow, progress) {
   mainWindow.webContents.send("upload-progress", progress);
-}
-async function getIpInfo() {
-  return new Promise((resolve2) => {
-    const request = net.request({
-      method: "GET",
-      url: "http://ip-api.com/json"
-    });
-    let responseData = "";
-    request.on("response", (response) => {
-      response.on("data", (chunk) => {
-        responseData += chunk.toString();
-      });
-      response.on("end", () => {
-        try {
-          const data = JSON.parse(responseData);
-          if (data.status === "success") {
-            resolve2(data);
-          } else {
-            resolve2(null);
-          }
-        } catch {
-          resolve2(null);
-        }
-      });
-      response.on("error", () => {
-        resolve2(null);
-      });
-    });
-    request.on("error", () => {
-      resolve2(null);
-    });
-    setTimeout(() => {
-      request.abort();
-      resolve2(null);
-    }, 1e4);
-    request.end();
-  });
 }
 const __dirname$1 = path$6.dirname(fileURLToPath(import.meta.url));
 const isDev = !!process.env["VITE_DEV_SERVER_URL"];

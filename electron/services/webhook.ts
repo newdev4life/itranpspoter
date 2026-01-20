@@ -8,6 +8,7 @@ export interface WebhookPayload {
     endTime: string
     duration?: string  // Human-readable duration for success status
     errorMessage?: string
+    ipRegion?: string  // IP region, e.g., "Taiwan, Taipei"
 }
 
 export interface WebhookResult {
@@ -55,6 +56,10 @@ function buildMessageText(payload: WebhookPayload): string {
     let message = `${statusEmoji[payload.status]} ${statusText[payload.status]}\n`
     message += `📦 File: ${payload.fileName}\n`
     message += `👤 Apple ID: ${payload.appleId}\n`
+
+    if (payload.ipRegion) {
+        message += `🌍 Region: ${payload.ipRegion}\n`
+    }
 
     if (payload.status === 'success' && payload.duration) {
         message += `⏱️ Duration: ${payload.duration}\n`

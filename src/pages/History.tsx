@@ -122,6 +122,8 @@ export function History() {
                     <div className="col-status">{t('history.status')}</div>
                     <div className="col-filename">{t('history.filename')}</div>
                     <div className="col-apple-id">{t('history.apple_id')}</div>
+                    <div className="col-region">{t('history.region')}</div>
+                    <div className="col-duration">{t('history.duration')}</div>
                     <div className="col-date">{t('history.date')}</div>
                 </div>
 
@@ -150,6 +152,12 @@ export function History() {
                                 </div>
                                 <div className="col-apple-id">
                                     {record.appleId}
+                                </div>
+                                <div className="col-region">
+                                    {record.ipRegion || '-'}
+                                </div>
+                                <div className="col-duration">
+                                    {record.duration || '-'}
                                 </div>
                                 <div className="col-date">
                                     <span className="date-text">{formatDate(record.startTime)}</span>
