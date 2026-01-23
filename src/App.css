@@ -52,3 +52,17 @@ body {
 .app-content>* {
   animation: fadeIn 0.12s ease-out;
 }
+
+/* Page container - for keeping pages mounted but hidden */
+.page-container {
+  height: 100%;
+  width: 100%;
+}
+
+.page-container.active {
+  display: block;
+}
+
+.page-container.hidden {
+  display: none;
+}

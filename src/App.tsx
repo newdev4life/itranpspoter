@@ -74,38 +74,6 @@ export default function App() {
         setCurrentPage('workspace')
     }
 
-    const renderContent = () => {
-        if (currentPage === 'history') {
-            return <History />
-        }
-
-        if (currentPage === 'settings') {
-            return <Settings onBack={handleBackFromSettings} />
-        }
-
-        // Workspace view with three-column layout
-        return (
-            <WorkspaceLayout
-                sidebar={
-                    <StatusSidebar onEnvironmentReady={handleEnvironmentReady} />
-                }
-                main={
-                    <Upload
-                        onStartUpload={handleStartUpload}
-                        isUploading={isUploading}
-                    />
-                }
-                bottom={
-                    <BottomPanel
-                        isUploading={isUploading}
-                        uploadStatus={uploadStatus}
-                        onRetry={handleUploadRetry}
-                    />
-                }
-            />
-        )
-    }
-
     return (
         <div className="app-container">
             <Header
@@ -113,10 +81,43 @@ export default function App() {
                 onNavigate={handleNavigate}
                 isUploading={isUploading}
             />
-            <main className={`app-content ${currentPage === 'workspace' ? 'workspace-content' : ''}`}>
-                {renderContent()}
+            <main className="app-content">
+                {/* Workspace - always mounted, use CSS to hide */}
+                <div className={`page-container ${currentPage === 'workspace' ? 'active' : 'hidden'}`}>
+                    <WorkspaceLayout
+                        sidebar={
+                            <StatusSidebar onEnvironmentReady={handleEnvironmentReady} />
+                        }
+                        main={
+                            <Upload
+                                onStartUpload={handleStartUpload}
+                                isUploading={isUploading}
+                            />
+                        }
+                        bottom={
+                            <BottomPanel
+                                isUploading={isUploading}
+                                uploadStatus={uploadStatus}
+                                onRetry={handleUploadRetry}
+                            />
+                        }
+                    />
+                </div>
+
+                {/* History - mounted on demand but kept alive once shown */}
+                <div className={`page-container ${currentPage === 'history' ? 'active' : 'hidden'}`}>
+                    <History />
+                </div>
+
+                {/* Settings - mounted when shown */}
+                {currentPage === 'settings' && (
+                    <div className="page-container active">
+                        <Settings onBack={handleBackFromSettings} />
+                    </div>
+                )}
             </main>
             <ContextMenu />
         </div>
     )
 }
+

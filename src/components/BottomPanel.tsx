@@ -161,15 +161,23 @@ export function BottomPanel({ isUploading, uploadStatus, onRetry }: BottomPanelP
                         style={{ width: `${uploadProgress.progress}%` }}
                     />
                 </div>
-                <div className="progress-stats">
-                    {uploadProgress.bytesUploaded && uploadProgress.totalBytes && (
-                        <span className="progress-bytes">
-                            {formatBytes(uploadProgress.bytesUploaded)} / {formatBytes(uploadProgress.totalBytes)}
-                        </span>
-                    )}
-                    {uploadProgress.speed && (
-                        <span className="progress-speed">{uploadProgress.speed}</span>
-                    )}
+                <div className="progress-footer">
+                    <div className="progress-stats">
+                        {uploadProgress.bytesUploaded && uploadProgress.totalBytes && (
+                            <span className="progress-bytes">
+                                {formatBytes(uploadProgress.bytesUploaded)} / {formatBytes(uploadProgress.totalBytes)}
+                            </span>
+                        )}
+                        {uploadProgress.speed && (
+                            <span className="progress-speed">{uploadProgress.speed}</span>
+                        )}
+                    </div>
+                    <button
+                        className="btn-cancel-upload"
+                        onClick={() => window.api.cancelUpload()}
+                    >
+                        {t('progress.cancel_upload')}
+                    </button>
                 </div>
             </div>
         )

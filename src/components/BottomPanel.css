@@ -216,3 +216,32 @@
     height: 100%;
     border-radius: 0;
 }
+
+/* Progress Footer */
+.progress-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+}
+
+/* Cancel Upload Button */
+.btn-cancel-upload {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-error);
+    background: var(--color-error-light);
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-cancel-upload:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: var(--color-error);
+}
