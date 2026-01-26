@@ -10,6 +10,16 @@ export function History() {
 
     useEffect(() => {
         loadHistory()
+
+        // Listen for upload completion to refresh history automatically
+        const handleUploadComplete = () => {
+            loadHistory()
+        }
+
+        window.api.onUploadComplete(handleUploadComplete)
+        return () => {
+            window.api.offUploadComplete(handleUploadComplete)
+        }
     }, [])
 
     const loadHistory = async () => {
