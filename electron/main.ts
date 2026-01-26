@@ -51,10 +51,11 @@ function createWindow() {
   const isDev = !app.isPackaged;
 
   win = new BrowserWindow({
-    width: 1000,
-    height: 800,
-    minWidth: 900,
-    minHeight: 700,
+    width: 1200,
+    height: 900,
+    resizable: false,
+    fullscreenable: false,
+    maximizable: false,
     // icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
     titleBarStyle: 'hiddenInset',
     trafficLightPosition: { x: 16, y: 16 },
