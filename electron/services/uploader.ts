@@ -52,6 +52,7 @@ let currentRetryAttempt: number = 0
 let maxRetryAttempts: number = 3
 let isCancelledByUser: boolean = false
 let currentIpRegion: string = ''
+let currentUploadLogs: string[] = []  // Accumulate logs for history
 
 /**
  * Format duration from milliseconds to human-readable string
@@ -324,6 +325,7 @@ export async function startUpload(
     currentRetryAttempt = 0
     isCancelledByUser = false
     uploadStartTime = new Date().toISOString()
+    currentUploadLogs = []  // Reset logs for new upload
 
     // Capture IP info at the start of upload
     try {
@@ -402,7 +404,8 @@ export async function startUpload(
         endTime,
         errorMessage: lastResult.errorMessage || 'Upload failed after all retries',
         ipRegion: currentIpRegion || undefined,
-        duration
+        duration,
+        uploadLog: currentUploadLogs.slice(-500)  // Keep last 500 lines
     })
 
     mainWindow.webContents.send('upload-complete', {
@@ -555,7 +558,8 @@ function performSingleUpload(
                     startTime: uploadStartTime,
                     endTime,
                     ipRegion: currentIpRegion || undefined,
-                    duration
+                    duration,
+                    uploadLog: currentUploadLogs.slice(-500)  // Keep last 500 lines
                 })
 
                 mainWindow.webContents.send('upload-complete', { success: true })
@@ -635,7 +639,8 @@ export function cancelUpload(mainWindow: BrowserWindow): boolean {
             endTime,
             errorMessage: 'User cancelled upload',
             ipRegion: currentIpRegion || undefined,
-            duration
+            duration,
+            uploadLog: currentUploadLogs.slice(-500)  // Keep last 500 lines
         })
 
         // Send webhook notification for cancellation (before nullifying config)
@@ -676,6 +681,9 @@ export function isUploading(): boolean {
  * Send log to renderer process
  */
 function sendLog(mainWindow: BrowserWindow, message: string): void {
+    // Accumulate logs for history storage
+    currentUploadLogs.push(message)
+
     mainWindow.webContents.send('upload-log', {
         timestamp: new Date().toISOString(),
         message

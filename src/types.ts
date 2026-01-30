@@ -45,6 +45,7 @@ export interface UploadHistoryRecord {
     errorMessage?: string
     ipRegion?: string      // IP region, e.g., "Taiwan, Taipei"
     duration?: string      // Upload duration, e.g., "2m 30s"
+    uploadLog?: string[]   // Upload log lines
 }
 
 // Upload Config
@@ -155,6 +156,7 @@ declare global {
             saveCredential: (data: { appleId: string; password: string }) => Promise<boolean>
             deleteCredential: (appleId: string) => Promise<boolean>
             getUploadHistory: () => Promise<UploadHistoryRecord[]>
+            getUploadHistoryRecord: (id: string) => Promise<UploadHistoryRecord | null>
             clearUploadHistory: () => Promise<boolean>
             deleteUploadHistory: (id: string) => Promise<boolean>
             // IP Info

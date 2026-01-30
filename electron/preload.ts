@@ -96,6 +96,7 @@ contextBridge.exposeInMainWorld('api', {
   getUploadHistory: () => ipcRenderer.invoke('get-upload-history'),
   clearUploadHistory: () => ipcRenderer.invoke('clear-upload-history'),
   deleteUploadHistory: (id: string) => ipcRenderer.invoke('delete-upload-history', id),
+  getUploadHistoryRecord: (id: string) => ipcRenderer.invoke('get-upload-history-record', id),
 
   // IP Info
   getIpInfo: () => ipcRenderer.invoke('get-ip-info'),

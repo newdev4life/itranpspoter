@@ -10,6 +10,7 @@ import {
   saveCredential,
   deleteCredential,
   getUploadHistory,
+  getUploadHistoryRecord,
   clearUploadHistory,
   deleteUploadHistory,
   getWebhookSettings,
@@ -196,6 +197,11 @@ ipcMain.handle('clear-upload-history', () => {
 // 删除单条上传历史
 ipcMain.handle('delete-upload-history', (_event, id: string) => {
   return deleteUploadHistory(id)
+})
+
+// 获取单条上传历史记录（用于查看日志）
+ipcMain.handle('get-upload-history-record', (_event, id: string) => {
+  return getUploadHistoryRecord(id)
 })
 
 // IP Info - Fetch user's IP geolocation

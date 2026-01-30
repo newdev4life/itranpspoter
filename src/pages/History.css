@@ -299,3 +299,148 @@
     color: #9CA3AF;
     margin: 0;
 }
+
+/* Row Actions */
+.row-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* View Log Button */
+.btn-view-log {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #9CA3AF;
+    cursor: pointer;
+    border-radius: 6px;
+    opacity: 0;
+    transition: all 0.15s;
+}
+
+.history-row:hover .btn-view-log {
+    opacity: 1;
+}
+
+.btn-view-log:hover {
+    background: #E8F2FF;
+    color: #4B6EFF;
+}
+
+/* Log Modal */
+.log-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.log-modal {
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    background: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    animation: modalSlideIn 0.25s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.log-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.log-modal-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1D1D1F;
+}
+
+.log-modal-filename {
+    font-weight: 400;
+    color: #6B7280;
+    font-size: 13px;
+}
+
+.log-modal-close {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #6B7280;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.15s;
+}
+
+.log-modal-close:hover {
+    background: #F3F4F6;
+    color: #374151;
+}
+
+.log-modal-content {
+    flex: 1;
+    overflow: hidden;
+    padding: 16px 20px;
+    min-height: 200px;
+    max-height: calc(80vh - 80px);
+}
+
+.log-content {
+    font-family: 'SF Mono', Menlo, Monaco, monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #374151;
+    background: #F9FAFB;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-y: auto;
+    max-height: calc(80vh - 120px);
+}
+
+.log-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: #9CA3AF;
+    font-size: 14px;
+}

@@ -7,6 +7,9 @@ export function History() {
     const { t } = useTranslation()
     const [history, setHistory] = useState<UploadHistoryRecord[]>([])
     const [loading, setLoading] = useState(true)
+    const [showLogModal, setShowLogModal] = useState(false)
+    const [selectedLog, setSelectedLog] = useState<string[]>([])
+    const [selectedFileName, setSelectedFileName] = useState('')
 
     useEffect(() => {
         loadHistory()
@@ -42,6 +45,25 @@ export function History() {
             await window.api.clearUploadHistory()
             loadHistory()
         }
+    }
+
+    const handleViewLog = async (id: string, fileName: string) => {
+        const record = await window.api.getUploadHistoryRecord(id)
+        if (record && record.uploadLog && record.uploadLog.length > 0) {
+            setSelectedLog(record.uploadLog)
+            setSelectedFileName(fileName)
+            setShowLogModal(true)
+        } else {
+            setSelectedLog([])
+            setSelectedFileName(fileName)
+            setShowLogModal(true)
+        }
+    }
+
+    const handleCloseLogModal = () => {
+        setShowLogModal(false)
+        setSelectedLog([])
+        setSelectedFileName('')
     }
 
     const formatDate = (isoString: string) => {
@@ -171,21 +193,68 @@ export function History() {
                                 </div>
                                 <div className="col-date">
                                     <span className="date-text">{formatDate(record.startTime)}</span>
-                                    <button
-                                        className="btn-delete"
-                                        onClick={(e) => handleDelete(record.id, e)}
-                                        title={t('common.delete')}
-                                    >
-                                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M1.75 3.5H12.25M5.25 3.5V2.33333C5.25 1.97971 5.39048 1.64057 5.64052 1.39052C5.89057 1.14048 6.22971 1 6.58333 1H7.41667C7.77029 1 8.10943 1.14048 8.35948 1.39052C8.60952 1.64057 8.75 1.97971 8.75 2.33333V3.5M10.5 3.5V11.6667C10.5 12.0203 10.3595 12.3594 10.1095 12.6095C9.85943 12.8595 9.52029 13 9.16667 13H4.83333C4.47971 13 4.14057 12.8595 3.89052 12.6095C3.64048 12.3594 3.5 12.0203 3.5 11.6667V3.5H10.5Z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>
-                                    </button>
+                                    <div className="row-actions">
+                                        <button
+                                            className="btn-view-log"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                handleViewLog(record.id, record.fileName)
+                                            }}
+                                            title={t('history.view_log')}
+                                        >
+                                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M2.33337 3.5H11.6667M2.33337 7H11.6667M2.33337 10.5H7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        </button>
+                                        <button
+                                            className="btn-delete"
+                                            onClick={(e) => handleDelete(record.id, e)}
+                                            title={t('common.delete')}
+                                        >
+                                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M1.75 3.5H12.25M5.25 3.5V2.33333C5.25 1.97971 5.39048 1.64057 5.64052 1.39052C5.89057 1.14048 6.22971 1 6.58333 1H7.41667C7.77029 1 8.10943 1.14048 8.35948 1.39052C8.60952 1.64057 8.75 1.97971 8.75 2.33333V3.5M10.5 3.5V11.6667C10.5 12.0203 10.3595 12.3594 10.1095 12.6095C9.85943 12.8595 9.52029 13 9.16667 13H4.83333C4.47971 13 4.14057 12.8595 3.89052 12.6095C3.64048 12.3594 3.5 12.0203 3.5 11.6667V3.5H10.5Z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))
                     )}
                 </div>
             </div>
+
+            {/* Log Modal */}
+            {showLogModal && (
+                <div className="log-modal-overlay" onClick={handleCloseLogModal}>
+                    <div className="log-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="log-modal-header">
+                            <div className="log-modal-title">
+                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 4.5H15M3 9H15M3 13.5H9" stroke="#4B6EFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                                <span>{t('history.log_title')}</span>
+                                <span className="log-modal-filename">{selectedFileName}</span>
+                            </div>
+                            <button className="log-modal-close" onClick={handleCloseLogModal}>
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M10.5 3.5L3.5 10.5M3.5 3.5L10.5 10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div className="log-modal-content">
+                            {selectedLog.length > 0 ? (
+                                <pre className="log-content">
+                                    {selectedLog.join('\n')}
+                                </pre>
+                            ) : (
+                                <div className="log-empty">
+                                    <span>{t('history.no_log')}</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

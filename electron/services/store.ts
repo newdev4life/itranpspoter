@@ -22,6 +22,7 @@ export interface UploadHistoryRecord {
     errorMessage?: string
     ipRegion?: string      // IP region, e.g., "Taiwan, Taipei"
     duration?: string      // Upload duration, e.g., "2m 30s"
+    uploadLog?: string[]   // Upload log lines
 }
 
 export interface WebhookSettings {
@@ -189,6 +190,14 @@ export function addUploadHistory(record: Omit<UploadHistoryRecord, 'id'>): Uploa
  */
 export function getUploadHistory(): UploadHistoryRecord[] {
     return store.get('uploadHistory', [])
+}
+
+/**
+ * 获取单条上传历史记录（用于查看日志）
+ */
+export function getUploadHistoryRecord(id: string): UploadHistoryRecord | null {
+    const history = store.get('uploadHistory', [])
+    return history.find(h => h.id === id) || null
 }
 
 /**

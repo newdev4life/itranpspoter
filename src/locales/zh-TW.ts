@@ -104,6 +104,10 @@ export const zhTW = {
     'history.empty_desc': '上傳的文件將顯示在這裡',
     'history.delete_confirm': '您確定要刪除這條記錄嗎？',
     'history.clear_confirm': '您確定要清除所有上傳歷史嗎？此操作無法撤銷。',
+    'history.view_log': '查看日誌',
+    'history.log_title': '上傳日誌',
+    'history.no_log': '此記錄沒有日誌',
+    'history.close': '關閉',
 
     // Credentials
     'cred.title': '已儲存的憑證',
