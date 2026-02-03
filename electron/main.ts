@@ -21,6 +21,7 @@ import {
 import { startUpload, cancelUpload, isUploading, fetchProviders } from './services/uploader'
 import { getIpInfo } from './services/ipInfo'
 import { testWebhook } from './services/webhook'
+import { analyzeIpa } from './services/ipaAnalyzer'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -53,7 +54,7 @@ function createWindow() {
 
   win = new BrowserWindow({
     width: 1200,
-    height: 900,
+    height: 920,
     resizable: false,
     fullscreenable: false,
     maximizable: false,
@@ -238,6 +239,13 @@ ipcMain.handle('get-retry-attempts', () => {
 ipcMain.handle('set-retry-attempts', (_event, attempts: number) => {
   setRetryAttempts(attempts)
   return true
+})
+
+// ==================== IPA Analysis ====================
+
+// Analyze IPA file
+ipcMain.handle('analyze-ipa', async (_event, ipaPath: string) => {
+  return await analyzeIpa(ipaPath)
 })
 
 // ==================== App Lifecycle ====================

@@ -22,6 +22,7 @@ export function BottomPanel({ isUploading, uploadStatus, onRetry }: BottomPanelP
     })
     const [errorMessage, setErrorMessage] = useState<string>('')
     const [retryInfo, setRetryInfo] = useState<{ attempt: number; maxAttempts: number } | null>(null)
+    const [showCancelConfirm, setShowCancelConfirm] = useState(false)
 
     const handleUploadLog = useCallback((_event: any, data: LogMessage) => {
         setLogs(prev => [...prev, data])
@@ -174,7 +175,7 @@ export function BottomPanel({ isUploading, uploadStatus, onRetry }: BottomPanelP
                     </div>
                     <button
                         className="btn-cancel-upload"
-                        onClick={() => window.api.cancelUpload()}
+                        onClick={() => setShowCancelConfirm(true)}
                     >
                         {t('progress.cancel_upload')}
                     </button>
@@ -218,6 +219,34 @@ export function BottomPanel({ isUploading, uploadStatus, onRetry }: BottomPanelP
                     </div>
                 )}
             </div>
+
+            {/* Cancel Confirmation Dialog */}
+            {showCancelConfirm && (
+                <div className="cancel-confirm-overlay">
+                    <div className="cancel-confirm-dialog">
+                        <div className="cancel-confirm-icon">⚠️</div>
+                        <h3>{t('progress.cancel_confirm_title')}</h3>
+                        <p>{t('progress.cancel_confirm_message')}</p>
+                        <div className="cancel-confirm-actions">
+                            <button
+                                className="btn btn-secondary"
+                                onClick={() => setShowCancelConfirm(false)}
+                            >
+                                {t('progress.cancel_confirm_no')}
+                            </button>
+                            <button
+                                className="btn btn-danger"
+                                onClick={() => {
+                                    setShowCancelConfirm(false)
+                                    window.api.cancelUpload()
+                                }}
+                            >
+                                {t('progress.cancel_confirm_yes')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

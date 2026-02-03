@@ -120,7 +120,10 @@ contextBridge.exposeInMainWorld('api', {
 
   // 重试次数设置
   getRetryAttempts: () => ipcRenderer.invoke('get-retry-attempts'),
-  setRetryAttempts: (attempts: number) => ipcRenderer.invoke('set-retry-attempts', attempts)
+  setRetryAttempts: (attempts: number) => ipcRenderer.invoke('set-retry-attempts', attempts),
+
+  // IPA 分析
+  analyzeIpa: (ipaPath: string) => ipcRenderer.invoke('analyze-ipa', ipaPath)
 } as ElectronAPI)
 
 // 保留原有的 ipcRenderer 暴露（兼容性）

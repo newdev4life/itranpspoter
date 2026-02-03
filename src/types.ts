@@ -46,6 +46,16 @@ export interface UploadHistoryRecord {
     ipRegion?: string      // IP region, e.g., "Taiwan, Taipei"
     duration?: string      // Upload duration, e.g., "2m 30s"
     uploadLog?: string[]   // Upload log lines
+    appInfo?: IPAInfo      // IPA app info
+}
+
+// IPA App Info
+export interface IPAInfo {
+    bundleId: string
+    appName: string
+    version: string
+    build: string
+    minOSVersion?: string
 }
 
 // Upload Config
@@ -172,6 +182,8 @@ declare global {
             // Retry Attempts Setting
             getRetryAttempts: () => Promise<number>
             setRetryAttempts: (attempts: number) => Promise<boolean>
+            // IPA Analysis
+            analyzeIpa: (ipaPath: string) => Promise<IPAInfo | null>
         }
     }
 }

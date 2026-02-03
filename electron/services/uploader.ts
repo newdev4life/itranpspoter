@@ -4,6 +4,7 @@ import { getITMSTransporterPath } from './environment'
 import { addUploadHistory, saveCredential } from './store'
 import { sendWebhookNotification } from './webhook'
 import { getIpInfo } from './ipInfo'
+import { analyzeIpa, IPAInfo } from './ipaAnalyzer'
 import * as path from 'path'
 
 export interface UploadConfig {
@@ -53,6 +54,7 @@ let maxRetryAttempts: number = 3
 let isCancelledByUser: boolean = false
 let currentIpRegion: string = ''
 let currentUploadLogs: string[] = []  // Accumulate logs for history
+let currentAppInfo: IPAInfo | null = null  // Current IPA app info
 
 /**
  * Format duration from milliseconds to human-readable string
@@ -339,6 +341,13 @@ export async function startUpload(
         currentIpRegion = ''
     }
 
+    // Analyze IPA to get app info
+    try {
+        currentAppInfo = await analyzeIpa(config.ipaPath)
+    } catch {
+        currentAppInfo = null
+    }
+
     const fileName = path.basename(config.ipaPath)
     let lastResult: UploadResult = { success: false, errorMessage: 'Unknown error' }
 
@@ -405,7 +414,8 @@ export async function startUpload(
         errorMessage: lastResult.errorMessage || 'Upload failed after all retries',
         ipRegion: currentIpRegion || undefined,
         duration,
-        uploadLog: currentUploadLogs.slice(-500)  // Keep last 500 lines
+        uploadLog: currentUploadLogs.slice(-500),  // Keep last 500 lines
+        appInfo: currentAppInfo || undefined
     })
 
     mainWindow.webContents.send('upload-complete', {
@@ -422,7 +432,8 @@ export async function startUpload(
         endTime,
         errorMessage: lastResult.errorMessage || 'Upload failed after all retries',
         ipRegion: currentIpRegion || undefined,
-        duration
+        duration,
+        appInfo: currentAppInfo || undefined
     })
 
     return lastResult
@@ -559,7 +570,8 @@ function performSingleUpload(
                     endTime,
                     ipRegion: currentIpRegion || undefined,
                     duration,
-                    uploadLog: currentUploadLogs.slice(-500)  // Keep last 500 lines
+                    uploadLog: currentUploadLogs.slice(-500),  // Keep last 500 lines
+                    appInfo: currentAppInfo || undefined
                 })
 
                 mainWindow.webContents.send('upload-complete', { success: true })
@@ -572,7 +584,8 @@ function performSingleUpload(
                     startTime: uploadStartTime,
                     endTime,
                     ipRegion: currentIpRegion || undefined,
-                    duration
+                    duration,
+                    appInfo: currentAppInfo || undefined
                 })
 
                 resolve({ success: true })
@@ -640,7 +653,8 @@ export function cancelUpload(mainWindow: BrowserWindow): boolean {
             errorMessage: 'User cancelled upload',
             ipRegion: currentIpRegion || undefined,
             duration,
-            uploadLog: currentUploadLogs.slice(-500)  // Keep last 500 lines
+            uploadLog: currentUploadLogs.slice(-500),  // Keep last 500 lines
+            appInfo: currentAppInfo || undefined
         })
 
         // Send webhook notification for cancellation (before nullifying config)
@@ -652,7 +666,8 @@ export function cancelUpload(mainWindow: BrowserWindow): boolean {
             endTime,
             errorMessage: 'User cancelled upload',
             ipRegion: currentIpRegion || undefined,
-            duration
+            duration,
+            appInfo: currentAppInfo || undefined
         })
 
         currentUploadProcess.kill('SIGTERM')

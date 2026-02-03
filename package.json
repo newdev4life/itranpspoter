@@ -1,7 +1,7 @@
 {
   "name": "iTransporter",
   "private": true,
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A modern IPA uploader for App Store Connect",
   "author": "jimjay",
   "type": "module",
@@ -12,9 +12,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/plist": "^3.0.5",
+    "bplist-parser": "^0.3.2",
     "electron-store": "^8.2.0",
+    "plist": "^3.1.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "yauzl": "^3.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.64",

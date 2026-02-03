@@ -23,6 +23,13 @@ export interface UploadHistoryRecord {
     ipRegion?: string      // IP region, e.g., "Taiwan, Taipei"
     duration?: string      // Upload duration, e.g., "2m 30s"
     uploadLog?: string[]   // Upload log lines
+    appInfo?: {            // IPA app info
+        bundleId: string
+        appName: string
+        version: string
+        build: string
+        minOSVersion?: string
+    }
 }
 
 export interface WebhookSettings {

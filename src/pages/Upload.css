@@ -420,3 +420,67 @@
 .btn-confirm-proceed:hover {
     background: var(--color-primary-hover);
 }
+
+/* IPA Info Card */
+.ipa-info-card {
+    margin-top: var(--space-sm);
+    background: linear-gradient(135deg, rgba(90, 200, 250, 0.08) 0%, rgba(0, 122, 255, 0.08) 100%);
+    border: 1px solid rgba(0, 122, 255, 0.2);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+}
+
+.ipa-info-loading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.loading-spinner.small {
+    width: 14px;
+    height: 14px;
+    border-width: 1.5px;
+}
+
+.ipa-info-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.ipa-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ipa-info-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ipa-info-value {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+    text-align: right;
+    max-width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ipa-info-value.app-name {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+}
+
+.ipa-info-value.bundle-id {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+}

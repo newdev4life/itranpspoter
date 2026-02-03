@@ -152,6 +152,7 @@ export function History() {
                 {/* Table Header */}
                 <div className="history-table-header">
                     <div className="col-status">{t('history.status')}</div>
+                    <div className="col-app-info">{t('upload.app_name')}</div>
                     <div className="col-filename">{t('history.filename')}</div>
                     <div className="col-apple-id">{t('history.apple_id')}</div>
                     <div className="col-region">{t('history.region')}</div>
@@ -178,6 +179,16 @@ export function History() {
                             <div key={record.id} className="history-row">
                                 <div className="col-status">
                                     {getStatusBadge(record.status)}
+                                </div>
+                                <div className="col-app-info">
+                                    {record.appInfo ? (
+                                        <div className="app-info-cell">
+                                            <span className="app-name">{record.appInfo.appName}</span>
+                                            <span className="bundle-id">{record.appInfo.bundleId}</span>
+                                        </div>
+                                    ) : (
+                                        <span className="no-info">-</span>
+                                    )}
                                 </div>
                                 <div className="col-filename">
                                     {record.fileName}

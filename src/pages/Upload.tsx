@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { CredentialListItem, UploadConfig, Provider, IpInfo } from '../types'
+import { CredentialListItem, UploadConfig, Provider, IpInfo, IPAInfo } from '../types'
 import { useTranslation } from '../i18n'
 import './Upload.css'
 
@@ -31,6 +31,10 @@ export function Upload({ onStartUpload, isUploading }: UploadProps) {
     const [showConfirmDialog, setShowConfirmDialog] = useState(false)
     const [ipInfo, setIpInfo] = useState<IpInfo | null>(null)
     const [pendingUploadConfig, setPendingUploadConfig] = useState<UploadConfig | null>(null)
+
+    // IPA info state
+    const [ipaInfo, setIpaInfo] = useState<IPAInfo | null>(null)
+    const [analyzingIpa, setAnalyzingIpa] = useState(false)
 
     useEffect(() => {
         loadCredentials()
@@ -78,6 +82,16 @@ export function Upload({ onStartUpload, isUploading }: UploadProps) {
         const path = await window.api.selectIpaFile()
         if (path) {
             setIpaPath(path)
+            setIpaInfo(null)
+            setAnalyzingIpa(true)
+            try {
+                const info = await window.api.analyzeIpa(path)
+                setIpaInfo(info)
+            } catch (error) {
+                console.error('Failed to analyze IPA:', error)
+            } finally {
+                setAnalyzingIpa(false)
+            }
         }
     }
 
@@ -245,6 +259,33 @@ export function Upload({ onStartUpload, isUploading }: UploadProps) {
                             {t('common.browse')}
                         </button>
                     </div>
+
+                    {/* IPA Info Card */}
+                    {(analyzingIpa || ipaInfo) && (
+                        <div className="ipa-info-card">
+                            {analyzingIpa ? (
+                                <div className="ipa-info-loading">
+                                    <div className="loading-spinner small"></div>
+                                    <span>{t('upload.analyzing_ipa')}</span>
+                                </div>
+                            ) : ipaInfo && (
+                                <div className="ipa-info-content">
+                                    <div className="ipa-info-row">
+                                        <span className="ipa-info-label">{t('upload.app_name')}</span>
+                                        <span className="ipa-info-value app-name">{ipaInfo.appName}</span>
+                                    </div>
+                                    <div className="ipa-info-row">
+                                        <span className="ipa-info-label">{t('upload.bundle_id')}</span>
+                                        <span className="ipa-info-value bundle-id">{ipaInfo.bundleId}</span>
+                                    </div>
+                                    <div className="ipa-info-row">
+                                        <span className="ipa-info-label">{t('upload.version')}</span>
+                                        <span className="ipa-info-value">{ipaInfo.version} ({ipaInfo.build})</span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* Apple ID */}

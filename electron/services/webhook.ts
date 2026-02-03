@@ -9,6 +9,12 @@ export interface WebhookPayload {
     duration?: string  // Human-readable duration for success status
     errorMessage?: string
     ipRegion?: string  // IP region, e.g., "Taiwan, Taipei"
+    appInfo?: {        // IPA app info
+        bundleId: string
+        appName: string
+        version: string
+        build: string
+    }
 }
 
 export interface WebhookResult {
@@ -48,28 +54,36 @@ function buildMessageText(payload: WebhookPayload): string {
     }
 
     const statusText = {
-        success: 'Upload Successful',
-        failed: 'Upload Failed',
-        cancelled: 'Upload Cancelled'
+        success: '上傳成功',
+        failed: '上傳失敗',
+        cancelled: '上傳已取消'
     }
 
     let message = `${statusEmoji[payload.status]} ${statusText[payload.status]}\n`
-    message += `📦 File: ${payload.fileName}\n`
-    message += `👤 Apple ID: ${payload.appleId}\n`
+
+    // App info (if available)
+    if (payload.appInfo) {
+        message += `📱 應用程式：${payload.appInfo.appName}\n`
+        message += `🔖 Bundle ID：${payload.appInfo.bundleId}\n`
+        message += `📌 版本：${payload.appInfo.version} (${payload.appInfo.build})\n`
+    }
+
+    message += `📦 文件：${payload.fileName}\n`
+    message += `👤 Apple ID：${payload.appleId}\n`
 
     if (payload.ipRegion) {
-        message += `🌍 Region: ${payload.ipRegion}\n`
+        message += `🌍 區域：${payload.ipRegion}\n`
     }
 
     if (payload.status === 'success' && payload.duration) {
-        message += `⏱️ Duration: ${payload.duration}\n`
+        message += `⏱️ 耗時：${payload.duration}\n`
     }
 
     if (payload.errorMessage) {
-        message += `❗ Error: ${payload.errorMessage}\n`
+        message += `❗ 錯誤：${payload.errorMessage}\n`
     }
 
-    message += `🕐 Time: ${new Date(payload.endTime).toLocaleString()}`
+    message += `🕐 時間：${new Date(payload.endTime).toLocaleString()}`
 
     return message
 }
@@ -132,7 +146,7 @@ export async function testWebhook(url: string): Promise<WebhookResult> {
     const requestBody = {
         msg_type: 'text',
         content: {
-            text: '🔔 iTransporter Webhook Test\n\nYour webhook is configured correctly! You will receive notifications when uploads complete.'
+            text: '🔔 iTransporter Webhook 測試\n\n您的 Webhook 配置正确！上傳完成時您將收到通知。'
         }
     }
 
