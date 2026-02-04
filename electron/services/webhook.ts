@@ -171,3 +171,133 @@ export async function testWebhook(url: string): Promise<WebhookResult> {
         return { success: false, message: errorMessage }
     }
 }
+
+export interface UploadStartPayload {
+    fileName: string
+    appleId: string
+    startTime: string
+    ipRegion?: string
+    appInfo?: {
+        bundleId: string
+        appName: string
+        version: string
+        build: string
+    }
+}
+
+/**
+ * Send webhook notification when upload starts
+ */
+export async function sendUploadStartNotification(payload: UploadStartPayload): Promise<WebhookResult> {
+    const settings = getWebhookSettings()
+
+    if (!settings.enabled || !settings.url) {
+        return { success: false, message: 'Webhook not enabled or URL not set' }
+    }
+
+    let message = `🚀 開始上傳\n`
+
+    if (payload.appInfo) {
+        message += `📱 應用程式：${payload.appInfo.appName}\n`
+        message += `🔖 Bundle ID：${payload.appInfo.bundleId}\n`
+        message += `📌 版本：${payload.appInfo.version} (${payload.appInfo.build})\n`
+    }
+
+    message += `📦 文件：${payload.fileName}\n`
+    message += `👤 Apple ID：${payload.appleId}\n`
+
+    if (payload.ipRegion) {
+        message += `🌍 IP 區域：${payload.ipRegion}\n`
+    }
+
+    message += `🕐 時間：${new Date(payload.startTime).toLocaleString()}`
+
+    const requestBody = {
+        msg_type: 'text',
+        content: { text: message }
+    }
+
+    try {
+        const response = await fetch(settings.url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
+        })
+
+        const data = await response.json()
+
+        if (data.code === 0 || data.StatusCode === 0) {
+            return { success: true, code: 0, message: data.msg || 'success' }
+        } else {
+            return { success: false, code: data.code, message: data.msg || 'Unknown error' }
+        }
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        return { success: false, message: errorMessage }
+    }
+}
+
+export interface RetryPayload {
+    fileName: string
+    appleId: string
+    attempt: number
+    maxAttempts: number
+    errorMessage?: string
+    appInfo?: {
+        bundleId: string
+        appName: string
+        version: string
+        build: string
+    }
+}
+
+/**
+ * Send webhook notification when retry attempt starts
+ */
+export async function sendRetryNotification(payload: RetryPayload): Promise<WebhookResult> {
+    const settings = getWebhookSettings()
+
+    if (!settings.enabled || !settings.url) {
+        return { success: false, message: 'Webhook not enabled or URL not set' }
+    }
+
+    let message = `🔄 上傳失敗，正在嘗試第 ${payload.attempt}/${payload.maxAttempts} 次重試\n`
+
+    if (payload.appInfo) {
+        message += `📱 應用程式：${payload.appInfo.appName}\n`
+        message += `📌 版本：${payload.appInfo.version} (${payload.appInfo.build})\n`
+    }
+
+    message += `📦 文件：${payload.fileName}\n`
+    message += `👤 Apple ID：${payload.appleId}\n`
+
+    if (payload.errorMessage) {
+        message += `❗ 上次錯誤：${payload.errorMessage}\n`
+    }
+
+    message += `🕐 時間：${new Date().toLocaleString()}`
+
+    const requestBody = {
+        msg_type: 'text',
+        content: { text: message }
+    }
+
+    try {
+        const response = await fetch(settings.url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
+        })
+
+        const data = await response.json()
+
+        if (data.code === 0 || data.StatusCode === 0) {
+            return { success: true, code: 0, message: data.msg || 'success' }
+        } else {
+            return { success: false, code: data.code, message: data.msg || 'Unknown error' }
+        }
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        return { success: false, message: errorMessage }
+    }
+}

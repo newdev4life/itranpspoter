@@ -2,7 +2,7 @@ import { spawn, ChildProcess } from 'child_process'
 import { BrowserWindow } from 'electron'
 import { getITMSTransporterPath } from './environment'
 import { addUploadHistory, saveCredential } from './store'
-import { sendWebhookNotification } from './webhook'
+import { sendWebhookNotification, sendUploadStartNotification, sendRetryNotification } from './webhook'
 import { getIpInfo } from './ipInfo'
 import { analyzeIpa, IPAInfo } from './ipaAnalyzer'
 import * as path from 'path'
@@ -350,6 +350,16 @@ export async function startUpload(
 
     const fileName = path.basename(config.ipaPath)
     let lastResult: UploadResult = { success: false, errorMessage: 'Unknown error' }
+    let lastErrorMessage: string | undefined = undefined  // Track last error for retry notification
+
+    // Send upload start webhook notification
+    sendUploadStartNotification({
+        fileName,
+        appleId: config.appleId,
+        startTime: uploadStartTime,
+        ipRegion: currentIpRegion || undefined,
+        appInfo: currentAppInfo || undefined
+    })
 
     while (currentRetryAttempt < maxRetryAttempts) {
         currentRetryAttempt++
@@ -372,11 +382,23 @@ export async function startUpload(
                 attempt: currentRetryAttempt,
                 maxAttempts: maxRetryAttempts
             })
+
+            // Send retry webhook notification
+            sendRetryNotification({
+                fileName,
+                appleId: config.appleId,
+                attempt: currentRetryAttempt,
+                maxAttempts: maxRetryAttempts,
+                errorMessage: lastErrorMessage,
+                appInfo: currentAppInfo || undefined
+            })
+
             // Wait 2 seconds before retry
             await new Promise(resolve => setTimeout(resolve, 2000))
         }
 
         lastResult = await performSingleUpload(config, mainWindow)
+        lastErrorMessage = lastResult.errorMessage  // Store error for next retry notification
 
         if (lastResult.success || isCancelledByUser) {
             return lastResult
