@@ -186,3 +186,46 @@
         justify-content: space-between;
     }
 }
+
+/* IP Changed State */
+.ip-info-banner.changed {
+    border-color: rgba(255, 149, 0, 0.4);
+    background: linear-gradient(135deg, #fff8f0 0%, #fff0e0 100%);
+    animation: bannerChangePulse 0.6s ease;
+}
+
+@keyframes bannerChangePulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.01);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.ip-info-changed-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: #B25E00;
+    background: rgba(255, 149, 0, 0.15);
+    padding: 2px 10px;
+    border-radius: 10px;
+    animation: ipBadgeFadeIn 0.3s ease;
+}
+
+@keyframes ipBadgeFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

@@ -100,6 +100,10 @@ contextBridge.exposeInMainWorld('api', {
 
   // IP Info
   getIpInfo: () => ipcRenderer.invoke('get-ip-info'),
+  onIpChanged: (callback: (event: any, data: any) => void) =>
+    ipcRenderer.on('ip-changed', callback),
+  offIpChanged: (callback: (event: any, data: any) => void) =>
+    ipcRenderer.off('ip-changed', callback),
 
   // Webhook Settings
   getWebhookSettings: () => ipcRenderer.invoke('get-webhook-settings'),

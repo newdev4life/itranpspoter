@@ -256,3 +256,70 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+/* Network Changed State */
+.network-info-compact.changed {
+    border-color: rgba(255, 149, 0, 0.4);
+    background: rgba(255, 149, 0, 0.08);
+    animation: networkChangePulse 0.6s ease;
+}
+
+@keyframes networkChangePulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.network-changed-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px;
+    background: rgba(255, 149, 0, 0.12);
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #B25E00;
+    animation: badgeFadeIn 0.3s ease;
+    margin-bottom: var(--space-xs);
+}
+
+.network-changed-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #FF9500;
+    animation: dotPulse 1.5s ease infinite;
+}
+
+@keyframes dotPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+
+@keyframes badgeFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

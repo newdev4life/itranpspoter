@@ -162,6 +162,8 @@ export const zhTW = {
     'ipinfo.coordinates': '座標',
     'ipinfo.timezone': '時區',
     'ipinfo.as': 'AS',
+    'ipinfo.changed': '網路已變更',
+    'ipinfo.refresh': '重新偵測',
 
     // Bottom Panel / Status Sidebar
     'env.title': '環境狀態',

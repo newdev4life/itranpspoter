@@ -1,29 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from '../i18n'
+import { IpInfo } from '../types'
 import './IPInfoBanner.css'
-
-interface IpInfo {
-    status: string
-    country: string
-    countryCode: string
-    region: string
-    regionName: string
-    city: string
-    zip: string
-    lat: number
-    lon: number
-    timezone: string
-    isp: string
-    org: string
-    as: string
-    query: string
-}
 
 export function IPInfoBanner() {
     const { t } = useTranslation()
     const [ipInfo, setIpInfo] = useState<IpInfo | null>(null)
     const [loading, setLoading] = useState(true)
     const [expanded, setExpanded] = useState(false)
+    const [ipChanged, setIpChanged] = useState(false)
 
     useEffect(() => {
         const fetchIpInfo = async () => {
@@ -39,6 +24,26 @@ export function IPInfoBanner() {
 
         fetchIpInfo()
     }, [])
+
+    // Listen for IP changes from the monitor
+    useEffect(() => {
+        const handleIpChanged = (_event: any, newInfo: IpInfo) => {
+            setIpInfo(newInfo)
+            setIpChanged(true)
+        }
+
+        window.api.onIpChanged(handleIpChanged)
+        return () => {
+            window.api.offIpChanged(handleIpChanged)
+        }
+    }, [])
+
+    // Auto-clear the "changed" indicator after 10 seconds
+    useEffect(() => {
+        if (!ipChanged) return
+        const timer = setTimeout(() => setIpChanged(false), 10_000)
+        return () => clearTimeout(timer)
+    }, [ipChanged])
 
     if (loading) {
         return (
@@ -63,10 +68,14 @@ export function IPInfoBanner() {
     }
 
     return (
-        <div className={`ip-info-banner ${expanded ? 'expanded' : ''}`}>
+        <div className={`ip-info-banner ${expanded ? 'expanded' : ''} ${ipChanged ? 'changed' : ''}`}>
             <div className="ip-info-header">
                 <span className="ip-info-title">🌐 {t('ipinfo.title')}</span>
-                <span className="ip-info-subtitle">{t('ipinfo.subtitle')}</span>
+                {ipChanged ? (
+                    <span className="ip-info-changed-badge">{t('ipinfo.changed')}</span>
+                ) : (
+                    <span className="ip-info-subtitle">{t('ipinfo.subtitle')}</span>
+                )}
             </div>
             <div className="ip-info-main" onClick={() => setExpanded(!expanded)}>
                 <div className="ip-info-left">
@@ -111,3 +120,4 @@ export function IPInfoBanner() {
         </div>
     )
 }
+

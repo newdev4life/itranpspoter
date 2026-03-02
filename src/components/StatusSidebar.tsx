@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { EnvironmentStatus, IpInfo } from '../types'
 import { useTranslation } from '../i18n'
 import './StatusSidebar.css'
@@ -14,6 +14,7 @@ export function StatusSidebar({ onEnvironmentReady }: StatusSidebarProps) {
     const [installing, setInstalling] = useState(false)
     const [ipInfo, setIpInfo] = useState<IpInfo | null>(null)
     const [ipLoading, setIpLoading] = useState(true)
+    const [ipChanged, setIpChanged] = useState(false)
 
     const checkEnvironment = async () => {
         setLoading(true)
@@ -27,7 +28,7 @@ export function StatusSidebar({ onEnvironmentReady }: StatusSidebarProps) {
         setLoading(false)
     }
 
-    const fetchIpInfo = async () => {
+    const fetchIpInfo = useCallback(async () => {
         setIpLoading(true)
         try {
             const info = await window.api.getIpInfo()
@@ -36,12 +37,32 @@ export function StatusSidebar({ onEnvironmentReady }: StatusSidebarProps) {
             console.error('Failed to fetch IP info:', error)
         }
         setIpLoading(false)
-    }
+    }, [])
 
     useEffect(() => {
         checkEnvironment()
         fetchIpInfo()
     }, [])
+
+    // Listen for IP changes from the monitor
+    useEffect(() => {
+        const handleIpChanged = (_event: any, newInfo: IpInfo) => {
+            setIpInfo(newInfo)
+            setIpChanged(true)
+        }
+
+        window.api.onIpChanged(handleIpChanged)
+        return () => {
+            window.api.offIpChanged(handleIpChanged)
+        }
+    }, [])
+
+    // Auto-clear the "changed" indicator after 10 seconds
+    useEffect(() => {
+        if (!ipChanged) return
+        const timer = setTimeout(() => setIpChanged(false), 10_000)
+        return () => clearTimeout(timer)
+    }, [ipChanged])
 
     const openTransporterDownload = () => {
         window.api.openExternal('https://apps.apple.com/app/transporter/id1450874784')
@@ -169,6 +190,16 @@ export function StatusSidebar({ onEnvironmentReady }: StatusSidebarProps) {
             <div className="sidebar-section-divider"></div>
             <div className="sidebar-header">
                 <h3>{t('ipinfo.title')}</h3>
+                <button
+                    className="btn-recheck"
+                    onClick={fetchIpInfo}
+                    disabled={ipLoading}
+                    title={t('ipinfo.refresh')}
+                >
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11.67 2.33C10.47 1.13 8.84 0.5 7 0.5C3.41 0.5 0.51 3.41 0.51 7C0.51 10.59 3.41 13.5 7 13.5C10.01 13.5 12.49 11.47 13.17 8.75H11.67C11.03 10.66 9.18 12 7 12C4.24 12 2 9.76 2 7C2 4.24 4.24 2 7 2C8.38 2 9.61 2.57 10.53 3.47L8 6H14V0L11.67 2.33Z" fill="currentColor" />
+                    </svg>
+                </button>
             </div>
 
             {ipLoading ? (
@@ -177,7 +208,13 @@ export function StatusSidebar({ onEnvironmentReady }: StatusSidebarProps) {
                     <span>{t('ipinfo.loading')}</span>
                 </div>
             ) : ipInfo ? (
-                <div className="network-info-compact">
+                <div className={`network-info-compact ${ipChanged ? 'changed' : ''}`}>
+                    {ipChanged && (
+                        <div className="network-changed-badge">
+                            <span className="network-changed-dot"></span>
+                            <span>{t('ipinfo.changed')}</span>
+                        </div>
+                    )}
                     <div className="network-info-row">
                         <span className="network-flag">{getCountryFlag(ipInfo.countryCode)}</span>
                         <div className="network-location">
@@ -194,3 +231,4 @@ export function StatusSidebar({ onEnvironmentReady }: StatusSidebarProps) {
         </div>
     )
 }
+

@@ -171,6 +171,8 @@ declare global {
             deleteUploadHistory: (id: string) => Promise<boolean>
             // IP Info
             getIpInfo: () => Promise<IpInfo | null>
+            onIpChanged: (callback: (event: any, data: IpInfo) => void) => void
+            offIpChanged: (callback: (event: any, data: IpInfo) => void) => void
             // Webhook Settings
             getWebhookSettings: () => Promise<WebhookSettings>
             setWebhookSettings: (settings: WebhookSettings) => Promise<boolean>

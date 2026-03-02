@@ -19,7 +19,7 @@ import {
   setRetryAttempts
 } from './services/store'
 import { startUpload, cancelUpload, isUploading, fetchProviders } from './services/uploader'
-import { getIpInfo } from './services/ipInfo'
+import { getLastIpInfo, startIpMonitor, stopIpMonitor } from './services/ipInfo'
 import { testWebhook } from './services/webhook'
 import { analyzeIpa } from './services/ipaAnalyzer'
 
@@ -205,9 +205,9 @@ ipcMain.handle('get-upload-history-record', (_event, id: string) => {
   return getUploadHistoryRecord(id)
 })
 
-// IP Info - Fetch user's IP geolocation
+// IP Info - Fetch user's IP geolocation (uses monitor cache)
 ipcMain.handle('get-ip-info', async () => {
-  return await getIpInfo()
+  return await getLastIpInfo()
 })
 
 // ==================== Webhook Settings ====================
@@ -254,6 +254,7 @@ ipcMain.handle('analyze-ipa', async (_event, ipaPath: string) => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
+  stopIpMonitor()
   if (process.platform !== 'darwin') {
     app.quit()
     win = null
@@ -268,4 +269,7 @@ app.on('activate', () => {
   }
 })
 
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+  createWindow()
+  startIpMonitor()
+})
